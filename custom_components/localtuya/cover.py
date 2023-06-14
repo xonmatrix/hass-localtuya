@@ -105,10 +105,9 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
         # in case cover moving by set position cmd.
         if (self._current_state_action == STATE_SET_CLOSING
             or self._current_state_action == STATE_SET_OPENING):
-            curr_pos = self.current_cover_position
             set_pos = self._set_new_position
             # Reset state whenn cover reached the position.
-            if curr_pos - set_pos < 5 and curr_pos - set_pos > -5 :
+            if curr_pos - set_pos < 5 and curr_pos - set_pos >= -5 :
                 self._current_state_action = STATE_STOPPED 
         return self._current_state_action
     
@@ -274,7 +273,7 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
             pos_diff = position - curr_pos
             if pos_diff > 5:
                 self._current_state_action = STATE_SET_OPENING
-            elif pos_diff < -5:
+            elif pos_diff <= -5:
                 self._current_state_action = STATE_SET_CLOSING
         # Write state data.
         self.async_write_ha_state()
