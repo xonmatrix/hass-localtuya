@@ -263,6 +263,7 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
 
     def update_state(self, action, position=None):
         """ update cover current states """
+        state = self._current_state_action
         # using Commands.
         if position is None:
             self._current_state_action = action
@@ -271,10 +272,15 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
             curr_pos = self.current_cover_position
             self._set_new_position = position
             pos_diff = position - curr_pos
-            if pos_diff > 5:
-                self._current_state_action = STATE_SET_OPENING
-            elif pos_diff <= -5:
-                self._current_state_action = STATE_SET_CLOSING
+            # Prevent stuck state when interrupted on middle of cmd
+            # This's rarely happen when user uses SET POS while device is moving. this might improvable
+            if state == STATE_STOPPED:
+                if pos_diff > 5:
+                    self._current_state_action = STATE_SET_OPENING
+                elif pos_diff <= -5:
+                    self._current_state_action = STATE_SET_CLOSING
+            else:
+                self._current_state_action = STATE_STOPPED
         # Write state data.
         self.async_write_ha_state()
 
