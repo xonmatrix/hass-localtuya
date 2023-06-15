@@ -98,7 +98,7 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
     def _current_state(self) -> str:
         """Return the current state of the cover."""
         state = self._current_state_action
-        curr_pos = self.current_cover_position
+        curr_pos = self._current_cover_position
         # Reset STATE when cover is fully closed or fully opened.
         if (state == STATE_CLOSING and curr_pos == 0) or (state == STATE_OPENING and curr_pos == 100):
             self._current_state_action = STATE_STOPPED
@@ -139,6 +139,10 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
 
     async def async_set_cover_position(self, **kwargs):
         """Move the cover to a specific position."""
+        # Update device values IF the device is moving at the moment.
+        if self._current_state != STATE_STOPPED:
+            await self.async_stop_cover()
+
         self.debug("Setting cover position: %r", kwargs[ATTR_POSITION])
         if self._config[CONF_POSITIONING_MODE] == COVER_MODE_TIMED:
             newpos = float(kwargs[ATTR_POSITION])
@@ -161,11 +165,12 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
             converted_position = int(kwargs[ATTR_POSITION])
             if self._config[CONF_POSITION_INVERTED]:
                 converted_position = 100 - converted_position
-
             if 0 <= converted_position <= 100 and self.has_config(CONF_SET_POSITION_DP):
                 await self._device.set_dp(
                     converted_position, self._config[CONF_SET_POSITION_DP]
                 )
+            # Give it a moment, to make sure hass updated current pos.
+            await asyncio.sleep(0.1)
             self.update_state(STATE_SET_CMD,converted_position)
 
     async def async_stop_after_timeout(self, delay_sec):
@@ -273,11 +278,10 @@ class LocaltuyaCover(LocalTuyaEntity, CoverEntity):
             self._set_new_position = position
             pos_diff = position - curr_pos
             # Prevent stuck state when interrupted on middle of cmd
-            # This's rarely happen when user uses SET POS while device is moving. this might improvable
             if state == STATE_STOPPED:
-                if pos_diff > 5:
+                if pos_diff > 0:
                     self._current_state_action = STATE_SET_OPENING
-                elif pos_diff <= -5:
+                elif pos_diff < 0:
                     self._current_state_action = STATE_SET_CLOSING
             else:
                 self._current_state_action = STATE_STOPPED
