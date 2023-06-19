@@ -394,30 +394,6 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
         )
         self.set_logger(logger, self._dev_config_entry[CONF_DEVICE_ID])
 
-    @property
-    def entity_category(self) -> str:
-        """Return the category of the entity."""
-        if self.has_config(CONF_CATEGORY_ENTITY):
-            category = self._config[CONF_CATEGORY_ENTITY]
-            if EntityCategory.CONFIG in category:
-                category = EntityCategory.CONFIG
-            elif EntityCategory.DIAGNOSTIC in category:
-                category = EntityCategory.DIAGNOSTIC
-            else:
-                category = None
-            return category
-        else:
-            # Set Default values for unconfigured devices.
-            if self.has_config(CONF_PLATFORM):
-                platform = self._config[CONF_PLATFORM]
-            if any(platform in i for i in DEFAULT_CATEGORIES["CONTROL"]):
-                return None
-            elif any(platform in i for i in DEFAULT_CATEGORIES["CONFIG"]):
-                return EntityCategory.CONFIG
-            elif any(platform in i for i in DEFAULT_CATEGORIES["DIAGNOSTIC"]):
-                return EntityCategory.DIAGNOSTIC
-        return None
-
     async def async_added_to_hass(self):
         """Subscribe localtuya events."""
         await super().async_added_to_hass()
@@ -504,6 +480,30 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
     def available(self):
         """Return if device is available or not."""
         return str(self._dp_id) in self._status
+
+    @property
+    def entity_category(self) -> str:
+        """Return the category of the entity."""
+        if self.has_config(CONF_CATEGORY_ENTITY):
+            category = self._config[CONF_CATEGORY_ENTITY]
+            if EntityCategory.CONFIG in category:
+                category = EntityCategory.CONFIG
+            elif EntityCategory.DIAGNOSTIC in category:
+                category = EntityCategory.DIAGNOSTIC
+            else:
+                category = None
+            return category
+        else:
+            # Set Default values for unconfigured devices.
+            if self.has_config(CONF_PLATFORM):
+                platform = self._config[CONF_PLATFORM]
+            if any(platform in i for i in DEFAULT_CATEGORIES["CONTROL"]):
+                return None
+            elif any(platform in i for i in DEFAULT_CATEGORIES["CONFIG"]):
+                return EntityCategory.CONFIG
+            elif any(platform in i for i in DEFAULT_CATEGORIES["DIAGNOSTIC"]):
+                return EntityCategory.DIAGNOSTIC
+        return None
 
     def dps(self, dp_index):
         """Return cached value for DPS index."""
