@@ -338,7 +338,20 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     _LOGGER.debug("Total DPS: %s", detected_dps)
 
-    return dps_string_list(detected_dps)
+    # Get DP descriptions from the cloud, if the device is there.
+    cloud_dp_codes = {}
+    if data[CONF_DEVICE_ID] in hass.data[DOMAIN][DATA_CLOUD].device_list:
+        cloud_device_specs, res = await hass.data[DOMAIN][
+            DATA_CLOUD
+        ].async_get_device_specifications(data[CONF_DEVICE_ID])
+        if res != "ok":
+            _LOGGER.error("Cloud DP specification request failed: %s", res)
+        else:
+            for category in ("functions", "status"):
+                cloud_dp_codes.update(
+                    {str(e["dp_id"]): e["code"] for e in cloud_device_specs[category]}
+                )
+    return dps_string_list(detected_dps, cloud_dp_codes)
 
 
 async def attempt_cloud_connection(hass, user_input):
