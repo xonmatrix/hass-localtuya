@@ -8,6 +8,7 @@ import homeassistant.helpers.config_validation as cv
 import homeassistant.helpers.entity_registry as er
 import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig, SelectSelectorMode, SelectOptionDict
 from homeassistant.const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -22,6 +23,7 @@ from homeassistant.const import (
     CONF_REGION,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
+    EntityCategory,
 )
 from homeassistant.core import callback
 
@@ -48,6 +50,9 @@ from .const import (
     DATA_DISCOVERY,
     DOMAIN,
     PLATFORMS,
+    CONF_CATEGORY_ENTITY,
+    ENTITY_CATEGORY,
+    DEFAULT_CATEGORIES,
 )
 from .discovery import discover
 
@@ -105,6 +110,20 @@ PICK_ENTITY_SCHEMA = vol.Schema(
     {vol.Required(PLATFORM_TO_ADD, default="switch"): vol.In(PLATFORMS)}
 )
 
+def _col_to_select(opt_list: dict, multi_select = False, is_dps = False):
+    """Convert collections to SelectSelectorConfig."""
+    if type(opt_list) == dict:
+        return SelectSelector(SelectSelectorConfig(
+            options=[SelectOptionDict(value=str(k), label=l) for k, l in opt_list.items()],
+            mode=SelectSelectorMode.DROPDOWN,
+        ))
+    elif type(opt_list) == list:
+            # value used the same method as func available_dps_string, no spaces values.
+            return SelectSelector(SelectSelectorConfig(
+                options=[SelectOptionDict(value=str(l).split(' ')[0] if is_dps == True else str(l)
+                                        , label=str(l)) for l in opt_list],
+                mode=SelectSelectorMode.DROPDOWN, multiple = True if multi_select == True else False,
+            ))
 
 def devices_schema(discovered_devices, cloud_devices_list, add_custom_device=True):
     """Create schema for devices step."""
@@ -191,6 +210,7 @@ def platform_schema(platform, dps_strings, allow_id=True, yaml=False):
     if allow_id:
         schema[vol.Required(CONF_ID)] = vol.In(dps_strings)
     schema[vol.Required(CONF_FRIENDLY_NAME)] = str
+    schema[vol.Required(CONF_CATEGORY_ENTITY, default=str(default_category(platform)))] = _col_to_select(ENTITY_CATEGORY)
     return vol.Schema(schema).extend(flow_schema(platform, dps_strings))
 
 
@@ -325,6 +345,16 @@ async def attempt_cloud_connection(hass, user_input):
 
     return cloud_api, {}
 
+def default_category(_platform):
+    """Auto Select default category depends on the platform"""
+    if any(_platform in i for i in DEFAULT_CATEGORIES["CONTROL"]):
+        return str(None)
+    elif any(_platform in i for i in DEFAULT_CATEGORIES["CONFIG"]):
+        return EntityCategory.CONFIG
+    elif any(_platform in i for i in DEFAULT_CATEGORIES["DIAGNOSTIC"]):
+        return  EntityCategory.DIAGNOSTIC
+    else:
+        return str(None)
 
 class LocaltuyaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LocalTuya integration."""
