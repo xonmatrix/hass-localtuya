@@ -29,6 +29,8 @@ from .const import (
     CONF_COLOR_TEMP_MAX_KELVIN,
     CONF_COLOR_TEMP_MIN_KELVIN,
     CONF_COLOR_TEMP_REVERSE,
+    CONF_SCENE_VALUES,
+    CONF_SCENE_VALUES_FRIENDLY,
     CONF_MUSIC_MODE,
 )
 
@@ -126,6 +128,8 @@ def flow_schema(dps):
             description={"suggested_value": DEFAULT_COLOR_TEMP_REVERSE},
         ): bool,
         vol.Optional(CONF_SCENE): _col_to_select(dps, is_dps=True),
+        vol.Optional(CONF_SCENE_VALUES): str,
+        vol.Optional(CONF_SCENE_VALUES_FRIENDLY): str,
         vol.Optional(
             CONF_MUSIC_MODE, default=False, description={"suggested_value": False}
         ): bool,
@@ -168,7 +172,12 @@ class LocaltuyaLight(LocalTuyaEntity, LightEntity):
         self._effect_list = []
         self._scenes = None
         if self.has_config(CONF_SCENE):
-            if self._config.get(CONF_SCENE) < 20:
+            if (self.has_config(CONF_SCENE_VALUES) and
+                self.has_config(CONF_SCENE_VALUES_FRIENDLY)):
+                values_list = [value.strip() for value in self._config.get(CONF_SCENE_VALUES).split(";")]
+                friendly_values_list = [value.strip() for value in self._config.get(CONF_SCENE_VALUES_FRIENDLY).split(";")]
+                self._scenes = dict(zip(friendly_values_list, values_list))
+            elif self._config.get(CONF_SCENE) < 20:
                 self._scenes = SCENE_LIST_RGBW_255
             elif self._config.get(CONF_BRIGHTNESS) is None:
                 self._scenes = SCENE_LIST_RGB_1000
@@ -242,7 +251,9 @@ class LocaltuyaLight(LocalTuyaEntity, LightEntity):
     @property
     def effect_list(self):
         """Return the list of supported effects for this light."""
-        return self._effect_list
+        if len(self._effect_list) > 0:
+            return self._effect_list
+        return None
 
     @property
     def supported_features(self):
