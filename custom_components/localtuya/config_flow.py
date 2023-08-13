@@ -4,6 +4,8 @@ import logging
 import time
 from importlib import import_module
 
+from .helpers.templates import create_tuya_config, export_tuya_config, list_templates
+
 
 import homeassistant.helpers.config_validation as cv
 
@@ -23,6 +25,7 @@ from homeassistant.const import (
     CONF_DEVICES,
     CONF_ENTITIES,
     CONF_FRIENDLY_NAME,
+    CONF_ENTITY_CATEGORY,
     CONF_HOST,
     CONF_ID,
     CONF_NAME,
@@ -57,7 +60,6 @@ from .const import (
     DATA_DISCOVERY,
     DOMAIN,
     PLATFORMS,
-    CONF_CATEGORY_ENTITY,
     ENTITY_CATEGORY,
     DEFAULT_CATEGORIES,
 )
@@ -97,8 +99,10 @@ def _col_to_select(opt_list: dict, multi_select=False, is_dps=False):
 ENTRIES_VERSION = 3
 
 PLATFORM_TO_ADD = "platform_to_add"
+USE_TEMPLATE = "use_template"
+TEMPLATES = "templates"
 NO_ADDITIONAL_ENTITIES = "no_additional_entities"
-SELECTED_DEVICE = "selected_device"
+EXPORT_CONFIG = "export_config"
 
 CUSTOM_DEVICE = {"Add custom device": "..."}
 
@@ -146,6 +150,17 @@ DEVICE_SCHEMA = vol.Schema(
 
 PICK_ENTITY_SCHEMA = vol.Schema(
     {vol.Required(PLATFORM_TO_ADD, default="switch"): _col_to_select(PLATFORMS)}
+)
+
+PICK_TEMPLATE = vol.Schema(
+    {
+        vol.Required(
+            TEMPLATES,
+            default=list(list_templates().values())[0]
+            if list_templates()
+            else "No templates found.",
+        ): _col_to_select(list_templates())
+    }
 )
 
 
@@ -198,6 +213,7 @@ def options_schema(entities):
             ): cv.multi_select(entity_names),
             # _col_to_select(entity_names, multi_select=True)
             vol.Required(CONF_ENABLE_ADD_ENTITIES, default=False): bool,
+            vol.Optional(EXPORT_CONFIG, default=False): bool,
         }
     )
 
@@ -249,7 +265,7 @@ def platform_schema(platform, dps_strings, allow_id=True, yaml=False):
         schema[vol.Required(CONF_ID)] = _col_to_select(dps_strings, is_dps=True)
     schema[vol.Required(CONF_FRIENDLY_NAME)] = str
     schema[
-        vol.Required(CONF_CATEGORY_ENTITY, default=str(default_category(platform)))
+        vol.Required(CONF_ENTITY_CATEGORY, default=str(default_category(platform)))
     ] = _col_to_select(ENTITY_CATEGORY)
     return vol.Schema(schema).extend(flow_schema(platform, dps_strings))
 
@@ -488,6 +504,8 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
         self.selected_platform = None
         self.discovered_devices = {}
         self.entities = []
+        self.use_template = False
+        self.template_device = None
 
     async def async_step_init(self, user_input=None):
         """Manage basic options."""
@@ -641,6 +659,13 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
                             CONF_PRODUCT_NAME
                         )
                 if self.editing_device:
+                    if user_input.get(EXPORT_CONFIG):
+                        _config = self.config_entry.data[CONF_DEVICES][dev_id].copy()
+                        export_tuya_config(
+                            _config, self.device_data[CONF_FRIENDLY_NAME]
+                        )
+                        return self.async_create_entry(title="", data={})
+
                     if user_input[CONF_ENABLE_ADD_ENTITIES]:
                         self.editing_device = False
                         user_input[CONF_DEVICE_ID] = dev_id
@@ -669,7 +694,10 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
                             int(entity.split(":")[0])
                             for entity in user_input[CONF_ENTITIES]
                         ]
-                        device_config = self.config_entry.data[CONF_DEVICES][dev_id]
+                        if self.use_template:
+                            device_config = self.template_device
+                        else:
+                            device_config = self.config_entry.data[CONF_DEVICES][dev_id]
                         self.entities = [
                             entity
                             for entity in device_config[CONF_ENTITIES]
@@ -692,7 +720,11 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
         defaults = {}
         if self.editing_device:
             # If selected device exists as a config entry, load config from it
-            defaults = self.config_entry.data[CONF_DEVICES][dev_id].copy()
+            defaults = (
+                self.device_data
+                if self.use_template
+                else self.config_entry.data[CONF_DEVICES][dev_id].copy()
+            )
             cloud_devs = self.hass.data[DOMAIN][DATA_CLOUD].device_list
             placeholders = {"for_device": f" for device `{dev_id}`"}
             if dev_id in cloud_devs:
@@ -735,6 +767,25 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
             description_placeholders=placeholders,
         )
 
+    async def async_step_choose_template(self, user_input=None):
+        """Handle asking which templates to use"""
+        if user_input is not None:
+            self.use_template = True
+            filename = user_input.get(TEMPLATES)
+            _config = create_tuya_config(filename)
+            dev_conf = self.device_data
+            dev_conf[CONF_ENTITIES] = _config
+            dev_conf[CONF_DPS_STRINGS] = self.dps_strings
+            self.device_data = dev_conf
+
+            self.entities = dev_conf[CONF_ENTITIES]
+            self.template_device = self.device_data
+            self.editing_device = True
+
+            return await self.async_step_configure_device()
+        schema = PICK_TEMPLATE
+        return self.async_show_form(step_id="choose_template", data_schema=schema)
+
     async def async_step_pick_entity_type(self, user_input=None):
         """Handle asking if user wants to add another entity."""
         if user_input is not None:
@@ -757,12 +808,22 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
                 )
                 return self.async_create_entry(title="", data={})
 
+            if user_input.get(USE_TEMPLATE):
+                return await self.async_step_choose_template()
+
             self.selected_platform = user_input[PLATFORM_TO_ADD]
             return await self.async_step_configure_entity()
 
         # Add a checkbox that allows bailing out from config flow if at least one
         # entity has been added
         schema = PICK_ENTITY_SCHEMA
+        # Template only avaliable in first time adding platform
+        if (
+            not self.use_template
+            and self.selected_platform is None
+            and not self.editing_device
+        ):
+            schema = schema.extend({vol.Optional(USE_TEMPLATE, default=False): bool})
         if self.selected_platform is not None:
             schema = schema.extend(
                 {vol.Required(NO_ADDITIONAL_ENTITIES, default=True): bool}
@@ -785,7 +846,7 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
         errors = {}
         if user_input is not None:
             entity = strip_dps_values(user_input, self.dps_strings)
-            entity[CONF_ID] = int(self.current_entity[CONF_ID])
+            entity[CONF_ID] = self.current_entity[CONF_ID]
             entity[CONF_PLATFORM] = self.current_entity[CONF_PLATFORM]
             self.device_data[CONF_ENTITIES].append(entity)
             if len(self.entities) == len(self.device_data[CONF_ENTITIES]):
