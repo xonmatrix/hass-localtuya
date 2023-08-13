@@ -102,6 +102,7 @@ PLATFORM_TO_ADD = "platform_to_add"
 USE_TEMPLATE = "use_template"
 TEMPLATES = "templates"
 NO_ADDITIONAL_ENTITIES = "no_additional_entities"
+SELECTED_DEVICE = "selected_device"
 EXPORT_CONFIG = "export_config"
 
 CUSTOM_DEVICE = {"Add custom device": "..."}
