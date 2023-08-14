@@ -884,7 +884,7 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             if self.editing_device:
                 entity = strip_dps_values(user_input, self.dps_strings)
-                entity[CONF_ID] = int(self.current_entity[CONF_ID])
+                entity[CONF_ID] = self.current_entity[CONF_ID]
                 entity[CONF_PLATFORM] = self.current_entity[CONF_PLATFORM]
                 self.device_data[CONF_ENTITIES].append(entity)
                 if len(self.entities) == len(self.device_data[CONF_ENTITIES]):
