@@ -40,7 +40,7 @@ def create_tuya_config(filename):
             for key, value in values.items():
                 ent[str(key)] = (
                     str(value)
-                    if type(values) is not bool and type(value) is not float
+                    if type(value) is not bool and type(value) is not float
                     else value
                 )
             ent[CONF_PLATFORM] = plat
