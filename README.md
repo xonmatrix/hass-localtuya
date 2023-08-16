@@ -31,7 +31,11 @@ This repository's development began as code from [@NameLessJedi](https://github.
 
 # Installation:
 
-The easiest way, if you are using [HACS](https://hacs.xyz/), is to install LocalTuya through HACS.
+The easiest way, Is using [HACS](https://hacs.xyz/),
+1- Open HACS and navigate to Frontend Section
+2- Open the Overflow Menu (⋮) in the top right corner and click on Custom repositories
+3- Paste `https://github.com/xZetsubou/localtuya` into the input field and select Integration from the category dropdown then click ADD
+4- Now the integration should be added search in for it and install it!
 
 For manual installation, copy the localtuya folder and all of its contents into your Home Assistant's custom_components folder. This folder is usually inside your `/config` folder. If you are running Hass.io, use SAMBA to copy the folder over. If you are running Home Assistant Supervised, the custom_components folder might be located at `/usr/share/hassio/homeassistant`. You may need to create the `custom_components` folder and then copy the localtuya folder and all of its contents into it.
 
