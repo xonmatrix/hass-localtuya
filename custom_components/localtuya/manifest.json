@@ -1,11 +1,11 @@
 {
   "domain": "localtuya",
   "name": "LocalTuya integration",
+  "documentation": "https://github.com/xZetsubou/hass-localtuya/",
+  "issue_tracker": "https://github.com/xZetsubou/hass-localtuya/issues",
   "codeowners": [
     "@rospogrigio", "@postlund"
   ],
-  "documentation": "https://github.com/xZetsubou/hass-localtuya/",
-  "issue_tracker": "https://github.com/xZetsubou/hass-localtuya/issues",
   "integration_type": "hub",
   "config_flow": true,
   "iot_class": "local_push",
