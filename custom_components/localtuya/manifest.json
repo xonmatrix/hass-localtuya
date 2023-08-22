@@ -1,15 +1,16 @@
 {
   "domain": "localtuya",
   "name": "LocalTuya integration",
-  "documentation": "https://github.com/xZetsubou/hass-localtuya/",
-  "issue_tracker": "https://github.com/xZetsubou/hass-localtuya/issues",
-  "codeowners": [
-    "@rospogrigio", "@postlund"
-  ],
-  "integration_type": "hub",
-  "config_flow": true,
-  "iot_class": "local_push",
-  "dependencies": [],
-  "requirements": [],
-  "version": "5.2.1"
+	"codeowners": [
+		"@rospogrigio",
+		"@postlund"
+	],
+	"config_flow": true,
+	"dependencies": [],
+	"documentation": "https://github.com/xZetsubou/hass-localtuya/",
+	"integration_type": "hub",
+	"iot_class": "local_push",
+	"issue_tracker": "https://github.com/xZetsubou/hass-localtuya/issues",
+	"requirements": [],
+	"version": "5.2.1"
 }
