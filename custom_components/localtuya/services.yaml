@@ -11,7 +11,7 @@ set_dp:
       description: Device ID of device to change datapoint value for
       example: 11100118278aab4de001
     dp:
-      naame: "DP"
+      name: "DP"
       description: Target DP, Datapoint index
       example: 1
     value:
