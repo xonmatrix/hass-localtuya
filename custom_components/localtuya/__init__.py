@@ -95,7 +95,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
         await device.set_dp(event.data[CONF_VALUE], event.data[CONF_DP])
 
-    def _device_discovered(device):
+    def _device_discovered(device: TuyaDevice):
         """Update address of device if it has changed."""
         device_ip = device["ip"]
         device_id = device["gwId"]
@@ -139,15 +139,14 @@ async def async_setup(hass: HomeAssistant, config: dict):
             )
             new_data[ATTR_UPDATED_AT] = str(int(time.time() * 1000))
             hass.config_entries.async_update_entry(entry, data=new_data)
-            device = hass.data[DOMAIN][TUYA_DEVICES][device_id]
-            if not device.connected:
-                device.async_connect()
+            # No need to do connect task here, when entry updated, it will reconnect. [elif].
+            # device = hass.data[DOMAIN][TUYA_DEVICES][device_id]
+            # if not device.connected:
+            #     hass.create_task(device.async_connect())
         elif device_id in hass.data[DOMAIN][TUYA_DEVICES]:
-            # _LOGGER.debug("Device %s found with IP %s", device_id, device_ip)
-
             device = hass.data[DOMAIN][TUYA_DEVICES][device_id]
             if not device.connected:
-                device.async_connect()
+                hass.create_task(device.async_connect())
 
     def _shutdown(event):
         """Clean up resources when shutting down."""
@@ -157,7 +156,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
         """Try connecting to devices not already connected to."""
         for device_id, device in hass.data[DOMAIN][TUYA_DEVICES].items():
             if not device.connected:
-                device.async_connect()
+                hass.create_task(device.async_connect())
 
     async_track_time_interval(hass, _async_reconnect, RECONNECT_INTERVAL)
 
@@ -284,55 +283,38 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
             hass.data[DOMAIN][TUYA_DEVICES][dev_id] = TuyaDevice(hass, entry, dev_id)
 
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-                for platform in platforms
-            ]
-        )
-
-        for dev_id in device_ids:
-            hass.data[DOMAIN][TUYA_DEVICES][dev_id].async_connect()
-
         await async_remove_orphan_entities(hass, entry)
+        await hass.config_entries.async_forward_entry_setups(entry, platforms)
 
-    hass.async_create_task(setup_entities(entry.data[CONF_DEVICES].keys()))
-
+    await setup_entities(entry.data[CONF_DEVICES].keys())
     unsub_listener = entry.add_update_listener(update_listener)
+
     hass.data[DOMAIN][entry.entry_id] = {UNSUB_LISTENER: unsub_listener}
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Unload a config entry."""
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Unloading the Tuya platforms."""
     platforms = {}
-
     for dev_id, dev_entry in entry.data[CONF_DEVICES].items():
         for entity in dev_entry[CONF_ENTITIES]:
             platforms[entity[CONF_PLATFORM]] = True
 
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, component)
-                for component in platforms
-            ]
-        )
-    )
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, platforms)
 
-    hass.data[DOMAIN][entry.entry_id][UNSUB_LISTENER]()
     for dev_id, device in hass.data[DOMAIN][TUYA_DEVICES].items():
         if device.connected:
             await device.close()
 
     if unload_ok:
+        hass.data[DOMAIN][entry.entry_id][UNSUB_LISTENER]()
         hass.data[DOMAIN][TUYA_DEVICES] = {}
 
-    return True
+    return unload_ok
 
 
-async def update_listener(hass, config_entry):
+async def update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
     """Update listener."""
     await hass.config_entries.async_reload(config_entry.entry_id)
 
