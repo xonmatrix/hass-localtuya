@@ -348,25 +348,28 @@ async def validate_input(hass: core.HomeAssistant, data):
         auto_protocol = conf_protocol == "auto"
         # If 'auto' will be loop through supported protocols.
         for ver in SUPPORTED_PROTOCOL_VERSIONS:
-            version = ver if auto_protocol else conf_protocol
-            interface = await pytuya.connect(
-                data[CONF_HOST],
-                data[CONF_DEVICE_ID],
-                data[CONF_LOCAL_KEY],
-                float(version),
-                data[CONF_ENABLE_DEBUG],
-                data.get(CONF_NODE_ID, None),
-            )
-            # Break the loop if input isn't auto.
-            if not auto_protocol:
-                break
+            try:
+                version = ver if auto_protocol else conf_protocol
+                interface = await pytuya.connect(
+                    data[CONF_HOST],
+                    data[CONF_DEVICE_ID],
+                    data[CONF_LOCAL_KEY],
+                    float(version),
+                    data[CONF_ENABLE_DEBUG],
+                    data.get(CONF_NODE_ID, None),
+                )
+                # Break the loop if input isn't auto.
+                if not auto_protocol:
+                    break
 
-            detected_dps = await interface.detect_available_dps()
-            # If Auto: using DPS detected we will assume this is the correct version if dps found.
-            if len(detected_dps) > 0:
-                # Set the conf_protocol to the worked version to return it and update self.device_data.
-                conf_protocol = version
-                break
+                detected_dps = await interface.detect_available_dps()
+                # If Auto: using DPS detected we will assume this is the correct version if dps found.
+                if len(detected_dps) > 0:
+                    # Set the conf_protocol to the worked version to return it and update self.device_data.
+                    conf_protocol = version
+                    break
+            except:
+                continue
 
         if CONF_RESET_DPIDS in data:
             reset_ids_str = data[CONF_RESET_DPIDS].split(",")
