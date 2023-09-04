@@ -271,13 +271,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unloading the Tuya platforms."""
-    # Close all connection to the devices.
-    close_devices = [
-        device.close()
-        for device in hass.data[DOMAIN][entry.entry_id][TUYA_DEVICES].values()
-    ]
-    await asyncio.wait_for(asyncio.gather(*close_devices), 5)
-
     # Get used platforms.
     platforms = {}
     for dev_id, dev_entry in entry.data[CONF_DEVICES].items():
@@ -286,6 +279,18 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Unload the platforms.
     unload_ok = await hass.config_entries.async_unload_platforms(entry, platforms)
+
+    # Close all connection to the devices.
+    close_devices = [
+        device.close()
+        for device in hass.data[DOMAIN][entry.entry_id][TUYA_DEVICES].values()
+        if device.connected
+    ]
+    # Just to prevent the loop get stuck due to calling multiples quickly
+    try:
+        await asyncio.wait_for(asyncio.gather(*close_devices), 5)
+    except:
+        pass
 
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
