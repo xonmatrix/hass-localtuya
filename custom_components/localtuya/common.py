@@ -67,7 +67,12 @@ def prepare_setup_entities(hass, config_entry, platform):
 
 
 async def async_setup_entry(
-    domain, entity_class, flow_schema, hass, config_entry, async_add_entities
+    domain,
+    entity_class,
+    flow_schema,
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities,
 ):
     """Set up a Tuya platform based on a config entry.
 
@@ -88,7 +93,9 @@ async def async_setup_entry(
         ]
 
         if entities_to_setup:
-            tuyainterface = hass.data[DOMAIN][TUYA_DEVICES][dev_id]
+            tuyainterface = hass.data[DOMAIN][config_entry.entry_id][TUYA_DEVICES][
+                dev_id
+            ]
 
             dps_config_fields = list(get_dps_for_platform(flow_schema))
 
@@ -181,11 +188,12 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         """Return if connected to device."""
         return self._interface is not None
 
-    def async_connect(self):
+    async def async_connect(self):
         """Connect to device if not already connected."""
         # self.info("async_connect: %d %r %r", self._is_closing, self._connect_task, self._interface)
-        if not self._is_closing and self._connect_task is None and not self._interface:
-            self._connect_task = self._hass.create_task(self._make_connection())
+        # if not self._is_closing and self._connect_task is None and not self._interface:
+        await self._make_connection()
+        # self._connect_task = asyncio.create_task(self._make_connection())
 
     async def _make_connection(self):
         """Subscribe localtuya entity events."""
@@ -288,8 +296,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     async def update_local_key(self):
         """Retrieve updated local_key from Cloud API and update the config_entry."""
         dev_id = self._dev_config_entry[CONF_DEVICE_ID]
-        await self._hass.data[DOMAIN][DATA_CLOUD].async_get_devices_list()
-        cloud_devs = self._hass.data[DOMAIN][DATA_CLOUD].device_list
+        entry_id = self._config_entry.entry_id
+        await self._hass.data[DOMAIN][entry_id][DATA_CLOUD].async_get_devices_list()
+        cloud_devs = self._hass.data[DOMAIN][entry_id][DATA_CLOUD].device_list
         if dev_id in cloud_devs:
             self._local_key = cloud_devs[dev_id].get(CONF_LOCAL_KEY)
             new_data = self._config_entry.data.copy()
@@ -314,6 +323,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             await self._connect_task
         if self._interface is not None:
             await self._interface.close()
+            self._interface = None
         if self._disconnect_task is not None:
             self._disconnect_task()
         self.info(
