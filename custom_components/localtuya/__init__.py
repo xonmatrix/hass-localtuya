@@ -293,6 +293,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         pass
 
     if unload_ok:
+        hass.data[DOMAIN][entry.entry_id][UNSUB_LISTENER]()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return True
