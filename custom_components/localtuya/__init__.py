@@ -260,6 +260,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await asyncio.gather(*connect_task)
 
     await setup_entities(entry.data[CONF_DEVICES].keys())
+    # calling back to unsub listener
     unsub_listener = entry.add_update_listener(update_listener)
 
     hass.data[DOMAIN][entry.entry_id].update({UNSUB_LISTENER: unsub_listener})
@@ -286,9 +287,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         for device in hass.data[DOMAIN][entry.entry_id][TUYA_DEVICES].values()
         if device.connected
     ]
-    # Just to prevent the loop get stuck due to calling multiples quickly
+    # Just to prevent the loop get stuck in-case it calls multiples quickly
     try:
-        await asyncio.wait_for(asyncio.gather(*close_devices), 5)
+        await asyncio.wait_for(asyncio.gather(*close_devices), 3)
     except:
         pass
 

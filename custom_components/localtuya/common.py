@@ -198,7 +198,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     async def _make_connection(self):
         """Subscribe localtuya entity events."""
         self.info("Trying to connect to %s...", self._dev_config_entry[CONF_HOST])
-
+        self._connect_task = True
         try:
             self._interface = await pytuya.connect(
                 self._dev_config_entry[CONF_HOST],
@@ -319,8 +319,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         """Close connection and stop re-connect loop."""
         self._is_closing = True
         if self._connect_task is not None:
-            self._connect_task.cancel()
-            await self._connect_task
+            # self._connect_task.cancel()
+            # await self._connect_task
+            self._connect_task = None
         if self._interface is not None:
             await self._interface.close()
             self._interface = None
@@ -376,7 +377,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         self._interface = None
 
         if self._connect_task is not None:
-            self._connect_task.cancel()
+            # self._connect_task.cancel()
             self._connect_task = None
         self.warning("Disconnected - waiting for discovery broadcast")
 
