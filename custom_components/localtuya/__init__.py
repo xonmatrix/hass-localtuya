@@ -260,7 +260,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await asyncio.gather(*connect_task)
 
     await setup_entities(entry.data[CONF_DEVICES].keys())
-    # calling back to unsub listener
+    # callback back to unsub listener
     unsub_listener = entry.add_update_listener(update_listener)
 
     hass.data[DOMAIN][entry.entry_id].update({UNSUB_LISTENER: unsub_listener})
@@ -294,6 +294,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         pass
 
     if unload_ok:
+        # Unsub listener.
         hass.data[DOMAIN][entry.entry_id][UNSUB_LISTENER]()
         hass.data[DOMAIN].pop(entry.entry_id)
 
