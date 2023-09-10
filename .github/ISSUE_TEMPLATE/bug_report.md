@@ -24,7 +24,8 @@ assignees: ''
   Provide details about your environment.
 -->
 - Localtuya version: <!-- plugin version from HACS, master, commit id --> 
-- Home Assistant Core version: <!-- Configuration => Info --> 
+- Home Assistant Core version: <!-- Configuration => Info -->
+- Home Assistant [Installtion Method](https://www.home-assistant.io/installation/#compare-installation-methods): <!-- OS or Container ... -->
 - [] Does the device work using the Home Assistant Tuya Cloud component ? <!-- if yes, put a x between the two [] => [x] -->
 - [] Does the device work using the Tinytuya (https://github.com/jasonacox/tinytuya) command line tool ? <!-- if yes, put a x between the two [] => [x] -->
 - [] Was the device working with earlier versions of localtuya ? Which one? <!-- if yes, put a x between the two [] => [x] -->
