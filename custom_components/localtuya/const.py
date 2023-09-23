@@ -149,7 +149,7 @@ CONF_RESTORE_ON_RECONNECT = "restore_on_reconnect"
 
 # Categories
 ENTITY_CATEGORY = {
-    "Controls": None,
+    "None": None,
     "Configuration": EntityCategory.CONFIG,
     "Diagnostic": EntityCategory.DIAGNOSTIC,
 }
