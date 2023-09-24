@@ -257,7 +257,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             device.async_connect()
             for device in hass.data[DOMAIN][entry.entry_id][TUYA_DEVICES].values()
         ]
-        await asyncio.gather(*connect_task)
+        try:
+            await asyncio.wait_for(asyncio.gather(*connect_task), 1)
+        except:
+            # If there is device that isn't connected to network it will return failed Initialization.
+            ...
 
     await setup_entities(entry.data[CONF_DEVICES].keys())
     # callback back to unsub listener
