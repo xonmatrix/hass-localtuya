@@ -168,7 +168,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         self._hvac_mode = None
         self._preset_mode = None
         self._hvac_action = None
-        self._precision = self._config.get(CONF_PRECISION, DEFAULT_PRECISION)
+        self._precision = float(self._config.get(CONF_PRECISION, DEFAULT_PRECISION))
         self._target_precision = self._config.get(
             CONF_TARGET_PRECISION, self._precision
         )
