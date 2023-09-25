@@ -47,6 +47,7 @@ _LOGGER = logging.getLogger(__name__)
 UNSUB_LISTENER = "unsub_listener"
 
 RECONNECT_INTERVAL = timedelta(seconds=60)
+RECONNECT_TASK = "localtuya_reconnect_interval"
 
 CONFIG_SCHEMA = config_schema()
 
@@ -283,7 +284,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             platforms[entity[CONF_PLATFORM]] = True
 
     # Unload the platforms.
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, platforms)
+    await hass.config_entries.async_unload_platforms(entry, platforms)
 
     # Close all connection to the devices.
     close_devices = [
@@ -297,10 +298,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except:
         pass
 
-    if unload_ok:
-        # Unsub listener.
-        hass.data[DOMAIN][entry.entry_id][UNSUB_LISTENER]()
-        hass.data[DOMAIN].pop(entry.entry_id)
+    # Unsub events.
+    hass.data[DOMAIN][entry.entry_id][RECONNECT_TASK]()
+    hass.data[DOMAIN][entry.entry_id][UNSUB_LISTENER]()
+
+    hass.data[DOMAIN].pop(entry.entry_id)
 
     return True
 
@@ -356,7 +358,9 @@ def reconnectTask(hass: HomeAssistant, entry: ConfigEntry):
             if not dev.connected:
                 hass.create_task(dev.async_connect())
 
-    async_track_time_interval(hass, _async_reconnect, RECONNECT_INTERVAL)
+    hass.data[DOMAIN][entry.entry_id][RECONNECT_TASK] = async_track_time_interval(
+        hass, _async_reconnect, RECONNECT_INTERVAL
+    )
 
 
 async def async_remove_orphan_entities(hass, entry):
