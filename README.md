@@ -9,6 +9,7 @@ A Home Assistant custom Integration for local handling of Tuya-based devices.
   * [Adding the Integration](#adding-the-integration)
   * [Integration Options](#integration-options)
   * [Add Devices](#add-devices)
+  * [Delete Devices](#delete-devices)
   * [Templates](https://github.com/xZetsubou/hass-localtuya/discussions/13)
 - [Debugging](#debugging)
 - [Notes](#notes)
@@ -135,26 +136,25 @@ Once you configure the entities, the procedure is complete. and can access devic
 
 ![image](https://github.com/xZetsubou/hass-localtuya/assets/46300268/154c94c0-d10e-485f-ac5c-c5a370b671c7)
 
+### Delete Devices
 Deleting a device simply go to device page and click on three dots next to `Download diagnostics` then delete.
+![image](https://github.com/xZetsubou/hass-localtuya/assets/46300268/5064c1a9-7513-4b16-a2ac-5a36b375cc75)
+
 
 <details><summary>Remap the values</summary>
 <p>
 
 Usually we use True `on` and False `off` commands for switches but if you have device that do more like single, double clicks and long press. there are 2 method to manage this devices:
 
-#### Method 1:
-add the device as select. assuming your device uses `0, 1 and 3` values then as the config would be like this:
 
-![image](https://github.com/xZetsubou/hass-localtuya/assets/46300268/f38ae38e-3a7a-43de-ac39-7942f75db28d)
-
-#### Method 2: Call_Service
+#### Method 1: Call_Service
 is to add the device any way you want as sensor or switch but doing action through HA do it with call_service
 to set your actions: ( The best since set any value you want ).
 ```yaml
 service: localtuya.set_dp
 data:
   device_id: 767823809c9c1f842393 # you devices_id
-  dp: 1 # The DP you want to control it
+  dp: 1 # The DP that you want to control of it
   value: 0 # assuming 0 is single_click
 ```
 
