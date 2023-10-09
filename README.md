@@ -15,22 +15,6 @@ A Home Assistant custom Integration for local handling of Tuya-based devices.
 - [Notes](#notes)
 - [Credits](#credits)
 
-<details><summary>Supported platforms</summary>
-<p>
-
-The following Tuya device types are currently supported:
-* Switches
-* Lights
-* Covers
-* Fans
-* Climates
-* Vacuums
-
-Energy monitoring (voltage, current, watts, etc.) is supported for compatible devices.
-
-</p>
-</details> 
-
 
 
 # Installation
@@ -39,7 +23,8 @@ The easiest way and the best, Is using [HACS](https://hacs.xyz/), <br>
 
 <details><summary>HACS installation</summary>
 <p>
-    
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?category=integration&repository=hass-localtuya&owner=xZetsubou)
 1. Open HACS and navigate to Integrations Section <br>
 2. Open the Overflow Menu (⋮) in the top right corner and click on Custom repositories <br>
 3. Paste `https://github.com/xZetsubou/localtuya` into the input field and select Integration from the category dropdown then click ADD. <br>
@@ -77,7 +62,7 @@ Manual installation:
 > 
 #### Go to integrations page And click +Add integration bottom right and search for Local Tuya. 
 
-#### [![Open your Home Assistant instance and show your integrations.](https://my.home-assistant.io/badges/integrations.svg)](https://my.home-assistant.io/redirect/integrations/) 
+[![Open your Home Assistant instance and show your integrations.](https://my.home-assistant.io/badges/integrations.svg)](https://my.home-assistant.io/redirect/integrations/)
 
 ### All the bottom Information are explained here [Homeassistant Tuya](https://www.home-assistant.io/integrations/tuya/)
 | Image | Details |
