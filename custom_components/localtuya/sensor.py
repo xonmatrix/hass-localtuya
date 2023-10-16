@@ -4,7 +4,12 @@ from functools import partial
 from .config_flow import _col_to_select
 
 import voluptuous as vol
-from homeassistant.components.sensor import DEVICE_CLASSES, DOMAIN
+from homeassistant.components.sensor import (
+    DEVICE_CLASSES_SCHEMA,
+    DOMAIN,
+    STATE_CLASSES_SCHEMA,
+    SensorStateClass,
+)
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
     CONF_UNIT_OF_MEASUREMENT,
@@ -12,7 +17,7 @@ from homeassistant.const import (
 )
 
 from .common import LocalTuyaEntity, async_setup_entry
-from .const import CONF_SCALING
+from .const import CONF_SCALING, CONF_STATE_CLASS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +28,10 @@ def flow_schema(dps):
     """Return schema used in config flow."""
     return {
         vol.Optional(CONF_UNIT_OF_MEASUREMENT): str,
-        vol.Optional(CONF_DEVICE_CLASS): _col_to_select(DEVICE_CLASSES),
+        vol.Optional(CONF_DEVICE_CLASS): DEVICE_CLASSES_SCHEMA,
+        vol.Optional(CONF_STATE_CLASS): _col_to_select(
+            [sc.value for sc in SensorStateClass]
+        ),
         vol.Optional(CONF_SCALING): vol.All(
             vol.Coerce(float), vol.Range(min=-1000000.0, max=1000000.0)
         ),
@@ -53,6 +61,11 @@ class LocaltuyaSensor(LocalTuyaEntity):
     def device_class(self):
         """Return the class of this device."""
         return self._config.get(CONF_DEVICE_CLASS)
+
+    @property
+    def state_class(self) -> str | None:
+        """Return state class."""
+        return self._config.get(CONF_STATE_CLASS)
 
     @property
     def unit_of_measurement(self):
