@@ -87,7 +87,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
         """Handle set_dp service call."""
         dev_id = event.data[CONF_DEVICE_ID]
         entry: ConfigEntry = async_config_entry_by_device_id(hass, dev_id)
-        if entry and not entry.entry_id:
+        if not entry or not entry.entry_id:
             raise HomeAssistantError("unknown device id")
 
         host = entry.data[CONF_DEVICES][dev_id].get(CONF_HOST)
