@@ -68,6 +68,9 @@ def generate_tuya_device(localtuya_data: dict, tuya_category: str) -> dict | lis
 
     if not tuya_category or not detected_dps:
         return
+    if dps_data := device_cloud_data.get("dps_data"):
+        detected_dps = merge_local_cloud_dps(detected_dps, dps_data)
+
     entities = {}
 
     for platform, tuya_data in DATA_PLATFORMS.items():

@@ -605,6 +605,8 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
     @property
     def available(self) -> bool:
         """Return if device is available or not."""
+        if (platform := self._config.get(CONF_PLATFORM)) and platform == "button":
+            return True
         return str(self._dp_id) in self._status
 
     @property
