@@ -501,6 +501,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
     """Representation of a Tuya entity."""
 
+    _attr_device_class = None
     _attr_has_entity_name = True
     _attr_should_poll = False
 
