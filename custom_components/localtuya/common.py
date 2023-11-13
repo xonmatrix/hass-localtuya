@@ -340,7 +340,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 )
 
             self._is_closing = False
-            self.info(f"Success: connected to {host}")
+            self.info(f"Success: connected to {host}", clear_warning=True)
             if self._sub_devices:
                 connect_sub_devices = [
                     device.async_connect() for device in self._sub_devices.values()
@@ -394,10 +394,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._interface = None
         if self._disconnect_task is not None:
             self._disconnect_task()
-        self.info(
-            "Closed connection with device %s.",
-            self._device_config[CONF_FRIENDLY_NAME],
-        )
+        self.info(f"Closed connection with {self._device_config[CONF_FRIENDLY_NAME]}")
 
     async def set_dp(self, state, dp_index):
         """Change value of a DP of the Tuya device."""

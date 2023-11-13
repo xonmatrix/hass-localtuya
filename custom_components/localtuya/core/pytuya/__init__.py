@@ -260,6 +260,9 @@ class ContextualLogger:
         self._logger = None
         self._enable_debug = False
 
+        self._reset_warning = int(time.time())
+        self._last_warning = ""
+
     def set_logger(self, logger, device_id, enable_debug=False):
         """Set base logger to use."""
         self._enable_debug = enable_debug
@@ -271,13 +274,20 @@ class ContextualLogger:
             return
         return self._logger.log(logging.DEBUG, msg, *args)
 
-    def info(self, msg, *args):
-        """Info level log."""
+    def info(self, msg, *args, clear_warning=False):
+        """Info level log. clear_warning to re-enable warings msgs if duplicated"""
+        if clear_warning:
+            self._last_warning = ""
+
         return self._logger.log(logging.INFO, msg, *args)
 
     def warning(self, msg, *args):
         """Warning method log."""
-        return self._logger.log(logging.WARNING, msg, *args)
+        if msg != self._last_warning:
+            self._last_warning = msg
+            return self._logger.log(logging.WARNING, msg, *args)
+        else:
+            self.info(msg)
 
     def error(self, msg, *args):
         """Error level log."""
