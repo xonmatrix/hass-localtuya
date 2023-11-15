@@ -1479,8 +1479,10 @@ async def connect(
         )
     except OSError as ex:
         raise ValueError(str(ex))
+    except Exception as ex:
+        raise ex
     except:
-        raise ValueError(f"Failed conect to the device, try again and check logs.")
+        raise ValueError(f"Unable to connect to the device. try again.")
 
     await asyncio.wait_for(on_connected, timeout=timeout)
     return protocol
