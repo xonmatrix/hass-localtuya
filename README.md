@@ -12,7 +12,7 @@ __A Home Assistant custom Integration for local handling of Tuya-based devices._
 
 
 ## __𝐅𝐞𝐚𝐭𝐮𝐫𝐞𝐬__
-- Supported Sub-devices: `Devices that function through gateways`
+- Supported Sub-devices - `Devices that function through gateways`
 - Auto-configure devices - `Requires a cloud API setup`
 - Automatic insertion - `Some fields requires a cloud API setup`
 - Devices discovery - `Discovers Tuya devices on your network`
@@ -28,6 +28,7 @@ __A Home Assistant custom Integration for local handling of Tuya-based devices._
 Whenever you write a bug report, it's incredibly helpful to include debug logs directly. Otherwise, we'll need to request them separately, prolonging the process. Please enable debug logs as shown and include them in your issue:
 
 <details><summary> Via UI </summary>
+
 ![](https://github.com/xZetsubou/hass-localtuya/assets/46300268/2515cf9d-fffb-46a9-b2c2-e776e20c5eb3)
 </details>
 
@@ -55,7 +56,7 @@ The Cloud API account configuration is not mandatory (LocalTuya can work also wi
 <details><summary> 𝐂𝐫𝐞𝐝𝐢𝐭𝐬 </summary>
 <p>
     
-[Rospogrigio](https://github.com/rospogrigio), originally maintained LocalTuya. This fork was created when the upstream version was at `v5.2.1`.
+[Rospogrigio](https://github.com/rospogrigio), original maintainer of LocalTuya. This fork was created when the upstream version was at `v5.2.1`.
 
 [NameLessJedi](https://github.com/NameLessJedi/localtuya-homeassistant) and [mileperhour](https://github.com/mileperhour/localtuya-homeassistant) being the major sources of inspiration, and whose code for switches is substantially unchanged.
 
