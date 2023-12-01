@@ -253,8 +253,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         host = name if self.is_subdevice else self._device_config.get(CONF_HOST)
 
         try:
+            # self.info("Trying to connect to %s...", host)
             if self.is_subdevice:
-                # self.info(f"Connect Sub Device {name} through gateway {host}")
                 await self.get_gateway()
                 gateway = self._gwateway
                 if gateway and not gateway.connected or gateway.is_connecting:
@@ -262,7 +262,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     return
                 self._interface = gateway._interface
             else:
-                # self.info("Trying to connect to %s...", host)
                 self._interface = await pytuya.connect(
                     self._device_config[CONF_HOST],
                     self._device_config[CONF_DEVICE_ID],
@@ -274,7 +273,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._interface.add_dps_to_request(self.dps_to_request)
         except Exception as ex:  # pylint: disable=broad-except
             self.warning(f"Failed to connect to {host}: {ex}")
-
             await self.abort_connect()
 
         if self._interface is not None:
@@ -298,17 +296,17 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     self._interface.start_heartbeat()
                 self.status_updated(status)
 
-            except UnicodeDecodeError as e:  # pylint: disable=broad-except
+            except UnicodeDecodeError as e:
                 self.exception(f"Connect to {host} failed: due to: {type(e)}")
                 await self.abort_connect()
-            except Exception as e:  # pylint: disable=broad-except
+            except pytuya.DecodeError as derror:
+                self.info(f"Initial update state failed {derror}, trying key update")
+                await self.update_local_key()
+            except Exception as e:
                 if not (self._fake_gateway and "Not found" in str(e)):
                     e = "Sub device is not connected" if self.is_subdevice else e
                     self.warning(f"Connect to {host} failed: {e}")
                     await self.abort_connect()
-                if "json.decode" in str(type(e)):
-                    self.info(f"Initial update state failed {e}, trying key update")
-                    await self.update_local_key()
             except:
                 if self._fake_gateway:
                     self.warning(f"Failed to use {name} as gateway.")
@@ -424,9 +422,10 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     def status_updated(self, status: dict):
         """Device updated status."""
         if self._fake_gateway:
-            # Fake gateways are only used to pass commands no need for update status.
+            # Fake gateways are only used to pass commands no need to update status.
             return
-        status = status.get(self._node_id) if self._node_id else status.get("parent")
+        cid = self._node_id
+        status = status.get(cid, {}) if cid else status.get("parent", {})
         self._handle_event(self._status, status)
         self._status.update(status)
         self._dispatch_status()
@@ -523,7 +522,7 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
         """ Restore on connect setting is available to be provided by Platform entities
         if required"""
         self.set_logger(logger, self._device_config[CONF_DEVICE_ID])
-        _LOGGER.debug(f"Initialized {self._config.get(CONF_PLATFORM)} [{self.name}]")
+        self.debug(f"Initialized {self._config.get(CONF_PLATFORM)} [{self.name}]")
 
     async def async_added_to_hass(self):
         """Subscribe localtuya events."""
