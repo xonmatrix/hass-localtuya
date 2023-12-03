@@ -287,8 +287,8 @@ class ContextualLogger:
         if msg != self._last_warning:
             self._last_warning = msg
             return self._logger.log(logging.WARNING, msg, *args)
-        else:
-            self.info(msg)
+        # else:
+        #     self.info(msg)
 
     def error(self, msg, *args):
         """Error level log."""
@@ -574,7 +574,7 @@ class MessageDispatcher(ContextualLogger):
         """Initialize a new MessageBuffer."""
         super().__init__()
         self.buffer = b""
-        self.listeners = {}
+        self.listeners: dict[str, asyncio.Semaphore] = {}
         self.listener = listener
         self.version = protocol_version
         self.local_key = local_key
@@ -883,8 +883,6 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
     def connection_lost(self, exc):
         """Disconnected from device."""
-        if exc:
-            self.info(f"Lost connection due to: {exc}")
         self.debug("Connection lost: %s", exc)
         self.real_local_key = self.local_key
         try:
