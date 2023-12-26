@@ -739,19 +739,19 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
         ),
         LocalTuyaEntity(
             id=DPCode.UP_CONFIRM,
-            name="UP Limit Reset",
+            name="Set Upper Limit",
             icon="mdi:arrow-collapse-up",
             entity_category=EntityCategory.CONFIG,
         ),
         LocalTuyaEntity(
             id=DPCode.MIDDLE_CONFIRM,
-            name="Middle Reset",
+            name="Set Middle Limit",
             icon="mdi:format-vertical-align-center",
             entity_category=EntityCategory.CONFIG,
         ),
         LocalTuyaEntity(
             id=DPCode.DOWN_CONFIRM,
-            name="Down Limit Reset",
+            name="Set Down Limit",
             icon="mdi:arrow-collapse-down",
             entity_category=EntityCategory.CONFIG,
         ),
