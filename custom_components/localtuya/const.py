@@ -19,7 +19,7 @@ PLATFORMS = {
     "Humidifier": Platform.HUMIDIFIER,
     "Light": Platform.LIGHT,
     "Number": Platform.NUMBER,
-    "Selector": Platform.SELECT,
+    "Select": Platform.SELECT,
     "Sensor": Platform.SENSOR,
     "Siren": Platform.SIREN,
     "Switch": Platform.SWITCH,
@@ -106,8 +106,8 @@ CONF_STATE_CLASS = "state_class"
 CONF_TARGET_TEMPERATURE_DP = "target_temperature_dp"
 CONF_CURRENT_TEMPERATURE_DP = "current_temperature_dp"
 CONF_TEMPERATURE_STEP = "temperature_step"
-CONF_MAX_TEMP_DP = "max_temperature_dp"  # deprecated
-CONF_MIN_TEMP_DP = "min_temperature_dp"  # deprecated
+CONF_MIN_TEMP = "min_temperature"
+CONF_MAX_TEMP = "max_temperature"
 CONF_PRECISION = "precision"
 CONF_TARGET_PRECISION = "target_precision"
 CONF_HVAC_MODE_DP = "hvac_mode_dp"
@@ -117,6 +117,7 @@ CONF_PRESET_SET = "preset_set"
 CONF_HEURISTIC_ACTION = "heuristic_action"
 CONF_HVAC_ACTION_DP = "hvac_action_dp"
 CONF_HVAC_ACTION_SET = "hvac_action_set"
+CONF_HVAC_ADD_OFF = "hvac_add_off"
 CONF_ECO_DP = "eco_dp"
 CONF_ECO_VALUE = "eco_value"
 
@@ -142,7 +143,7 @@ CONF_STOP_STATUS = "stop_status"
 # number
 CONF_MIN_VALUE = "min_value"
 CONF_MAX_VALUE = "max_value"
-CONF_STEPSIZE_VALUE = "step_size"
+CONF_STEPSIZE = "step_size"
 
 # select
 CONF_OPTIONS = "select_options"
