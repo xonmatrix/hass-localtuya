@@ -55,7 +55,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 version_tuple = (2023, 12, 0)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
-__author__ = "rospogrigio"
+__author__ = "rospogrigio, xZetsubou"
 
 _LOGGER = logging.getLogger(__name__)
 
