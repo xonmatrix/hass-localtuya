@@ -316,6 +316,14 @@ class DPCode(StrEnum):
     RECORD_MODE = "record_mode"
     RECORD_SWITCH = "record_switch"  # Recording switch
     RELAY_STATUS = "relay_status"
+    RELAY_STATUS_1 = "relay_status_1"  # Scene Switch cjkg
+    RELAY_STATUS_2 = "relay_status_2"  # Scene Switch cjkg
+    RELAY_STATUS_3 = "relay_status_3"  # Scene Switch cjkg
+    RELAY_STATUS_4 = "relay_status_4"  # Scene Switch cjkg
+    RELAY_STATUS_5 = "relay_status_5"  # Scene Switch cjkg
+    RELAY_STATUS_6 = "relay_status_6"  # Scene Switch cjkg
+    RELAY_STATUS_7 = "relay_status_7"  # Scene Switch cjkg
+    RELAY_STATUS_8 = "relay_status_8"  # Scene Switch cjkg
     REMAIN_TIME = "remain_time"
     REMOTE_REGISTER = "remote_register"
     RESET_DUSTER_CLOTH = "reset_duster_cloth"
