@@ -786,6 +786,10 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
     ),
 }
 
+# Scene Switch
+# https://developer.tuya.com/en/docs/iot/f?id=K9gf7nx6jelo8
+SWITCHES["cjkg"] = SWITCHES["kg"]
+
 # Socket (duplicate of `pc`)
 # https://developer.tuya.com/en/docs/iot/s?id=K9gf7o5prgf7s
 SWITCHES["cz"] = SWITCHES["pc"]
