@@ -1420,10 +1420,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             if cid := nodeId:
                 json_data["cid"] = cid
                 # for <= 3.3 we don't need `gwID`, `devID` and `uid` in payload.
-                # if command in (CONTROL, DP_QUERY):
-                #     for k in ("gwId", "devId", "uid"):
-                #         if k in json_data:
-                #             json_data.pop(k)
+                if command in (CONTROL, DP_QUERY):
+                    for k in ("gwId", "devId", "uid"):
+                        if k in json_data:
+                            json_data.pop(k)
             else:
                 del json_data["cid"]
         if "data" in json_data and "cid" in json_data["data"]:
