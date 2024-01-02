@@ -111,6 +111,26 @@ LIGHTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=DPCode.LIGHT,
             name=None,
+            custom_configs=localtuya_light(29, 1000, 2700, 6500, False, False),
+        ),
+    ),
+    # Fan Switch
+    "fskg": (
+        LocalTuyaEntity(
+            id=DPCode.SWITCH_LED,
+            name="Light",
+            color_mode=DPCode.WORK_MODE,
+            brightness=DPCode.BRIGHT_VALUE,
+            color_temp=DPCode.TEMP_VALUE,
+            color=DPCode.COLOUR_DATA,
+            scene=(DPCode.SCENE_DATA, DPCode.SCENE_DATA_V2),
+            custom_configs=localtuya_light(29, 1000, 2700, 6500, False, False),
+        ),
+        # Some ceiling fan lights use LIGHT for DPCode instead of SWITCH_LED
+        LocalTuyaEntity(
+            id=DPCode.LIGHT,
+            name=None,
+            custom_configs=localtuya_light(29, 1000, 2700, 6500, False, False),
         ),
     ),
     # Ambient Light

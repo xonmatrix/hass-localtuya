@@ -721,6 +721,15 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.CONFIG,
         ),
     ),
+    # Fan switch
+    "fskg": (
+        LocalTuyaEntity(
+            id=DPCode.BACKLIGHT_SWITCH,
+            name="LED Siwtch",
+            icon="mdi:led-outline",
+            entity_category=EntityCategory.CONFIG,
+        ),
+    ),
     # Curtain
     # https://developer.tuya.com/en/docs/iot/f?id=K9gf46o5mtfyc
     "cl": (

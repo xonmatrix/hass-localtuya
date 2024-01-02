@@ -107,6 +107,7 @@ class DPCode(StrEnum):
     ARM_UP_PERCENT = "arm_up_percent"
     AUTOMATIC_LOCK = "automatic_lock"
     AUTO_LOCK_TIME = "auto_lock_time"
+    BACKLIGHT_SWITCH = "backlight_switch"
     BASIC_ANTI_FLICKER = "basic_anti_flicker"
     BASIC_DEVICE_VOLUME = "basic_device_volume"
     BASIC_FLIP = "basic_flip"

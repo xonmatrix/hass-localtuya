@@ -759,6 +759,10 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
 # https://developer.tuya.com/en/docs/iot/f?id=K9gf7nx6jelo8
 SELECTS["cjkg"] = SELECTS["kg"]
 
+# Fan wall switch
+# For relay status
+SELECTS["fskg"] = SELECTS["kg"]
+
 # Socket (duplicate of `kg`)
 # https://developer.tuya.com/en/docs/iot/s?id=K9gf7o5prgf7s
 SELECTS["cz"] = SELECTS["kg"]
