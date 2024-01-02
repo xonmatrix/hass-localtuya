@@ -34,7 +34,7 @@ UNIT_F = "fahrenheit"
 
 def localtuya_climate(
     hvac_mode_set=None,
-    temp_step=None,
+    temp_step=1,
     actions_set=None,
     echo_value=None,
     preset_set=None,
