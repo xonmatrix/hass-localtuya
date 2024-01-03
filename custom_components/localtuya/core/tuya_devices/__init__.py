@@ -203,7 +203,7 @@ def scale(value: int, scale: int, _type: type = int) -> float:
     return _type(value) / (10**scale)
 
 
-def convert_list(_list: list, prefer_type: dict | str = str) -> dict:
+def convert_list(_list: list, prefer_type: dict | list | str = str):
     """Return list to dict values."""
     if not _list:
         return ""
@@ -220,6 +220,9 @@ def convert_list(_list: list, prefer_type: dict | str = str) -> dict:
         # Return dict {value1: value1, value2: value2, value3: value3}
         to_dict = {k: k.replace("_", " ").capitalize() for k in _list}
         return to_dict
+
+    # otherwise return prefer type list
+    return _list
 
 
 def convert_to_kelvin(value):
