@@ -42,7 +42,7 @@ def localtuya_fan(fwd, rev, min_speed, max_speed, order, dp_type):
         CONF_FAN_DIRECTION_REV: rev,
         CONF_FAN_SPEED_MIN: CLOUD_VALUE(min_speed, CONF_FAN_SPEED_CONTROL, "min"),
         CONF_FAN_SPEED_MAX: CLOUD_VALUE(max_speed, CONF_FAN_SPEED_CONTROL, "max"),
-        CONF_FAN_ORDERED_LIST: order,
+        CONF_FAN_ORDERED_LIST: CLOUD_VALUE(order, CONF_FAN_SPEED_CONTROL, "range", str),
         CONF_FAN_DPS_TYPE: dp_type,
     }
     return data

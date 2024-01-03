@@ -1,5 +1,6 @@
 from enum import StrEnum
-from typing import Any, NamedTuple
+from dataclasses import dataclass
+from typing import Any
 
 from homeassistant.const import (
     CONF_FRIENDLY_NAME,
@@ -10,10 +11,17 @@ from homeassistant.const import (
     EntityCategory,
 )
 
-# Obtain value from cloud data.
-CLOUD_VALUE = NamedTuple(
-    "dp_values", [("default_value", str), ("dp_config", str), ("value_key", str)]
-)
+
+# Obtain values from cloud data.
+@dataclass
+class CLOUD_VALUE:
+    """Retrieve a value from stored cloud data"""
+
+    default_value: Any
+    dp_config: str
+    value_key: str
+    prefer_type: type = None
+
 
 from ...const import CONF_CLEAN_AREA_DP, CONF_DPS_STRINGS, CONF_STATE_CLASS
 
