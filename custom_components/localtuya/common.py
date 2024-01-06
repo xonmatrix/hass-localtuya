@@ -243,12 +243,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             retry += 1
             try:
                 if self.is_subdevice:
-                    await self.get_gateway()
-                    gateway = self._gwateway
-                    # if not gateway or not (gateway.connected and gateway.is_connecting):
-                    #     return await self.abort_connect()
-                    if gateway and gateway.is_connecting:
-                        await gateway._connect_task
+                    gateway = await self.get_gateway()
+                    if not gateway or (not gateway.connected or gateway.is_connecting):
+                        return await self.abort_connect()
                     self._interface = gateway._interface
                 else:
                     self._interface = await pytuya.connect(
