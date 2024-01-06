@@ -10,27 +10,24 @@ from homeassistant.const import (
     Platform,
     EntityCategory,
 )
+from ...const import CONF_CLEAN_AREA_DP, CONF_DPS_STRINGS, CONF_STATE_CLASS
 
 
 # Obtain values from cloud data.
 @dataclass
 class CLOUD_VALUE:
-    """Retrieve a value from stored cloud data"""
+    """Retrieve a value from stored cloud data
+
+    `default_value`: The value that will be used if it fails to retrieve from the cloud.\n
+    `dp_config(str)`: The dp config key that will be used to look for the values into it.\n
+    `value_key(str)`: The "key" name of the targeted value.\n
+    `prefer_type(dict | str)`: Used for enums to convert the values to [dict or str splitted by comma, default is list].
+    """
 
     default_value: Any
     dp_config: str
     value_key: str
     prefer_type: type = None
-
-
-from ...const import CONF_CLEAN_AREA_DP, CONF_DPS_STRINGS, CONF_STATE_CLASS
-
-
-def update_dict(dict: dict, new_data: dict):
-    """update dict values"""
-    data = dict
-    data.update(new_data)
-    return data
 
 
 class LocalTuyaEntity:

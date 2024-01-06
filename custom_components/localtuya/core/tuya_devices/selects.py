@@ -139,7 +139,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status",
+            name="Power-on behavior",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -149,7 +149,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status",
+            name="Power-on behavior",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -157,14 +157,14 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status",
+            name="Power-on behavior",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
             id=DPCode.RELAY_STATUS_1,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 1",
+            name="Power-on behavior 1",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -174,7 +174,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_1,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 1",
+            name="Power-on behavior 1",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -182,14 +182,14 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_1,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 1",
+            name="Power-on behavior 1",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
             id=DPCode.RELAY_STATUS_2,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 2",
+            name="Power-on behavior 2",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -199,7 +199,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_2,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 2",
+            name="Power-on behavior 2",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -207,14 +207,14 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_2,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 2",
+            name="Power-on behavior 2",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
             id=DPCode.RELAY_STATUS_3,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 3",
+            name="Power-on behavior 3",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -224,7 +224,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_3,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 3",
+            name="Power-on behavior 3",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -232,14 +232,14 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_3,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 3",
+            name="Power-on behavior 3",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
             id=DPCode.RELAY_STATUS_4,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 4",
+            name="Power-on behavior 4",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -249,7 +249,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_4,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 4",
+            name="Power-on behavior 4",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -257,14 +257,14 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_4,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 4",
+            name="Power-on behavior 4",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
             id=DPCode.RELAY_STATUS_5,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 5",
+            name="Power-on behavior 5",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -274,7 +274,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_5,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 5",
+            name="Power-on behavior 5",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -282,14 +282,14 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_5,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 5",
+            name="Power-on behavior 5",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
             id=DPCode.RELAY_STATUS_6,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 6",
+            name="Power-on behavior 6",
             custom_configs=localtuya_selector(
                 "power_on,power_off,last", "ON,OFF,Last State"
             ),
@@ -299,7 +299,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_6,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 6",
+            name="Power-on behavior 6",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -307,7 +307,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS_6,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status 6",
+            name="Power-on behavior 6",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
@@ -460,7 +460,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status",
+            name="Power-on behavior",
             custom_configs=localtuya_selector("on,off,memory", "ON,OFF,Last State"),
             condition_contains_any=["on", "off", "memory"],
         ),
@@ -468,7 +468,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.RELAY_STATUS,
             icon="mdi:circle-double",
             entity_category=EntityCategory.CONFIG,
-            name="Relay Status",
+            name="Power-on behavior",
             custom_configs=localtuya_selector("0,1,2", "ON,OFF,Last State"),
         ),
         LocalTuyaEntity(
@@ -760,7 +760,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
 SELECTS["cjkg"] = SELECTS["kg"]
 
 # Fan wall switch
-# For relay status
+# For Power-on behavior
 SELECTS["fskg"] = SELECTS["kg"]
 
 # Socket (duplicate of `kg`)
