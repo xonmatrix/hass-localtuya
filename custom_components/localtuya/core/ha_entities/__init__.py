@@ -20,7 +20,8 @@
 
             If the configuration is not DPS, it will be inserted through "custom_configs". This is used to inject any configuration into the entity configuration
                 Example: custom_configs={"positioning_mode": "position"}. I hope that clarifies the concept
-        Check for more details at the URL above
+                
+        Check URL above for more details. 
 """
 
 import json

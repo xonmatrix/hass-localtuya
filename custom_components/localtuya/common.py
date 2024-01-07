@@ -245,9 +245,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 if self.is_subdevice:
                     gateway = await self.get_gateway()
                     if not gateway or (not gateway.connected and gateway.is_connecting):
-                        _LOGGER.debug(f"gateway: {gateway}")
-                        _LOGGER.debug(f"not gateway.connected: {not gateway.connected}")
-                        _LOGGER.debug(f"gateway.is_connecting: {gateway.is_connecting}")
                         return await self.abort_connect()
                     self._interface = gateway._interface
                 else:
