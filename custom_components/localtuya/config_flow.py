@@ -339,7 +339,7 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
     close = True
 
     cid = data.get(CONF_NODE_ID, None)
-    localtuya_devices = hass.data[DOMAIN][entry_id].tuya_devices
+    localtuya_devices = hass.data[DOMAIN][entry_id].devices
     try:
         conf_protocol = data[CONF_PROTOCOL_VERSION]
         auto_protocol = conf_protocol == "auto"

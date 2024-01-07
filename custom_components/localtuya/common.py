@@ -87,7 +87,7 @@ async def async_setup_entry(
         ]
 
         if entities_to_setup:
-            device: TuyaDevice = hass_entry_data.tuya_devices[device_key]
+            device: TuyaDevice = hass_entry_data.devices[device_key]
             dps_config_fields = list(get_dps_for_platform(flow_schema))
 
             for entity_config in entities_to_setup:
@@ -208,7 +208,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             return
         gateway: TuyaDevice
         node_host = self._device_config.get(CONF_HOST)
-        devices: dict = self._hass_entry.tuya_devices
+        devices: dict = self._hass_entry.devices
 
         # Sub to gateway.
         if gateway := devices.get(node_host):
@@ -227,7 +227,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if not self._is_closing and not self.is_connecting and not self.connected:
             try:
                 self._connect_task = self._hass.async_create_task(
-                    asyncio.wait_for(self._make_connection(), 5)
+                    self._make_connection()
                 )
                 await self._connect_task
             except (TimeoutError, asyncio.CancelledError):
@@ -244,7 +244,10 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             try:
                 if self.is_subdevice:
                     gateway = await self.get_gateway()
-                    if not gateway or (not gateway.connected or gateway.is_connecting):
+                    if not gateway or (not gateway.connected and gateway.is_connecting):
+                        _LOGGER.debug(f"gateway: {gateway}")
+                        _LOGGER.debug(f"not gateway.connected: {not gateway.connected}")
+                        _LOGGER.debug(f"gateway.is_connecting: {gateway.is_connecting}")
                         return await self.abort_connect()
                     self._interface = gateway._interface
                 else:
@@ -750,5 +753,5 @@ class HassLocalTuyaData(NamedTuple):
     """LocalTuya data stored in homeassistant data object."""
 
     cloud_data: TuyaCloudApi
-    tuya_devices: dict[str, TuyaDevice]
+    devices: dict[str, TuyaDevice]
     unsub_listeners: list[CALLBACK_TYPE,]
