@@ -21,15 +21,13 @@ class CLOUD_VALUE:
     `default_value`: The value that will be used if it fails to retrieve from the cloud.\n
     `dp_config(str)`: The dp config key that will be used to look for the values into it.\n
     `value_key(str)`: The "key" name of the targeted value.\n
-    `prefer_type(dict | str)`: Used for enums to convert the values to [dict or str splitted by comma, default is list].\n
-    `enable_conditions(bool)`: Enable the conditions to return the default value if it fails, default is false.
+    `prefer_type(dict | str)`: Used for enums to convert the values to [dict or str splitted by comma, default is list].
     """
 
     default_value: Any
     dp_config: str
     value_key: str
     prefer_type: type = None
-    enable_conditions: bool = False
 
 
 class LocalTuyaEntity:

@@ -7,13 +7,7 @@
     #TODO get values using "Get the instructions set by category"
 """
 
-from .base import (
-    DPCode,
-    LocalTuyaEntity,
-    CONF_DEVICE_CLASS,
-    EntityCategory,
-    CLOUD_VALUE,
-)
+from .base import DPCode, LocalTuyaEntity, CONF_DEVICE_CLASS, EntityCategory
 
 # from const.py this is temporarily.
 
@@ -23,10 +17,7 @@ from ...select import CONF_OPTIONS_FRIENDLY as OPS_NAME
 
 def localtuya_selector(options, options_name=None):
     """Generate localtuya select configs"""
-    data = {
-        OPS_VALS: CLOUD_VALUE(options, "id", "range", str, True),
-        OPS_NAME: options_name,
-    }
+    data = {OPS_VALS: options, OPS_NAME: options_name}
     return data
 
 
