@@ -743,6 +743,19 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             ),
         ),
     ),
+    # PIR Detector
+    # https://developer.tuya.com/en/docs/iot/categorypir?id=Kaiuz3ss11b80
+    "pir": (
+        LocalTuyaEntity(
+            id=DPCode.MOD,
+            icon="mdi:cog",
+            entity_category=EntityCategory.CONFIG,
+            name="Mode",
+            custom_configs=localtuya_selector(
+                "mode_auto,mode_on,mode_off", "AUTO,ON,OFF"
+            ),
+        ),
+    ),
     # Thermostat
     # https://developer.tuya.com/en/docs/iot/f?id=K9gf45ld5l0t9
     "wk": (
@@ -750,7 +763,17 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.SENSORTYPE,
             entity_category=EntityCategory.CONFIG,
             name="Temperature sensor",
-            custom_configs=localtuya_selector("0,1,2", "Internal;External;Both"),
+            custom_configs=localtuya_selector("0,1,2", "Internal,External,Both"),
+        ),
+    ),
+    # Thermostat
+    # https://developer.tuya.com/en/docs/iot/f?id=K9gf45ld5l0t9
+    "wk": (
+        LocalTuyaEntity(
+            id=DPCode.SENSORTYPE,
+            entity_category=EntityCategory.CONFIG,
+            name="Temperature sensor",
+            custom_configs=localtuya_selector("0,1,2", "Internal,External,Both"),
         ),
     ),
 }
