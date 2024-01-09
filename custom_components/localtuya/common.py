@@ -280,8 +280,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 status = await self._interface.status(cid=self._node_id)
                 if status is None:  # and not self.is_subdevice
                     raise Exception("Failed to retrieve status")
-                if not self._interface.heartbeater:
-                    self._interface.start_heartbeat()
+                self._interface.start_heartbeat()
                 self.status_updated(status)
 
             except UnicodeDecodeError as e:
