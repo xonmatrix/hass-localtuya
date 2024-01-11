@@ -197,7 +197,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
                     ent_items[k] = str(v) if type(v) is int else v
                 new_data[CONF_DEVICES][device][CONF_ENTITIES][i].update(ent_items)
                 i = i + 1
-        config_entry.version = new_version
+        config_entry.version = 3
         hass.config_entries.async_update_entry(config_entry, data=new_data)
     if config_entry.version <= 3:
         # Convert values and friendly name values to dict.
@@ -275,7 +275,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
                     new_entity_data
                 )
                 current_entity += 1
-        config_entry.version = new_version
+        config_entry.version = 4
         hass.config_entries.async_update_entry(config_entry, data=new_data)
 
     _LOGGER.info(
