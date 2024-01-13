@@ -91,6 +91,8 @@ async def async_setup(hass: HomeAssistant, config: dict):
             raise HomeAssistantError("unknown device id")
 
         host = entry.data[CONF_DEVICES][dev_id].get(CONF_HOST)
+        if node_id := entry.data[CONF_DEVICES][dev_id].get(CONF_NODE_ID):
+            host = f"{host}_{node_id}"
         device: TuyaDevice = hass.data[DOMAIN][entry.entry_id].devices[host]
         if not device.connected:
             raise HomeAssistantError("not connected to device")
