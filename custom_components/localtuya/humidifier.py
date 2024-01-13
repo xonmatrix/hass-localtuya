@@ -2,6 +2,7 @@
 import logging
 from functools import partial
 from .config_flow import _col_to_select
+from homeassistant.helpers import selector
 
 import voluptuous as vol
 from homeassistant.const import CONF_DEVICE_CLASS
@@ -38,7 +39,9 @@ def flow_schema(dps):
         vol.Optional(CONF_HUMIDIFIER_MODE_DP): _col_to_select(dps, is_dps=True),
         vol.Required(ATTR_MIN_HUMIDITY, default=DEFAULT_MIN_HUMIDITY): int,
         vol.Required(ATTR_MAX_HUMIDITY, default=DEFAULT_MAX_HUMIDITY): int,
-        vol.Optional(CONF_HUMIDIFIER_AVAILABLE_MODES): str,
+        vol.Optional(
+            CONF_HUMIDIFIER_AVAILABLE_MODES, default={}
+        ): selector.ObjectSelector(),
         vol.Optional(CONF_DEVICE_CLASS): DEVICE_CLASSES_SCHEMA,
     }
 
@@ -46,9 +49,9 @@ def flow_schema(dps):
 class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
     """Representation of a Localtuya Humidifier."""
 
-    _available_modes = CONF_HUMIDIFIER_MODE_DP
-    _dp_current_humidity = CONF_HUMIDIFIER_CURRENT_HUMIDITY_DP
     _dp_mode = CONF_HUMIDIFIER_MODE_DP
+    _available_modes = CONF_HUMIDIFIER_AVAILABLE_MODES
+    _dp_current_humidity = CONF_HUMIDIFIER_CURRENT_HUMIDITY_DP
     _dp_set_humidity = CONF_HUMIDIFIER_SET_HUMIDITY_DP
 
     def __init__(
@@ -61,6 +64,7 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
         """Initialize the Tuya button."""
         super().__init__(device, config_entry, humidifierID, _LOGGER, **kwargs)
         self._state = None
+        self._current_mode = None
 
         if self._config.get(self._dp_mode) and self._config.get(self._available_modes):
             self._attr_supported_features |= HumidifierEntityFeature.MODES
@@ -115,9 +119,8 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
     @property
     def available_modes(self):
         """Return the list of presets that this device supports."""
-        if modes := self._config.get(self._available_modes, None):
-            modes = [v.lstrip() for v in modes.split(",")]
-
+        if modes := self._config.get(self._available_modes, {}).values():
+            modes = list(modes)
         return modes
 
     async def async_set_mode(self, mode):
@@ -127,6 +130,17 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
             return None
 
         await self._device.set_dp(set_mode_dp, mode)
+
+    def status_updated(self):
+        """Device status was updated."""
+        super().status_updated()
+        current_mode = self.dp_value(self._dp_mode)
+        for mode, mode_name in self._config.get(self._available_modes, {}).items():
+            if mode == current_mode:
+                self._current_mode = mode_name
+                break
+            else:
+                self._current_mode = "unknown"
 
 
 async_setup_entry = partial(async_setup_entry, DOMAIN, LocaltuyaHumidifier, flow_schema)
