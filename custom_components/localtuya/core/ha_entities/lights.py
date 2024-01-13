@@ -66,9 +66,10 @@ LIGHTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.SWITCH_LED,
             name=None,
             color_mode=DPCode.WORK_MODE,
-            brightness=DPCode.BRIGHT_VALUE,
-            color_temp=DPCode.TEMP_VALUE,
-            color=DPCode.COLOUR_DATA,
+            brightness=(DPCode.BRIGHT_VALUE_V2, DPCode.BRIGHT_VALUE),
+            color_temp=(DPCode.TEMP_VALUE_V2, DPCode.TEMP_VALUE),
+            color=(DPCode.COLOUR_DATA_V2, DPCode.COLOUR_DATA),
+            scene=(DPCode.SCENE_DATA_V2, DPCode.SCENE_DATA),
             custom_configs=localtuya_light(29, 1000, 2700, 6500, False, False)
             # default_color_type=DEFAULT_COLOR_TYPE_DATA_V2,
         ),
