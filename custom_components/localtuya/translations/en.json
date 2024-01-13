@@ -228,7 +228,7 @@
                     "step_size": "Minimum increment between numbers",
                     "is_passive_entity": "Passive entity? (requires integration to send initialisation value)",
                     "entity_category": "Show the entity in this category",
-                    "humidifier_available_modes": "(Optional) Avaliable modes in device",
+                    "humidifier_available_modes": "(Optional) Available modes in the device",
                     "humidifier_current_humidity_dp": "(Optional) Current Humidity DP",
                     "humidifier_mode_dp": "(Optional) Set mode DP",
                     "humidifier_set_humidity_dp": "(Optional) Set Humidity DP",
