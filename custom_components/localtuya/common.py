@@ -343,9 +343,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
     async def check_connection(self):
         """Ensure that the device is not still connecting; if it is, wait for it."""
-        if self._connect_task:
+        if not self.connected and self._connect_task:
             await self._connect_task
-        if self._gwateway and self._gwateway._connect_task:
+        if not self.connected and self._gwateway and self._gwateway._connect_task:
             await self._gwateway._connect_task
 
     async def close(self):
