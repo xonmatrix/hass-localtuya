@@ -35,7 +35,7 @@ COUNT_DOWN = {
     "6": "6 Hours",
 }
 COUNT_DOWN_HOURS = {
-    "cancel": "Disable",
+    "off": "Disable",
     "1h": "1 Hour",
     "2h": "2 Hours",
     "3h": "3 Hours",
@@ -590,6 +590,15 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
     # Fan
     # https://developer.tuya.com/en/docs/iot/f?id=K9gf45vs7vkge
     "fs": (
+        LocalTuyaEntity(
+            id=DPCode.MODE,
+            entity_category=EntityCategory.CONFIG,
+            icon="mdi:cog",
+            name="Mode",
+            custom_configs=localtuya_selector(
+                {"sleep": "Sleep", "normal": "Normal", "nature": "Nature"}
+            ),
+        ),
         LocalTuyaEntity(
             id=DPCode.FAN_VERTICAL,
             entity_category=EntityCategory.CONFIG,
