@@ -189,7 +189,7 @@
             "music_mode": "Music mode available?",
             "scene": "Scene",
             "scene_values": "(Optional) Scene values",
-            "select_options": "Valid entries",
+            "select_options": "Select options values",
             "fan_speed_control": "Fan Speed Control DP",
             "fan_oscillating_control": "Fan Oscillating Control DP",
             "fan_speed_min": "minimum fan speed integer",
