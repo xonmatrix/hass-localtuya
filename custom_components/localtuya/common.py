@@ -640,12 +640,12 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
         """Return cached value for DPS index or Entity Config Key."""
         requested_dp = str(key)
         # If requested_dp in DP ID, get cached value.
-        if value := self._status.get(requested_dp):
+        if (value := self._status.get(requested_dp)) or value is not None:
             return value
 
         # If requested_dp is an config key get config dp then get cached value.
-        if conf_key := self._config.get(requested_dp):
-            if value := self._status.get(conf_key):
+        if (conf_key := self._config.get(requested_dp)) or conf_key is not None:
+            if (value := self._status.get(conf_key)) or value is not None:
                 return value
 
         if value is None:
