@@ -396,6 +396,11 @@ LIGHTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
 # https://developer.tuya.com/en/docs/iot/f?id=K9gf7nx6jelo8
 LIGHTS["cjkg"] = LIGHTS["tgkg"]
 
+# Wireless Switch  # also can come as knob switch.
+# https://developer.tuya.com/en/docs/iot/wxkg?id=Kbeo9t3ryuqm5
+LIGHTS["wxkg"] = LIGHTS["tgkg"]
+
+
 # Socket (duplicate of `kg`)
 # https://developer.tuya.com/en/docs/iot/s?id=K9gf7o5prgf7s
 LIGHTS["cz"] = LIGHTS["kg"]

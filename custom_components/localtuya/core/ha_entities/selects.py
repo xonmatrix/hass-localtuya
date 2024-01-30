@@ -53,14 +53,28 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Source",
             icon="mdi:volume-source",
             entity_category=EntityCategory.CONFIG,
-            custom_configs=localtuya_selector("cloud,local,aux,bluetooth"),
+            custom_configs=localtuya_selector(
+                {
+                    "cloud": "Cloud",
+                    "local": "Local",
+                    "aux": "Aux",
+                    "bluetooth": "Bluetooth",
+                }
+            ),
         ),
         LocalTuyaEntity(
             id=DPCode.PLAY_MODE,
             name="Mode",
             icon="mdi:cog-outline",
             entity_category=EntityCategory.CONFIG,
-            custom_configs=localtuya_selector("order,repeat_all,repeat_one,random"),
+            custom_configs=localtuya_selector(
+                {
+                    "order": "Order",
+                    "repeat_all": "Repeat ALL",
+                    "repeat_one": "Repeat one",
+                    "random": "Random",
+                }
+            ),
         ),
         LocalTuyaEntity(
             id=DPCode.SOUND_EFFECTS,
@@ -68,7 +82,18 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             icon="mdi:sine-wave",
             entity_category=EntityCategory.CONFIG,
             custom_configs=localtuya_selector(
-                "normal,pop,opera,classical,jazz,rock,folk,heavy_metal,hip_hop,wave"
+                {
+                    "normal": "Normal",
+                    "pop": "Pop",
+                    "opera": "Opera",
+                    "classical": "Classical",
+                    "jazz": "Jazz",
+                    "rock": "Rock",
+                    "folk": "Folk",
+                    "heavy_metal": "Metal",
+                    "hip_hop": "HipHop",
+                    "wave": "Wave",
+                }
             ),
         ),
     ),
@@ -79,13 +104,28 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.ALARM_VOLUME,
             name="volume",
             entity_category=EntityCategory.CONFIG,
-            custom_configs=localtuya_selector("low,middle,high,mute"),
+            custom_configs=localtuya_selector(
+                {
+                    "low": "Low",
+                    "middle": "Middle",
+                    "high": "High",
+                    "mute": "Mute",
+                }
+            ),
         ),
         LocalTuyaEntity(
             id=DPCode.ALARM_RINGTONE,
             name="Ringtone",
             entity_category=EntityCategory.CONFIG,
-            custom_configs=localtuya_selector("1,2,3,4,5"),
+            custom_configs=localtuya_selector(
+                {
+                    "1": "1",
+                    "2": "2",
+                    "3": "3",
+                    "4": "4",
+                    "5": "5",
+                }
+            ),
         ),
     ),
     # Heater
@@ -791,6 +831,20 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         ),
     ),
 }
+# Wireless Switch  # also can come as knob switch.
+# https://developer.tuya.com/en/docs/iot/wxkg?id=Kbeo9t3ryuqm5
+SELECTS["wxkg"] = (
+    LocalTuyaEntity(
+        id=DPCode.WORK_MODE,
+        name="Display mode",
+        icon="mdi:square-outline",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {"brightness": "Brightness", "temperature": "Temperature"}
+        ),
+    ),
+    *SELECTS["kg"],
+)
 
 # Scene Switch
 # https://developer.tuya.com/en/docs/iot/f?id=K9gf7nx6jelo8
