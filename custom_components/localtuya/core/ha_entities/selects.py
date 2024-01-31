@@ -687,7 +687,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Motor Direction",
             entity_category=EntityCategory.CONFIG,
             icon="mdi:swap-vertical",
-            custom_configs=localtuya_selector("forward,back"),
+            custom_configs=localtuya_selector({"forward": "Forward", "back": "Back"}),
         ),
         LocalTuyaEntity(
             id=DPCode.MOTOR_MODE,
@@ -702,7 +702,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.MODE,
             entity_category=EntityCategory.CONFIG,
             name="Cover Mode",
-            custom_configs=localtuya_selector("morning,night"),
+            custom_configs=localtuya_selector({"morning": "Morning", "night": "Night"}),
         ),
     ),
     # Humidifier
