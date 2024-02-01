@@ -277,7 +277,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
                 self.debug("Retrieving initial state")
 
-                status = await self._interface.status(cid=self._node_id)
+                # Usually we use status instead of detect_available_dps, but some device doesn't reports all dps when ask for status.
+                status = await self._interface.detect_available_dps(cid=self._node_id)
                 if status is None:  # and not self.is_subdevice
                     raise Exception("Failed to retrieve status")
                 self._interface.start_heartbeat()
@@ -462,8 +463,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if self._fake_gateway:
             # Fake gateways are only used to pass commands no need to update status.
             return
-        cid = self._node_id
-        status = status.get(cid, {}) if cid else status.get("parent", {})
         self._handle_event(self._status, status)
         self._status.update(status)
         self._dispatch_status()
