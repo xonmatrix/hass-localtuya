@@ -53,6 +53,7 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
     _available_modes = CONF_HUMIDIFIER_AVAILABLE_MODES
     _dp_current_humidity = CONF_HUMIDIFIER_CURRENT_HUMIDITY_DP
     _dp_set_humidity = CONF_HUMIDIFIER_SET_HUMIDITY_DP
+    _mode_name_to_value = {}
 
     def __init__(
         self,
@@ -68,6 +69,10 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
 
         if self._config.get(self._dp_mode) and self._config.get(self._available_modes):
             self._attr_supported_features |= HumidifierEntityFeature.MODES
+            self._mode_name_to_value = {
+                v: k if k else v.replace("_", " ").capitalize()
+                for k, v in self._config.get(self._available_modes, {}).items()
+            }
 
         self._attr_min_humidity = self._config.get(
             ATTR_MIN_HUMIDITY, DEFAULT_MIN_HUMIDITY
@@ -84,7 +89,7 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
     @property
     def mode(self) -> str | None:
         """Return the current mode."""
-        return self.dp_value(self._dp_mode)
+        return self._current_mode
 
     @property
     def target_humidity(self) -> int | None:
@@ -125,11 +130,12 @@ class LocaltuyaHumidifier(LocalTuyaEntity, HumidifierEntity):
 
     async def async_set_mode(self, mode):
         """Set new target preset mode."""
-        set_mode_dp = self._config.get(self._dp_set_humidity, None)
+        set_mode_dp = self._config.get(self._dp_mode, None)
         if set_mode_dp is None:
             return None
 
-        await self._device.set_dp(set_mode_dp, mode)
+        set_mode = self._mode_name_to_value.get(mode)
+        await self._device.set_dp(set_mode, set_mode_dp)
 
     def status_updated(self):
         """Device status was updated."""
