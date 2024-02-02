@@ -6,7 +6,13 @@
     Modified by: xZetsubou
 """
 
-from .base import DPCode, LocalTuyaEntity, CONF_DEVICE_CLASS, EntityCategory
+from .base import (
+    DPCode,
+    LocalTuyaEntity,
+    CONF_DEVICE_CLASS,
+    EntityCategory,
+    CLOUD_VALUE,
+)
 from homeassistant.components.humidifier import HumidifierDeviceClass
 
 CONF_HUMIDIFIER_SET_HUMIDITY_DP = "humidifier_set_humidity_dp"
@@ -18,7 +24,11 @@ CONF_HUMIDIFIER_AVAILABLE_MODES = "humidifier_available_modes"
 def localtuya_humidifier(modes):
     """Define localtuya fan configs"""
 
-    data = {"humidifier_available_modes": modes}
+    data = {
+        "humidifier_available_modes": CLOUD_VALUE(
+            modes, CONF_HUMIDIFIER_MODE_DP, "range", dict
+        )
+    }
     return data
 
 
