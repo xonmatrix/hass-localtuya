@@ -62,7 +62,7 @@ FANS: dict[str, tuple[LocalTuyaEntity, ...]] = {
                 DIRECTION_FORWARD, DIRECTION_REVERSE, 1, 100, "disabled", "int"
             ),
         ),
-    )
+    ),
 }
 # Fan with Light
 FANS["fsd"] = FANS["fs"]
