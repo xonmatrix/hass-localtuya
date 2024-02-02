@@ -781,7 +781,9 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Target Humidity",
             entity_category=EntityCategory.CONFIG,
             icon="mdi:water-percent",
-            custom_configs=localtuya_selector("10,20,30,40,50"),
+            custom_configs=localtuya_selector(
+                {"10": "10", "20": "20", "30": "30", "40": "40", "50": "50", "60": "60"}
+            ),
         ),
         LocalTuyaEntity(
             id=DPCode.SPRAY_VOLUME,
