@@ -47,6 +47,28 @@ FAULT_SENSOR = (
         entity_category=EntityCategory.DIAGNOSTIC,
         custom_configs=ON_1,
     ),
+    # CZ - Energy monitor?
+    LocalTuyaEntity(
+        id=DPCode.POWER_TYPE,
+        name="Power State",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        custom_configs=localtuya_binarySensor("warn"),
+    ),
+    LocalTuyaEntity(
+        id=DPCode.POWER_TYPE1,
+        name="Power 1 State",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        custom_configs=localtuya_binarySensor("warn"),
+    ),
+    LocalTuyaEntity(
+        id=DPCode.POWER_TYPE2,
+        name="Power 2 State",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        custom_configs=localtuya_binarySensor("warn"),
+    ),
 )
 
 

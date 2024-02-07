@@ -99,6 +99,8 @@ class DPCode(StrEnum):
     """
 
     ADD_ELE = "add_ele"
+    ADD_ELE1 = "add_ele1"
+    ADD_ELE2 = "add_ele2"
     AIR_QUALITY = "air_quality"
     ALARM_LOCK = "alarm_lock"
     ALARM_MESSAGE = "alarm_message"
@@ -107,6 +109,7 @@ class DPCode(StrEnum):
     ALARM_SWITCH = "alarm_switch"  # Alarm switch
     ALARM_TIME = "alarm_time"  # Alarm time
     ALARM_VOLUME = "alarm_volume"  # Alarm volume
+    ALL_ENERGY = "all_energy"
     ANGLE_HORIZONTAL = "angle_horizontal"
     ANGLE_VERTICAL = "angle_vertical"
     ANION = "anion"  # Ionizer unit
@@ -199,13 +202,21 @@ class DPCode(StrEnum):
     CRY_DETECTION_SWITCH = "cry_detection_switch"
     CUP_NUMBER = "cup_number"  # NUmber of cups
     CUR_CURRENT = "cur_current"  # Actual current
+    CUR_CURRENT1 = "cur_current1"
+    CUR_CURRENT2 = "cur_current2"
     CUR_POWER = "cur_power"  # Actual power
+    CUR_POWER1 = "cur_power1"
+    CUR_POWER2 = "cur_power2"
     CUR_VOLTAGE = "cur_voltage"  # Actual voltage
+    CUR_VOLTAGE1 = "cur_voltage1"
+    CUR_VOLTAGE2 = "cur_voltage2"
     C_F = "c_f"  # Temperature unit switching
     DECIBEL_SENSITIVITY = "decibel_sensitivity"
     DECIBEL_SWITCH = "decibel_switch"
     DEHUMIDITY_SET_ENUM = "dehumidify_set_enum"
     DEHUMIDITY_SET_VALUE = "dehumidify_set_value"
+    DEVICE_STATE1 = "device_state1"
+    DEVICE_STATE2 = "device_state2"
     DISINFECTION = "disinfection"
     DOORBELL = "doorbell"
     DOORCONTACT_STATE = "doorcontact_state"  # Status of door window sensor
@@ -291,6 +302,7 @@ class DPCode(StrEnum):
     MUFFLING = "muffling"  # Muffling
     MUTE = "mute"
     NEAR_DETECTION = "near_detection"
+    NET_STATE = "net_state"
     NORMAL_OPEN_SWITCH = "normal_open_switch"
     OPPOSITE = "opposite"
     OPTIMUMSTART = "optimumstart"
@@ -327,6 +339,9 @@ class DPCode(StrEnum):
     POWDER_SET = "powder_set"  # Powder
     POWER = "power"
     POWER_GO = "power_go"
+    POWER_TYPE = "power_type"
+    POWER_TYPE1 = "power_type1"
+    POWER_TYPE2 = "power_type2"
     PRESENCE_STATE = "presence_state"
     PRESSURE_STATE = "pressure_state"
     PRESSURE_VALUE = "pressure_value"
@@ -447,6 +462,8 @@ class DPCode(StrEnum):
     SWITCH_VERTICAL = "switch_vertical"  # Vertical swing flap switch
     SWITCH_VOICE = "switch_voice"  # Voice switch
     SWITCH_WELCOME = "switch_welcome"
+    SYNC_REQUEST = "sync_request"
+    SYNC_RESPONSE = "sync_response"
     TEMP = "temp"  # Temperature setting
     TEMPACTIVATE = "tempactivate"
     TEMPCOMP = "tempcomp"
@@ -466,9 +483,16 @@ class DPCode(StrEnum):
     TEMP_VALUE_V2 = "temp_value_v2"
     TIM = "tim"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
     TIME_TOTAL = "time_total"
+    TODAY_ACC_ENERGY1 = "today_acc_energy1"
+    TODAY_ACC_ENERGY2 = "today_acc_energy2"
+    TODAY_ENERGY_ADD1 = "today_energy_add1"
+    TODAY_ENERGY_ADD2 = "today_energy_add2"
     TOTAL_CLEAN_AREA = "total_clean_area"
     TOTAL_CLEAN_COUNT = "total_clean_count"
     TOTAL_CLEAN_TIME = "total_clean_time"
+    TOTAL_ENERGY = "total_energy"
+    TOTAL_ENERGY1 = "total_energy1"
+    TOTAL_ENERGY2 = "total_energy2"
     TOTAL_FORWARD_ENERGY = "total_forward_energy"
     TOTAL_PM = "total_pm"
     TOTAL_TIME = "total_time"
@@ -512,6 +536,9 @@ class DPCode(StrEnum):
     VOLUME_SET = "volume_set"
     WARM = "warm"  # Heat preservation
     WARM_TIME = "warm_time"  # Heat preservation time
+    WARN_POWER = "warn_power"
+    WARN_POWER1 = "warn_power1"
+    WARN_POWER2 = "warn_power2"
     WATER = "water"
     WATERSENSOR_STATE = "watersensor_state"
     WATER_RESET = "water_reset"  # Resetting of water usage days
