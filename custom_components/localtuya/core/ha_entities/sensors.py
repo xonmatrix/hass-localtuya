@@ -21,15 +21,20 @@ from homeassistant.const import (
     UnitOfEnergy,
 )
 
-from .base import DPCode, LocalTuyaEntity, CONF_DEVICE_CLASS, EntityCategory
+from .base import (
+    DPCode,
+    LocalTuyaEntity,
+    CONF_DEVICE_CLASS,
+    EntityCategory,
+    CLOUD_VALUE,
+)
 from ...const import CONF_SCALING as SCALE_FACTOR
 
 
 def localtuya_sensor(unit_of_measurement=None, scale_factor: float = None) -> dict:
     """Define LocalTuya Configs for Sensor."""
     data = {CONF_UNIT_OF_MEASUREMENT: unit_of_measurement}
-    if scale_factor:
-        data.update({SCALE_FACTOR: scale_factor})
+    data.update({SCALE_FACTOR: CLOUD_VALUE(scale_factor, "id", "scale")})
 
     return data
 

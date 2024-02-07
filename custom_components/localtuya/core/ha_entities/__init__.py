@@ -197,6 +197,13 @@ def get_dp_values(dp: str, dps_data: dict, req_info: CLOUD_VALUE = None) -> dict
         dp_values["range"] = convert_list(dp_values.get("range"), req_info)
         return dp_values
 
+    # Sensors don't have type
+    if dp_values and not dp_type:
+        # we need scaling factor for sensors.
+        if "scale" in dp_values:
+            dp_values["scale"] = scale(1, dp_values["scale"], float)
+            return dp_values
+
 
 def scale(value: int, scale: int, _type: type = int) -> float:
     """Return scaled value."""
