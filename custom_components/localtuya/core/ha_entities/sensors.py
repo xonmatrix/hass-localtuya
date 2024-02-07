@@ -464,6 +464,13 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             custom_configs=localtuya_sensor(UnitOfEnergy.KILO_WATT_HOUR, 0.001),
         ),
         LocalTuyaEntity(
+            id=DPCode.TODAY_ACC_ENERGY,
+            name="Today Energy",
+            device_class=SensorDeviceClass.ENERGY,
+            state_class=SensorStateClass.TOTAL_INCREASING,
+            custom_configs=localtuya_sensor(UnitOfEnergy.KILO_WATT_HOUR, 0.001),
+        ),
+        LocalTuyaEntity(
             id=DPCode.TODAY_ACC_ENERGY1,
             name="Today Energy 1",
             device_class=SensorDeviceClass.ENERGY,
@@ -473,6 +480,13 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=DPCode.TODAY_ACC_ENERGY2,
             name="Today Energy 2",
+            device_class=SensorDeviceClass.ENERGY,
+            state_class=SensorStateClass.TOTAL_INCREASING,
+            custom_configs=localtuya_sensor(UnitOfEnergy.KILO_WATT_HOUR, 0.001),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.TODAY_ENERGY_ADD,
+            name="Today Energy Increase",
             device_class=SensorDeviceClass.ENERGY,
             state_class=SensorStateClass.TOTAL_INCREASING,
             custom_configs=localtuya_sensor(UnitOfEnergy.KILO_WATT_HOUR, 0.001),

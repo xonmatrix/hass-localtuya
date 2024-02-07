@@ -483,8 +483,10 @@ class DPCode(StrEnum):
     TEMP_VALUE_V2 = "temp_value_v2"
     TIM = "tim"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
     TIME_TOTAL = "time_total"
+    TODAY_ACC_ENERGY = "today_acc_energy"
     TODAY_ACC_ENERGY1 = "today_acc_energy1"
     TODAY_ACC_ENERGY2 = "today_acc_energy2"
+    TODAY_ENERGY_ADD = "today_energy_add"
     TODAY_ENERGY_ADD1 = "today_energy_add1"
     TODAY_ENERGY_ADD2 = "today_energy_add2"
     TOTAL_CLEAN_AREA = "total_clean_area"
