@@ -35,8 +35,8 @@ DEFAULT_PRECISION = 2
 
 
 class TuyaMode(StrEnum):
-    DISARMED = "arm"
-    ARM = "disarmed"
+    DISARMED = "disarmed"
+    ARM = "arm"
     HOME = "home"
     SOS = "sos"
 
