@@ -38,7 +38,6 @@ def localtuya_alarm(states: dict):
     return data
 
 
-MAP_ALARM_VALUES = {}
 # All descriptions can be found here:
 # https://developer.tuya.com/en/docs/iot/standarddescription?id=K9i5ql6waswzq
 ALARMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
@@ -47,7 +46,6 @@ ALARMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
     "mal": (
         LocalTuyaEntity(
             id=DPCode.MASTER_MODE,
-            name="Alarm",
             custom_configs=localtuya_alarm(
                 {
                     STATE_ALARM_DISARMED: "disarmed",
