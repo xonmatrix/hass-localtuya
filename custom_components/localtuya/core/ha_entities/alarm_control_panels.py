@@ -55,5 +55,5 @@ ALARMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
                 }
             ),
         ),
-    )
+    ),
 }
