@@ -85,6 +85,7 @@ class LocalTuyaAlarmControlPanel(LocalTuyaEntity, AlarmControlPanelEntity):
             if STATE_ALARM_TRIGGERED in supported_modes:
                 self._attr_supported_features |= AlarmControlPanelEntityFeature.TRIGGER
 
+        self._state_ha_to_tuya: dict[str, str] = supported_modes
         self._state_tuya_to_ha: dict[str, str] = {
             v: k for k, v in supported_modes.items()
         }
@@ -111,19 +112,23 @@ class LocalTuyaAlarmControlPanel(LocalTuyaEntity, AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code: str | None = None) -> None:
         """Send disarm command."""
-        await self._device.set_dp(self._dp_id, TuyaMode.DISARMED)
+        state = self._state_ha_to_tuya.get(STATE_ALARM_DISARMED)
+        await self._device.set_dp(state, self._dp_id)
 
     async def async_alarm_arm_home(self, code: str | None = None) -> None:
         """Send arm home command."""
-        await self._device.set_dp(self._dp_id, TuyaMode.HOME)
+        state = self._state_ha_to_tuya.get(STATE_ALARM_ARMED_HOME)
+        await self._device.set_dp(state, self._dp_id)
 
     async def async_alarm_arm_away(self, code: str | None = None) -> None:
         """Send arm away command."""
-        await self._device.set_dp(self._dp_id, TuyaMode.ARM)
+        state = self._state_ha_to_tuya.get(STATE_ALARM_ARMED_AWAY)
+        await self._device.set_dp(state, self._dp_id)
 
     async def async_alarm_trigger(self, code: str | None = None) -> None:
         """Send alarm trigger command."""
-        await self._device.set_dp(self._dp_id, TuyaMode.SOS)
+        state = self._state_ha_to_tuya.get(STATE_ALARM_TRIGGERED)
+        await self._device.set_dp(state, self._dp_id)
 
     def status_updated(self):
         """Device status was updated."""
