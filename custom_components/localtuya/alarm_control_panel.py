@@ -78,11 +78,11 @@ class LocalTuyaAlarmControlPanel(LocalTuyaEntity, AlarmControlPanelEntity):
         # supported modes
         if supported_modes := self._config.get(CONF_ALARM_SUPPORTED_STATES, {}):
             # Key is HA state and value is Tuya State.
-            if TuyaMode.HOME in supported_modes.values():
+            if STATE_ALARM_ARMED_AWAY in supported_modes:
                 self._attr_supported_features |= AlarmControlPanelEntityFeature.ARM_HOME
-            if TuyaMode.ARM in supported_modes.values():
+            if STATE_ALARM_ARMED_HOME in supported_modes:
                 self._attr_supported_features |= AlarmControlPanelEntityFeature.ARM_AWAY
-            if TuyaMode.SOS in supported_modes.values():
+            if STATE_ALARM_TRIGGERED in supported_modes:
                 self._attr_supported_features |= AlarmControlPanelEntityFeature.TRIGGER
 
         self._state_tuya_to_ha: dict[str, str] = {
