@@ -100,6 +100,7 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Switch 2 Mode",
             icon="mdi:information-slab-circle-outline",
         ),
+        *BATTERY_SENSORS,
     ),
     # Smart panel with switches and zigbee hub ?
     # Not documented

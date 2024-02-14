@@ -429,11 +429,17 @@ class DPCode(StrEnum):
     SWING = "swing"  # Swing mode
     SWITCH = "switch"  # Switch
     SWITCH1 = "switch1"  # Switch 1 no underscore
+    SWITCH1_VALUE = "switch1_value"  # scene switch "wxkg"
     SWITCH2 = "switch2"  # Switch 2 no underscore
+    SWITCH2_VALUE = "switch2_value"  # scene switch "wxkg"
     SWITCH3 = "switch3"  # Switch 3 no underscore
+    SWITCH3_VALUE = "switch3_value"  # scene switch "wxkg"
     SWITCH4 = "switch4"  # Switch 4 no underscore
+    SWITCH4_VALUE = "switch4_value"  # scene switch "wxkg"
     SWITCH5 = "switch5"  # Switch 5 no underscore
+    SWITCH5_VALUE = "switch5_value"  # scene switch "wxkg"
     SWITCH6 = "switch6"  # Switch 6 no underscore
+    SWITCH6_VALUE = "switch6_value"  # scene switch "wxkg"
     SWITCH7 = "switch7"  # Switch 7 no underscore
     SWITCH8 = "switch8"  # Switch 8 no underscore
     SWITCH_1 = "switch_1"  # Switch 1

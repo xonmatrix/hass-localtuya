@@ -892,7 +892,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         ),
     ),
 }
-# Wireless Switch  # also can come as knob switch.
+# Wireless Switch  # also can come as knob switch. # and scene switch.
 # https://developer.tuya.com/en/docs/iot/wxkg?id=Kbeo9t3ryuqm5
 SELECTS["wxkg"] = (
     LocalTuyaEntity(
@@ -903,6 +903,76 @@ SELECTS["wxkg"] = (
         custom_configs=localtuya_selector(
             {"brightness": "Brightness", "temperature": "Temperature"}
         ),
+    ),
+    LocalTuyaEntity(
+        id=DPCode.SWITCH1_VALUE,
+        name="Switch 1",
+        icon="mdi:square-outline",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {
+                "single_click": "Single click",
+                "double_click": "Double click",
+                "long_press": "Long Press",
+            }
+        ),
+        condition_contains_any=["single_click", "double_click", "long_press"],
+    ),
+    LocalTuyaEntity(
+        id=DPCode.SWITCH2_VALUE,
+        name="Switch 2",
+        icon="mdi:palette-outline",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {
+                "single_click": "Single click",
+                "double_click": "Double click",
+                "long_press": "Long Press",
+            }
+        ),
+        condition_contains_any=["single_click", "double_click", "long_press"],
+    ),
+    LocalTuyaEntity(
+        id=DPCode.SWITCH3_VALUE,
+        name="Switch 3",
+        icon="mdi:palette-outline",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {
+                "single_click": "Single click",
+                "double_click": "Double click",
+                "long_press": "Long Press",
+            }
+        ),
+        condition_contains_any=["single_click", "double_click", "long_press"],
+    ),
+    LocalTuyaEntity(
+        id=DPCode.SWITCH4_VALUE,
+        name="Switch 4",
+        icon="mdi:palette-outline",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {
+                "single_click": "Single click",
+                "double_click": "Double click",
+                "long_press": "Long Press",
+            }
+        ),
+        condition_contains_any=["single_click", "double_click", "long_press"],
+    ),
+    LocalTuyaEntity(
+        id=DPCode.SWITCH5_VALUE,
+        name="Switch 5",
+        icon="mdi:palette-outline",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {
+                "single_click": "Single click",
+                "double_click": "Double click",
+                "long_press": "Long Press",
+            }
+        ),
+        condition_contains_any=["single_click", "double_click", "long_press"],
     ),
     *SELECTS["kg"],
 )
