@@ -142,6 +142,8 @@ def flow_schema(dps):
 class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
     """Tuya climate device."""
 
+    _enable_turn_on_off_backwards_compatibility = False
+
     def __init__(
         self,
         device,
@@ -183,6 +185,13 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
             supported_features |= ClimateEntityFeature.TARGET_TEMPERATURE
         if self.has_config(CONF_PRESET_DP) or self.has_config(CONF_ECO_DP):
             supported_features |= ClimateEntityFeature.PRESET_MODE
+
+        try:  # requires HA >= 2024.2.1
+            supported_features |= ClimateEntityFeature.TURN_OFF
+            supported_features |= ClimateEntityFeature.TURN_ON
+        except AttributeError:
+            ...
+
         return supported_features
 
     @property
