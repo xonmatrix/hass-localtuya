@@ -855,6 +855,21 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.CONFIG,
         ),
     ),
+    # Smart Water Meter
+    # https://developer.tuya.com/en/docs/iot/f?id=Ka8n052xu7w4c
+    "znsb": (
+        LocalTuyaEntity(
+            id=DPCode.SWITCH_COLD,
+            name="Valve",
+            icon="mdi:Valve",
+        ),
+        LocalTuyaEntity(
+            id=DPCode.AUTO_CLEAN,
+            name="Auto Clean",
+            icon="mdi:auto-fix",
+            entity_category=EntityCategory.CONFIG,
+        ),
+    ),
 }
 
 # Scene Switch

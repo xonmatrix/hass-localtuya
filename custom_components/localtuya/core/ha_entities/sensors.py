@@ -14,11 +14,12 @@ from homeassistant.const import (
     PERCENTAGE,
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
-    UnitOfPower,
     UnitOfTime,
     CONF_UNIT_OF_MEASUREMENT,
     UnitOfTemperature,
     UnitOfEnergy,
+    UnitOfVolume,
+    UnitOfElectricPotential,
 )
 
 from .base import (
@@ -1294,6 +1295,33 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.OTHEREVENT,
             name="Other Event",
             entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+    ),
+    # Smart Water Meter
+    # https://developer.tuya.com/en/docs/iot/f?id=Ka8n052xu7w4c
+    "znsb": (
+        LocalTuyaEntity(
+            id=DPCode.WATER_USE_DATA,
+            name="Total Water Consumption",
+            icon="mdi:water-outline",
+            device_class=SensorDeviceClass.WATER,
+            state_class=SensorStateClass.TOTAL_INCREASING,
+            custom_configs=localtuya_sensor(UnitOfVolume.LITERS, 1),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.WATER_TEMP,
+            name="Temperature",
+            device_class=SensorDeviceClass.TEMPERATURE,
+            state_class=SensorStateClass.MEASUREMENT,
+            custom_configs=localtuya_sensor(UnitOfTemperature.CELSIUS, 0.01),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.VOLTAGE_CURRENT,
+            name="Battery",
+            device_class=SensorDeviceClass.VOLTAGE,
+            state_class=SensorStateClass.MEASUREMENT,
+            entity_category=EntityCategory.DIAGNOSTIC,
+            custom_configs=localtuya_sensor(UnitOfElectricPotential.VOLT, 0.01),
         ),
     ),
 }

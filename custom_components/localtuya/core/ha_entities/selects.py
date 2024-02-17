@@ -891,6 +891,30 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             ),
         ),
     ),
+    # Smart Water Meter
+    # https://developer.tuya.com/en/docs/iot/f?id=Ka8n052xu7w4c
+    "znsb": (
+        LocalTuyaEntity(
+            id=DPCode.REPORT_PERIOD_SET,
+            entity_category=EntityCategory.CONFIG,
+            name="Report Period",
+            custom_configs=localtuya_selector(
+                {
+                    "1h": "1 Hours",
+                    "2h": "2 Hours",
+                    "3h": "3 Hours",
+                    "4h": "4 Hours",
+                    "6h": "6 Hours",
+                    "8h": "8 Hours",
+                    "12h": "12 Hours",
+                    "24h": "24 Hours",
+                    "48h": "48 Hours",
+                    "72h": "72 Hours",
+                }
+            ),
+            icon="mdi:file-chart-outline",
+        ),
+    ),
 }
 # Wireless Switch  # also can come as knob switch. # and scene switch.
 # https://developer.tuya.com/en/docs/iot/wxkg?id=Kbeo9t3ryuqm5

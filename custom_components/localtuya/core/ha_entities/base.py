@@ -120,6 +120,7 @@ class DPCode(StrEnum):
     ARM_DOWN_PERCENT = "arm_down_percent"
     ARM_UP_PERCENT = "arm_up_percent"
     AUTOMATIC_LOCK = "automatic_lock"
+    AUTO_CLEAN = "auto_clean"
     AUTO_LOCK_TIME = "auto_lock_time"
     BACKLIGHT_SWITCH = "backlight_switch"
     BASIC_ANTI_FLICKER = "basic_anti_flicker"
@@ -366,6 +367,7 @@ class DPCode(StrEnum):
     RELAY_STATUS_8 = "relay_status_8"  # Scene Switch cjkg
     REMAIN_TIME = "remain_time"
     REMOTE_REGISTER = "remote_register"
+    REPORT_PERIOD_SET = "report_period_set"
     RESET_DUSTER_CLOTH = "reset_duster_cloth"
     RESET_EDGE_BRUSH = "reset_edge_brush"
     RESET_FILTER = "reset_filter"
@@ -457,6 +459,7 @@ class DPCode(StrEnum):
     SWITCH_ALARM_SOUND = "switch_alarm_sound"
     SWITCH_BACKLIGHT = "switch_backlight"  # Backlight switch
     SWITCH_CHARGE = "switch_charge"
+    SWITCH_COLD = "switch_cold"
     SWITCH_CONTROLLER = "switch_controller"
     SWITCH_DISTURB = "switch_disturb"
     SWITCH_FAN = "switch_fan"
@@ -554,6 +557,7 @@ class DPCode(StrEnum):
     VOICE_SWITCH = "voice_switch"
     VOICE_TIMES = "voice_times"
     VOICE_VOL = "voice_vol"
+    VOLTAGE_CURRENT = "voltage_current"
     VOLUME_SET = "volume_set"
     WARM = "warm"  # Heat preservation
     WARM_TIME = "warm_time"  # Heat preservation time
@@ -564,6 +568,8 @@ class DPCode(StrEnum):
     WATERSENSOR_STATE = "watersensor_state"
     WATER_RESET = "water_reset"  # Resetting of water usage days
     WATER_SET = "water_set"  # Water level
+    WATER_TEMP = "water_temp"
+    WATER_USE_DATA = "water_use_data"
     WET = "wet"  # Humidification
     WINDOWDETECT = "windowdetect"
     WINDOW_CHECK = "window_check"
