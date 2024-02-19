@@ -1,4 +1,5 @@
 """Platform to locally control Tuya-based fan devices."""
+
 import logging
 import math
 from functools import partial
@@ -188,9 +189,9 @@ class LocaltuyaFan(LocalTuyaEntity, FanEntity):
         self.schedule_update_ha_state()
 
     @property
-    def supported_features(self) -> int:
+    def supported_features(self) -> FanEntityFeature:
         """Flag supported features."""
-        features = 0
+        features = FanEntityFeature(0)
 
         if self.has_config(CONF_FAN_OSCILLATING_CONTROL):
             features |= FanEntityFeature.OSCILLATE
