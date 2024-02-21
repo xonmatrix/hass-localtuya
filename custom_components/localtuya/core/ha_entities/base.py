@@ -102,6 +102,7 @@ class DPCode(StrEnum):
     ADD_ELE1 = "add_ele1"
     ADD_ELE2 = "add_ele2"
     AIR_QUALITY = "air_quality"
+    AIR_RETURN = "air_return"
     ALARM_DELAY_TIME = "alarm_delay_time"
     ALARM_LOCK = "alarm_lock"
     ALARM_MESSAGE = "alarm_message"
@@ -111,6 +112,7 @@ class DPCode(StrEnum):
     ALARM_TIME = "alarm_time"  # Alarm time
     ALARM_VOLUME = "alarm_volume"  # Alarm volume
     ALL_ENERGY = "all_energy"
+    AMBIEN = "ambien"
     ANGLE_HORIZONTAL = "angle_horizontal"
     ANGLE_VERTICAL = "angle_vertical"
     ANION = "anion"  # Ionizer unit
@@ -167,11 +169,13 @@ class DPCode(StrEnum):
     CLOUD_RECIPE_NUMBER = "cloud_recipe_number"
     CO2_STATE = "co2_state"
     CO2_VALUE = "co2_value"  # CO2 concentration
+    COIL_OUT = "coil_out"
     COLLECTION_MODE = "collection_mode"
     COLOR_DATA_V2 = "color_data_v2"
     COLOUR_DATA = "colour_data"  # Colored light mode
     COLOUR_DATA_HSV = "colour_data_hsv"  # Colored light mode
     COLOUR_DATA_V2 = "colour_data_v2"  # Colored light mode
+    COMPRESSOR_COMMAND = "compressor_command"
     CONCENTRATION_SET = "concentration_set"  # Concentration setting
     CONTROL = "control"
     CONTROL_2 = "control_2"
@@ -254,6 +258,7 @@ class DPCode(StrEnum):
     FLOODLIGHT_LIGHTNESS = "floodlight_lightness"
     FLOODLIGHT_SWITCH = "floodlight_switch"
     FORWARD_ENERGY_TOTAL = "forward_energy_total"
+    FOUT_WAY_VALVE = "fout_way_valve"
     GAS_SENSOR_STATE = "gas_sensor_state"
     GAS_SENSOR_STATUS = "gas_sensor_status"
     GAS_SENSOR_VALUE = "gas_sensor_value"
@@ -265,6 +270,7 @@ class DPCode(StrEnum):
     HUMIDITY_INDOOR = "humidity_indoor"  # Indoor humidity
     HUMIDITY_SET = "humidity_set"  # Humidity setting
     HUMIDITY_VALUE = "humidity_value"  # Humidity
+    IDU_ERROR = "idu_error"
     IPC_WORK_MODE = "ipc_work_mode"
     LED_TYPE_1 = "led_type_1"
     LED_TYPE_2 = "led_type_2"
@@ -307,6 +313,7 @@ class DPCode(StrEnum):
     NEAR_DETECTION = "near_detection"
     NET_STATE = "net_state"
     NORMAL_OPEN_SWITCH = "normal_open_switch"
+    ODU_FAN_SPEED = "odu_fan_speed"
     OPPOSITE = "opposite"
     OPTIMUMSTART = "optimumstart"
     OTHEREVENT = "OtherEvent"
@@ -375,6 +382,7 @@ class DPCode(StrEnum):
     RESET_MAP = "reset_map"
     RESET_ROLL_BRUSH = "reset_roll_brush"
     ROLL_BRUSH = "roll_brush"
+    RUNNING_FAN_SPEED = "running_fan_speed"
     SCENE_1 = "scene_1"
     SCENE_10 = "scene_10"
     SCENE_11 = "scene_11"

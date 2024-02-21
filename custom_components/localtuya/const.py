@@ -1,4 +1,5 @@
 """Constants for localtuya integration."""
+
 from homeassistant.const import EntityCategory, Platform
 
 DOMAIN = "localtuya"
@@ -124,6 +125,7 @@ CONF_HVAC_ACTION_SET = "hvac_action_set"
 CONF_HVAC_ADD_OFF = "hvac_add_off"
 CONF_ECO_DP = "eco_dp"
 CONF_ECO_VALUE = "eco_value"
+CONF_FAN_SPEED_LIST = "fan_speed_list"
 
 # vacuum
 CONF_POWERGO_DP = "powergo_dp"

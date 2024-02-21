@@ -47,6 +47,13 @@ FAULT_SENSOR = (
         entity_category=EntityCategory.DIAGNOSTIC,
         custom_configs=ON_1,
     ),
+    LocalTuyaEntity(
+        id=DPCode.IDU_ERROR,
+        name="IDU Error",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        custom_configs=ON_1,
+    ),
     # CZ - Energy monitor?
     LocalTuyaEntity(
         id=DPCode.POWER_TYPE,
@@ -412,3 +419,4 @@ BINARY_SENSORS["pc"] = FAULT_SENSOR
 BINARY_SENSORS["cz"] = FAULT_SENSOR
 BINARY_SENSORS["cs"] = FAULT_SENSOR
 BINARY_SENSORS["jsq"] = FAULT_SENSOR
+BINARY_SENSORS["kt"] = FAULT_SENSOR

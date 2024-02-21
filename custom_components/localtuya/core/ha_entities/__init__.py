@@ -226,11 +226,12 @@ def convert_list(_list: list, req_info: CLOUD_VALUE = str):
         # Return dict {value_1: Value 1, value_2: Value 2, value_3: Value 3}
         to_dict = {}
         for k in _list:
-            k_name = k.replace("_", " ").capitalize()  # Default name
-            if isinstance(req_info.default_value, dict):
-                k_name = req_info.default_value.get(k, k_name)
-            if remaped_value := req_info.remap_values.get(k):
-                k_name = remaped_value
+            if k in req_info.remap_values:
+                k_name = req_info.remap_values.get(k)
+            else:
+                k_name = k.replace("_", " ").capitalize()  # Default name
+                if isinstance(req_info.default_value, dict):
+                    k_name = req_info.default_value.get(k, k_name)
 
             if req_info.reverse_dict:
                 to_dict.update({k_name: k})

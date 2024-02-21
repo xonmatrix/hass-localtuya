@@ -30,11 +30,15 @@ from ...const import (
     CONF_CURRENT_TEMPERATURE_DP,
     CONF_MAX_TEMP,
     CONF_MIN_TEMP,
+    CONF_FAN_SPEED_LIST,
+    CONF_FAN_SPEED_DP,
 )
 
 
 UNIT_C = "celsius"
 UNIT_F = "fahrenheit"
+
+FAN_SPEEDS_DEFAULT = "auto,low,middle,high"
 
 
 def localtuya_climate(
@@ -43,6 +47,7 @@ def localtuya_climate(
     actions_set=None,
     echo_value=None,
     preset_set=None,
+    fans_speeds=FAN_SPEEDS_DEFAULT,
     unit=None,
     min_temperature=7,
     max_temperature=35,
@@ -50,7 +55,7 @@ def localtuya_climate(
     target_precision=0.1,
 ) -> dict:
     """Create localtuya climate configs"""
-    data = {ATTR_MIN_TEMP: DEFAULT_MIN_TEMP, ATTR_MAX_TEMP: DEFAULT_MAX_TEMP}
+    data = {}
     for key, conf in {
         CONF_HVAC_MODE_SET: CLOUD_VALUE(
             hvac_mode_set, CONF_HVAC_MODE_DP, "range", dict, MAP_CLIMATE_MODES, True
@@ -61,6 +66,7 @@ def localtuya_climate(
         CONF_HVAC_ACTION_SET: CLOUD_VALUE(
             actions_set, CONF_HVAC_ACTION_DP, "range", dict, MAP_CLIMATE_ACTIONS, True
         ),
+        CONF_FAN_SPEED_LIST: CLOUD_VALUE(fans_speeds, CONF_FAN_SPEED_DP, "range", str),
         CONF_ECO_VALUE: echo_value,
         CONF_PRESET_SET: preset_set,
         CONF_TEMPERATURE_UNIT: unit,
@@ -81,17 +87,17 @@ MAP_CLIMATE_MODES = {
     "auto": HVACMode.AUTO,
     "cold": HVACMode.COOL,
     "freeze": HVACMode.COOL,
+    "cooling": HVACMode.COOL,
     "hot": HVACMode.HEAT,
+    "heating": HVACMode.HEAT,
     "manual": HVACMode.HEAT_COOL,
     "wet": HVACMode.DRY,
     "wind": HVACMode.FAN_ONLY,
+    "fan": HVACMode.FAN_ONLY,
 }
 MAP_CLIMATE_ACTIONS = {
     "heating": HVACAction.HEATING,
     "cooling": HVACAction.COOLING,
-    "heating": HVACAction.HEATING,
-    "warming": HVACAction.IDLE,
-    "heating": HVACAction.HEATING,
     "warming": HVACAction.IDLE,
     "opened": HVACAction.HEATING,
     "closed": HVACAction.IDLE,
@@ -107,6 +113,8 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             current_temperature_dp=DPCode.TEMP_CURRENT,
             hvac_mode_dp=DPCode.MODE,
             hvac_action_dp=(DPCode.WORK_MODE, DPCode.WORK_STATUS, DPCode.WORK_STATE),
+            preset_dp=DPCode.MODE,
+            fan_speed_dp=DPCode.FAN_SPEED_ENUM,
             custom_configs=localtuya_climate(
                 hvac_mode_set={
                     HVACMode.AUTO: "auto",
@@ -114,6 +122,7 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
                     HVACMode.HEAT: "hot",
                     HVACMode.DRY: "wet",
                 },
+                preset_set={},
                 temp_step=1,
                 actions_set={
                     HVACAction.HEATING: "heating",
@@ -132,8 +141,9 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.SWITCH,
             target_temperature_dp=(DPCode.TEMP_SET_F, DPCode.TEMP_SET),
             current_temperature_dp=(DPCode.TEMP_CURRENT, DPCode.TEMP_CURRENT_F),
-            preset_dp=DPCode.MODE,
             hvac_action_dp=(DPCode.WORK_STATE, DPCode.WORK_MODE, DPCode.WORK_STATUS),
+            preset_dp=DPCode.MODE,
+            fan_speed_dp=DPCode.FAN_SPEED_ENUM,
             custom_configs=localtuya_climate(
                 hvac_mode_set={
                     HVACMode.OFF: "off",
@@ -157,8 +167,9 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.SWITCH,
             target_temperature_dp=(DPCode.TEMP_SET_F, DPCode.TEMP_SET),
             current_temperature_dp=(DPCode.TEMP_CURRENT, DPCode.TEMP_CURRENT_F),
-            preset_dp=DPCode.MODE,
             hvac_action_dp=(DPCode.WORK_STATE, DPCode.WORK_MODE, DPCode.WORK_STATUS),
+            preset_dp=DPCode.MODE,
+            fan_speed_dp=DPCode.FAN_SPEED_ENUM,
             custom_configs=localtuya_climate(
                 hvac_mode_set={
                     HVACMode.OFF: "off",
@@ -186,6 +197,7 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             hvac_mode_dp=(DPCode.SWITCH, DPCode.MODE),
             hvac_action_dp=(DPCode.WORK_STATE, DPCode.WORK_MODE, DPCode.WORK_STATUS),
             preset_dp=DPCode.MODE,
+            fan_speed_dp=DPCode.FAN_SPEED_ENUM,
             custom_configs=localtuya_climate(
                 hvac_mode_set={HVACMode.HEAT: True, HVACMode.OFF: False},
                 temp_step=1,
@@ -208,6 +220,8 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             current_temperature_dp=(DPCode.TEMP_CURRENT_F, DPCode.TEMP_CURRENT),
             hvac_mode_dp=DPCode.MODE,
             hvac_action_dp=(DPCode.WORK_STATE, DPCode.WORK_MODE, DPCode.WORK_STATUS),
+            preset_dp=DPCode.MODE,
+            fan_speed_dp=DPCode.FAN_SPEED_ENUM,
             custom_configs=localtuya_climate(
                 hvac_mode_set={
                     HVACMode.HEAT: "manual",

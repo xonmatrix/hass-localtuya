@@ -20,6 +20,7 @@ from homeassistant.const import (
     UnitOfEnergy,
     UnitOfVolume,
     UnitOfElectricPotential,
+    DEGREE,
 )
 
 from .base import (
@@ -1322,6 +1323,37 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             state_class=SensorStateClass.MEASUREMENT,
             entity_category=EntityCategory.DIAGNOSTIC,
             custom_configs=localtuya_sensor(UnitOfElectricPotential.VOLT, 0.01),
+        ),
+    ),
+    # Air conditioner
+    # https://developer.tuya.com/en/docs/iot/categorykt?id=Kaiuz0z71ov2n
+    "kt": (
+        LocalTuyaEntity(
+            id=DPCode.AIR_RETURN,
+            name="AIR Return",
+            icon="mdi:air-filter",
+            custom_configs=localtuya_sensor(DEGREE, 0.1),
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.COIL_OUT,
+            name="Coil Out",
+            icon="mdi:heating-coil",
+            custom_configs=localtuya_sensor(DEGREE, 0.1),
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.COMPRESSOR_COMMAND,
+            name="Compressor",
+        ),
+        LocalTuyaEntity(
+            id=DPCode.FOUT_WAY_VALVE,
+            name="Fout Way Valve",
+        ),
+        LocalTuyaEntity(
+            id=DPCode.ODU_FAN_SPEED,
+            name="ODU Fan Speed",
+            icon="mdi:fan",
         ),
     ),
 }
