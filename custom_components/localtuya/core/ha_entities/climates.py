@@ -95,6 +95,7 @@ MAP_CLIMATE_MODES = {
     "heating": HVACMode.HEAT,
     "manual": HVACMode.HEAT_COOL,
     "wet": HVACMode.DRY,
+    "dehum": HVACMode.DRY,
     "wind": HVACMode.FAN_ONLY,
     "fan": HVACMode.FAN_ONLY,
 }
