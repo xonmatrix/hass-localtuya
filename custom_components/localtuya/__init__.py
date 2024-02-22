@@ -47,7 +47,7 @@ _LOGGER = logging.getLogger(__name__)
 
 UNSUB_LISTENER = "unsub_listener"
 
-RECONNECT_INTERVAL = timedelta(seconds=5)
+RECONNECT_INTERVAL = timedelta(seconds=60)
 RECONNECT_TASK = "localtuya_reconnect_interval"
 
 CONFIG_SCHEMA = config_schema()
