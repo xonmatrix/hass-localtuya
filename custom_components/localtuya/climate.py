@@ -125,6 +125,9 @@ def flow_schema(dps):
         vol.Optional(CONF_PRECISION, default=str(DEFAULT_PRECISION)): _col_to_select(
             [PRECISION_WHOLE, PRECISION_HALVES, PRECISION_TENTHS]
         ),
+        vol.Optional(
+            CONF_TARGET_PRECISION, default=str(DEFAULT_PRECISION)
+        ): _col_to_select([PRECISION_WHOLE, PRECISION_HALVES, PRECISION_TENTHS]),
         vol.Optional(CONF_HVAC_MODE_DP): _col_to_select(dps, is_dps=True),
         vol.Optional(
             CONF_HVAC_MODE_SET, default=HVAC_MODE_SETS
@@ -167,6 +170,9 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         self._preset_mode = None
         self._hvac_action = None
         self._precision = float(self._config.get(CONF_PRECISION, DEFAULT_PRECISION))
+        self._precision_target = float(
+            self._config.get(CONF_TARGET_PRECISION, DEFAULT_PRECISION)
+        )
 
         # HVAC Modes
         self._hvac_mode_dp = self._config.get(CONF_HVAC_MODE_DP)
@@ -350,7 +356,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         if ATTR_TEMPERATURE in kwargs and self.has_config(CONF_TARGET_TEMPERATURE_DP):
-            temperature = round(kwargs[ATTR_TEMPERATURE] / self.precision)
+            temperature = round(kwargs[ATTR_TEMPERATURE] / self._precision_target)
             await self._device.set_dp(
                 temperature, self._config[CONF_TARGET_TEMPERATURE_DP]
             )
@@ -398,7 +404,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         # Update target temperature
         if self.has_config(CONF_TARGET_TEMPERATURE_DP):
             self._target_temperature = (
-                self.dp_value(CONF_TARGET_TEMPERATURE_DP) * self._precision
+                self.dp_value(CONF_TARGET_TEMPERATURE_DP) * self._precision_target
             )
 
         # Update current temperature

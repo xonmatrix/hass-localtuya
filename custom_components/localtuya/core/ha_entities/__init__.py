@@ -230,6 +230,7 @@ def convert_list(_list: list, req_info: CLOUD_VALUE = str):
                 k_name = req_info.remap_values.get(k)
             else:
                 # k_name = k.replace("_", " ").capitalize()  # Default name
+                k_name = k  # Default name
                 if isinstance(req_info.default_value, dict):
                     k_name = req_info.default_value.get(k, k_name)
 
