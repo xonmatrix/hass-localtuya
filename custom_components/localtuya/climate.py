@@ -370,15 +370,13 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode):
         """Set new target operation mode."""
-        if hvac_mode == HVACMode.OFF:
-            await self._device.set_dp(False, self._dp_id)
-            return
-        if not self._state and self._hvac_mode_dp != self._dp_id:
-            await self._device.set_dp(True, self._dp_id)
-            # Some thermostats need a small wait before sending another update
-            await asyncio.sleep(MODE_WAIT)
+        new_states = {self._dp_id: hvac_mode != HVACMode.OFF}
+        new_states[self._hvac_mode_dp] = self._hvac_mode_set[hvac_mode]
+        # if not self._state and self._hvac_mode_dp != self._dp_id:
+        # Some thermostats need a small wait before sending another update
+        # await asyncio.sleep(MODE_WAIT)
 
-        await self._device.set_dp(self._hvac_mode_set[hvac_mode], self._hvac_mode_dp)
+        await self._device.set_dps(new_states)
 
     async def async_turn_on(self) -> None:
         """Turn the entity on."""
