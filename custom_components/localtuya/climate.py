@@ -266,10 +266,11 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         """Return the list of available operation modes."""
         if not self.has_config(CONF_HVAC_MODE_DP):
             return None
-        if self._config.get(CONF_HVAC_ADD_OFF, False) and HVACMode.OFF not in modes:
-            self._hvac_mode_set["off"] = HVACMode.OFF
 
         modes = list(self._hvac_mode_set)
+
+        if self._config.get(CONF_HVAC_ADD_OFF, True) and HVACMode.OFF not in modes:
+            modes.append(HVACMode.OFF)
         return modes
 
     @property
@@ -372,7 +373,8 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode):
         """Set new target operation mode."""
         new_states = {self._dp_id: hvac_mode != HVACMode.OFF}
-        new_states[self._hvac_mode_dp] = self._hvac_mode_set[hvac_mode]
+        if hvac_mode in self._hvac_mode_set:
+            new_states[self._hvac_mode_dp] = self._hvac_mode_set[hvac_mode]
 
         await self._device.set_dps(new_states)
 
