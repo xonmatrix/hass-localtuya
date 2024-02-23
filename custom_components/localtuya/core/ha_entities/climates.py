@@ -53,7 +53,7 @@ def localtuya_climate(
     min_temperature=7,
     max_temperature=35,
     values_precsion=0.1,
-    target_precision=0.1,
+    target_precision=1,
 ) -> dict:
     """Create localtuya climate configs"""
     data = {}
@@ -98,6 +98,7 @@ MAP_CLIMATE_MODES = {
     "dehum": HVACMode.DRY,
     "wind": HVACMode.FAN_ONLY,
     "fan": HVACMode.FAN_ONLY,
+    "off": HVACMode.OFF,
 }
 MAP_CLIMATE_ACTIONS = {
     "heating": HVACAction.HEATING,
