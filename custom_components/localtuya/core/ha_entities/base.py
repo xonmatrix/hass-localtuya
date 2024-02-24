@@ -483,6 +483,11 @@ class DPCode(StrEnum):
     SWITCH_SAVE_ENERGY = "switch_save_energy"
     SWITCH_SOUND = "switch_sound"  # Voice switch
     SWITCH_SPRAY = "switch_spray"  # Spraying switch
+    SWITCH_TYPE_1 = "switch_type_1"
+    SWITCH_TYPE_2 = "switch_type_2"
+    SWITCH_TYPE_3 = "switch_type_3"
+    SWITCH_TYPE_4 = "switch_type_4"
+    SWITCH_TYPE_5 = "switch_type_5"
     SWITCH_USB1 = "switch_usb1"  # USB 1
     SWITCH_USB2 = "switch_usb2"  # USB 2
     SWITCH_USB3 = "switch_usb3"  # USB 3

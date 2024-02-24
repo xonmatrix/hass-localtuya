@@ -929,7 +929,7 @@ SELECTS["wxkg"] = (
         ),
     ),
     LocalTuyaEntity(
-        id=DPCode.SWITCH1_VALUE,
+        id=(DPCode.SWITCH1_VALUE, DPCode.SWITCH_TYPE_1),
         name="Switch 1",
         icon="mdi:square-outline",
         entity_category=EntityCategory.CONFIG,
@@ -943,7 +943,7 @@ SELECTS["wxkg"] = (
         condition_contains_any=["single_click", "double_click", "long_press"],
     ),
     LocalTuyaEntity(
-        id=DPCode.SWITCH2_VALUE,
+        id=(DPCode.SWITCH2_VALUE, DPCode.SWITCH_TYPE_2),
         name="Switch 2",
         icon="mdi:palette-outline",
         entity_category=EntityCategory.CONFIG,
@@ -957,7 +957,7 @@ SELECTS["wxkg"] = (
         condition_contains_any=["single_click", "double_click", "long_press"],
     ),
     LocalTuyaEntity(
-        id=DPCode.SWITCH3_VALUE,
+        id=(DPCode.SWITCH3_VALUE, DPCode.SWITCH_TYPE_3),
         name="Switch 3",
         icon="mdi:palette-outline",
         entity_category=EntityCategory.CONFIG,
@@ -971,7 +971,7 @@ SELECTS["wxkg"] = (
         condition_contains_any=["single_click", "double_click", "long_press"],
     ),
     LocalTuyaEntity(
-        id=DPCode.SWITCH4_VALUE,
+        id=(DPCode.SWITCH4_VALUE, DPCode.SWITCH_TYPE_4),
         name="Switch 4",
         icon="mdi:palette-outline",
         entity_category=EntityCategory.CONFIG,
@@ -985,7 +985,7 @@ SELECTS["wxkg"] = (
         condition_contains_any=["single_click", "double_click", "long_press"],
     ),
     LocalTuyaEntity(
-        id=DPCode.SWITCH5_VALUE,
+        id=(DPCode.SWITCH5_VALUE, DPCode.SWITCH_TYPE_5),
         name="Switch 5",
         icon="mdi:palette-outline",
         entity_category=EntityCategory.CONFIG,
