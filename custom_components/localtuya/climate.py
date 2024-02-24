@@ -435,9 +435,13 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
                     self._hvac_mode = HVACMode.AUTO
 
         # Update the current action
-        for ha_action, tuya_value in self._conf_hvac_action_set.items():
-            if self.dp_value(CONF_HVAC_ACTION_DP) == tuya_value:
-                self._hvac_action = ha_action
+        if not self._state:
+            self._hvac_action = HVACAction.OFF
+        else:
+            if self.has_config(CONF_HVAC_ACTION_DP):
+                for ha_action, tuya_value in self._conf_hvac_action_set.items():
+                    if self.dp_value(CONF_HVAC_ACTION_DP) == tuya_value:
+                        self._hvac_action = ha_action
 
 
 async_setup_entry = partial(async_setup_entry, DOMAIN, LocaltuyaClimate, flow_schema)
