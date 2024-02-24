@@ -281,8 +281,6 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
                 self._hvac_action = HVACAction.COOLING
             if self._hvac_mode == HVACMode.HEAT:
                 self._hvac_action = HVACAction.HEATING
-            if self._hvac_mode == HVACMode.OFF:
-                self._hvac_action = HVACAction.IDLE
             if self._hvac_mode == HVACMode.DRY:
                 self._hvac_action = HVACAction.DRYING
 

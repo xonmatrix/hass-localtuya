@@ -1,4 +1,5 @@
 """Platform to present any Tuya DP as an enumeration."""
+
 import logging
 from functools import partial
 
