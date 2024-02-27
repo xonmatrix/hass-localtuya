@@ -63,7 +63,9 @@ def localtuya_climate(
         ),
         CONF_MIN_TEMP: CLOUD_VALUE(min_temperature, CONF_TARGET_TEMPERATURE_DP, "min"),
         CONF_MAX_TEMP: CLOUD_VALUE(max_temperature, CONF_TARGET_TEMPERATURE_DP, "max"),
-        CONF_TEMPERATURE_STEP: temp_step,
+        CONF_TEMPERATURE_STEP: CLOUD_VALUE(
+            str(temp_step), CONF_TARGET_TEMPERATURE_DP, "step", str
+        ),
         CONF_HVAC_ACTION_SET: CLOUD_VALUE(
             actions_set, CONF_HVAC_ACTION_DP, "range", dict, MAP_CLIMATE_ACTIONS, True
         ),
@@ -72,10 +74,10 @@ def localtuya_climate(
         CONF_PRESET_SET: preset_set,
         CONF_TEMPERATURE_UNIT: unit,
         CONF_PRECISION: CLOUD_VALUE(
-            values_precsion, CONF_CURRENT_TEMPERATURE_DP, "scale"
+            str(values_precsion), CONF_CURRENT_TEMPERATURE_DP, "scale", str
         ),
         CONF_TARGET_PRECISION: CLOUD_VALUE(
-            target_precision, CONF_TARGET_TEMPERATURE_DP, "scale"
+            str(target_precision), CONF_TARGET_TEMPERATURE_DP, "scale", str
         ),
     }.items():
         if conf:

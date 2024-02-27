@@ -21,7 +21,9 @@ class CLOUD_VALUE:
     `default_value`: The value that will be used if it fails to retrieve from the cloud.\n
     `dp_config(str)`: The dp config key that will be used to look for the values into it.\n
     `value_key(str)`: The "key" name of the targeted value.\n
-    `prefer_type(dict | str)`: Used for enums to convert the values to [dict or str splitted by comma, default is list].\n
+    `prefer_type`: Convert values
+            Integer: Type(value) ( int, float or str ).\n
+            Enums: convert the values to [dict or str splitted by comma, default is list].\n
     `remap_values(dict)`: Used to remap dict values, if prefer_type is dict.\n
     `reverse_dict(bool)`: Reverse dict keys, value, if prefer_type is dict.\n
     """
@@ -270,6 +272,9 @@ class DPCode(StrEnum):
     HUMIDITY_INDOOR = "humidity_indoor"  # Indoor humidity
     HUMIDITY_SET = "humidity_set"  # Humidity setting
     HUMIDITY_VALUE = "humidity_value"  # Humidity
+    HUM_ALARM = "hum_alarm"
+    HUM_PERIODIC_REPORT = "hum_periodic_report"
+    HUM_SENSITIVITY = "hum_sensitivity"
     IDU_ERROR = "idu_error"
     IPC_WORK_MODE = "ipc_work_mode"
     LED_TYPE_1 = "led_type_1"
@@ -289,7 +294,11 @@ class DPCode(StrEnum):
     MASTER_MODE = "master_mode"  # alarm mode
     MASTER_STATE = "master_state"  # alarm mode
     MATERIAL = "material"  # Material
+    MAXHUM_SET = "maxhum_set"
+    MAXTEMP_SET = "maxtemp_set"
     MIDDLE_CONFIRM = "middle_confirm"  # cover reset.
+    MINIHUM_SET = "minihum_set"
+    MINITEMP_SET = "minitemp_set"
     MOD = "mod"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
     MODE = "mode"  # Working mode / Mode
     MODE_1 = "mode_1"  # Working mode / Mode
@@ -505,12 +514,15 @@ class DPCode(StrEnum):
     TEMPER_ALARM = "temper_alarm"  # Tamper alarm
     TEMPFLOOR = "TempFloor"
     TEMPPROGRAM = "tempprogram"
+    TEMP_ALARM = "temp_alarm"
     TEMP_BOILING_C = "temp_boiling_c"
     TEMP_BOILING_F = "temp_boiling_f"
     TEMP_CONTROLLER = "temp_controller"
     TEMP_CURRENT = "temp_current"  # Current temperature in °C
     TEMP_CURRENT_F = "temp_current_f"  # Current temperature in °F
     TEMP_INDOOR = "temp_indoor"  # Indoor temperature in °C
+    TEMP_PERIODIC_REPORT = "temp_periodic_report"
+    TEMP_SENSITIVITY = "temp_sensitivity"
     TEMP_SET = "temp_set"  # Set the temperature in °C
     TEMP_SET_F = "temp_set_f"  # Set the temperature in °F
     TEMP_UNIT_CONVERT = "temp_unit_convert"  # Temperature unit switching
