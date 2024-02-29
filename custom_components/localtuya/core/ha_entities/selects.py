@@ -832,6 +832,35 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             ),
         ),
     ),
+    # Temperature and Humidity Sensor
+    # https://developer.tuya.com/en/docs/iot/categorywsdcg?id=Kaiuz3hinij34
+    "wsdcg": (
+        LocalTuyaEntity(
+            id=(DPCode.C_F, DPCode.TEMP_UNIT_CONVERT),
+            name="Temperature Unit",
+            icon="mdi:cog",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_selector({"c": "Celsius", "f": "Fahrenheit"}),
+        ),
+        # LocalTuyaEntity(
+        #     id=DPCode.TEMP_ALARM,
+        #     name="Temperature Alarm",
+        #     entity_category=EntityCategory.CONFIG,
+        #     icon="mdi:bell-alert",
+        #     custom_configs=localtuya_selector(
+        #         {"loweralarm": "Low", "upperalarm": "High", "cancel": "Cancel"}
+        #     ),
+        # ),
+        # LocalTuyaEntity(
+        #     id=DPCode.HUM_ALARM,
+        #     name="Humidity Alarm",
+        #     icon="mdi:bell-alert",
+        #     entity_category=EntityCategory.CONFIG,
+        #     custom_configs=localtuya_selector(
+        #         {"loweralarm": "Low", "upperalarm": "High", "cancel": "Cancel"}
+        #     ),
+        # ),
+    ),
     # Alarm Host
     # https://developer.tuya.com/en/docs/iot/categorymal?id=Kaiuz33clqxaf
     "mal": (

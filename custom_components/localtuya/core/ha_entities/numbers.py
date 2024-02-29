@@ -11,6 +11,7 @@ from homeassistant.const import (
     PERCENTAGE,
     UnitOfTime,
     UnitOfPower,
+    UnitOfTemperature,
     CONF_UNIT_OF_MEASUREMENT,
 )
 
@@ -618,6 +619,65 @@ NUMBERS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.TEMPACTIVATE,
             name="Calibration swing",
             custom_configs=localtuya_numbers(1, 9),
+        ),
+    ),  # Temperature and Humidity Sensor
+    # https://developer.tuya.com/en/docs/iot/categorywsdcg?id=Kaiuz3hinij34
+    "wsdcg": (
+        LocalTuyaEntity(
+            id=DPCode.MAXTEMP_SET,
+            name="Max Temperature",
+            icon="mdi:thermometer-high",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(-200, 600, unit=UnitOfTemperature.CELSIUS),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.MINITEMP_SET,
+            name="Min Temperature",
+            icon="mdi:thermometer-low",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(-200, 600, unit=UnitOfTemperature.CELSIUS),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.MAXHUM_SET,
+            name="Max Humidity",
+            icon="mdi:water-percent",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(0, 100, unit=PERCENTAGE),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.MINIHUM_SET,
+            name="Min Humidity",
+            icon="mdi:water-percent",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(0, 100, unit=PERCENTAGE),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.TEMP_PERIODIC_REPORT,
+            name="Report Temperature Period",
+            icon="mdi:timer-sand",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(1, 120, unit=UnitOfTime.MINUTES),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.HUM_PERIODIC_REPORT,
+            name="Report Humidity Period",
+            icon="mdi:timer-sand",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(1, 120, unit=UnitOfTime.MINUTES),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.TEMP_SENSITIVITY,
+            name="Temperature Sensitivity",
+            icon="mdi:thermometer-lines",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(3, 20, unit=UnitOfTemperature.CELSIUS),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.HUM_SENSITIVITY,
+            name="Humidity Sensitivity",
+            icon="mdi:water-opacity",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_numbers(3, 20, unit=PERCENTAGE),
         ),
     ),
     # Alarm Host

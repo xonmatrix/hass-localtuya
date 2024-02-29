@@ -52,6 +52,7 @@ BATTERY_SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = (
     ),
     LocalTuyaEntity(
         id=DPCode.BATTERY_STATE,
+        name="Battery Level",
         # translation_id="battery_state",
         icon="mdi:battery",
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -824,14 +825,7 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             custom_configs=localtuya_sensor(UnitOfTemperature.CELSIUS, 0.01),
         ),
         LocalTuyaEntity(
-            id=DPCode.VA_HUMIDITY,
-            name="Humidity",
-            device_class=SensorDeviceClass.HUMIDITY,
-            state_class=SensorStateClass.MEASUREMENT,
-            custom_configs=localtuya_sensor(PERCENTAGE, 0.01),
-        ),
-        LocalTuyaEntity(
-            id=(DPCode.HUMIDITY_VALUE, DPCode.PRM_CONTENT),
+            id=(DPCode.HUMIDITY_VALUE, DPCode.PRM_CONTENT, DPCode.VA_HUMIDITY),
             name="Humidity",
             device_class=SensorDeviceClass.HUMIDITY,
             state_class=SensorStateClass.MEASUREMENT,
