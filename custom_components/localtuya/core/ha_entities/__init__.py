@@ -232,8 +232,8 @@ def convert_list(_list: list, req_info: CLOUD_VALUE = str):
         # Return dict {value_1: Value 1, value_2: Value 2, value_3: Value 3}
         to_dict = {}
         for k in _list:
-            if k in req_info.remap_values:
-                k_name = req_info.remap_values.get(k)
+            if k.lower() in req_info.remap_values:
+                k_name = req_info.remap_values.get(k.lower())
             else:
                 # k_name = k.replace("_", " ").capitalize()  # Default name
                 k_name = k  # Default name

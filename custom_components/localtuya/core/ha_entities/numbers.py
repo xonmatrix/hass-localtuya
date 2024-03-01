@@ -705,6 +705,17 @@ NUMBERS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.CONFIG,
         ),
     ),
+    # Air conditioner
+    # https://developer.tuya.com/en/docs/iot/categorykt?id=Kaiuz0z71ov2n
+    "kt": (
+        LocalTuyaEntity(
+            id=DPCode.TIMER,
+            name="Timer",
+            custom_configs=localtuya_numbers(0, 24, unit=UnitOfTime.HOURS),
+            icon="mdi:timer-outline",
+            entity_category=EntityCategory.CONFIG,
+        ),
+    ),
 }
 
 # Wireless Switch  # also can come as knob switch.

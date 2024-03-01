@@ -608,3 +608,6 @@ class DPCode(StrEnum):
     WORK_STATUS = "work_status"
     ZONE_ATTRIBUTE = "zone_attribute"
     ZONE_NUMBER = "zone_number"
+    DEFROST = "defrost"
+    TIMER = "timer"
+    INNERDRY = "innerdry"

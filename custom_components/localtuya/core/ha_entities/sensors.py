@@ -1335,6 +1335,19 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.DIAGNOSTIC,
         ),
         LocalTuyaEntity(
+            id=DPCode.DEFROST,
+            name="Defrosting",
+            icon="mdi:snowflake-melt",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.COUNTDOWN,
+            name="Timer State",
+            icon="mdi:timer-sand",
+            custom_configs=localtuya_sensor(UnitOfTime.MINUTES, 1),
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+        LocalTuyaEntity(
             id=DPCode.COMPRESSOR_COMMAND,
             name="Compressor",
         ),

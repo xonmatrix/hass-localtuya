@@ -288,6 +288,24 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             icon="mdi:account-lock",
             entity_category=EntityCategory.CONFIG,
         ),
+        LocalTuyaEntity(
+            id=DPCode.SLEEP,
+            name="Sleep",
+            icon="mdi:sleep",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.SHAKE,
+            name="Shake",
+            # icon="mdi:vibrate",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.INNERDRY,
+            name="Inner Dry",
+            icon="mdi:water-outline",
+            entity_category=EntityCategory.CONFIG,
+        ),
     ),
     # Sous Vide Cooker
     # https://developer.tuya.com/en/docs/iot/categorymzj?id=Kaiuz2vy130ux
