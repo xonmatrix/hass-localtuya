@@ -944,6 +944,73 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             icon="mdi:file-chart-outline",
         ),
     ),
+    "hdmipmtbq": (
+        LocalTuyaEntity(
+            id=DPCode.VIDEO_SCENE,
+            entity_category=EntityCategory.CONFIG,
+            name="Video Type",
+            icon="mdi:camera-burst",
+            custom_configs=localtuya_selector({"game": "Gaming", "movie": "Movies"}),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.VIDEO_MODE,
+            entity_category=EntityCategory.CONFIG,
+            name="Video Mode",
+            icon="mdi:format-wrap-square",
+            custom_configs=localtuya_selector(
+                {
+                    "nor_closed": "Nor Closed",
+                    "multiple_colour": "Multi Colors",
+                    "single_colour": "Single Color",
+                }
+            ),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.VIDEO_INTENSITY,
+            entity_category=EntityCategory.CONFIG,
+            name="Intensity",
+            icon="mdi:television-ambient-light",
+            custom_configs=localtuya_selector(
+                {
+                    "low": "Low",
+                    "middle": "Middle",
+                    "high": "High",
+                    "music": "Music",
+                }
+            ),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.STRIP_INPUT_POS,
+            entity_category=EntityCategory.CONFIG,
+            name="Start Position",
+            icon="mdi:vector-square-minus",
+            custom_configs=localtuya_selector(
+                {"low_right": "Low Right", "low_left": "Low Left"}
+            ),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.STRIP_DIRECTION,
+            entity_category=EntityCategory.CONFIG,
+            name="Strip Direction",
+            icon="mdi:subdirectory-arrow-right",
+            custom_configs=localtuya_selector(
+                {"clockwise": "Clockwise", "anti_clockwise": "Counter-Clockwise"}
+            ),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.TV_SIZE,
+            entity_category=EntityCategory.CONFIG,
+            name="TV Size",
+            icon="mdi:move-resize",
+            custom_configs=localtuya_selector(
+                {
+                    "55_to_64_inch": "55 - 64 Inches",
+                    "65_to_74_inch": "65 - 74 Inches",
+                    "above_75_inch": "75 Inches or Above",
+                }
+            ),
+        ),
+    ),
 }
 # Wireless Switch  # also can come as knob switch. # and scene switch.
 # https://developer.tuya.com/en/docs/iot/wxkg?id=Kbeo9t3ryuqm5

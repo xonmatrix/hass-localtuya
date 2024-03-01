@@ -171,7 +171,7 @@ NUMBERS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.COUNTDOWN,
             icon="mdi:timer",
             entity_category=EntityCategory.CONFIG,
-            name="Light 4 Timer",
+            name="Timer",
             custom_configs=localtuya_numbers(0, 86400, 1, 1, UnitOfTime.SECONDS),
         ),
     ),
@@ -729,6 +729,9 @@ NUMBERS["wxkg"] = (
     ),
     *NUMBERS["kg"],
 )
+
+# HDMI Sync Box A1
+NUMBERS["hdmipmtbq"] = NUMBERS["dj"]
 
 # Scene Switch
 # https://developer.tuya.com/en/docs/iot/f?id=K9gf7nx6jelo8

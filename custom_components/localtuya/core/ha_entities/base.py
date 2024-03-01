@@ -221,6 +221,7 @@ class DPCode(StrEnum):
     C_F = "c_f"  # Temperature unit switching
     DECIBEL_SENSITIVITY = "decibel_sensitivity"
     DECIBEL_SWITCH = "decibel_switch"
+    DEFROST = "defrost"
     DEHUMIDITY_SET_ENUM = "dehumidify_set_enum"
     DEHUMIDITY_SET_VALUE = "dehumidify_set_value"
     DELAY_SET = "delay_set"
@@ -276,6 +277,7 @@ class DPCode(StrEnum):
     HUM_PERIODIC_REPORT = "hum_periodic_report"
     HUM_SENSITIVITY = "hum_sensitivity"
     IDU_ERROR = "idu_error"
+    INNERDRY = "innerdry"
     IPC_WORK_MODE = "ipc_work_mode"
     LED_TYPE_1 = "led_type_1"
     LED_TYPE_2 = "led_type_2"
@@ -441,6 +443,8 @@ class DPCode(StrEnum):
     START = "start"  # Start
     STATUS = "status"
     STERILIZATION = "sterilization"  # Sterilization
+    STRIP_DIRECTION = "strip_direction"
+    STRIP_INPUT_POS = "strip_input_pos"
     SUB_CLASS = "sub_class"
     SUB_STATE = "sub_state"
     SUB_TYPE = "sub_type"
@@ -529,6 +533,7 @@ class DPCode(StrEnum):
     TEMP_VALUE = "temp_value"  # Color temperature
     TEMP_VALUE_V2 = "temp_value_v2"
     TIM = "tim"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
+    TIMER = "timer"
     TIME_TOTAL = "time_total"
     TODAY_ACC_ENERGY = "today_acc_energy"
     TODAY_ACC_ENERGY1 = "today_acc_energy1"
@@ -547,6 +552,7 @@ class DPCode(StrEnum):
     TOTAL_TIME = "total_time"
     TREBLE_CONTROL = "treble_control"
     TVOC = "tvoc"
+    TV_SIZE = "tv_size"
     UNLOCK_APP = "unlock_app"
     UNLOCK_BLE = "unlock_ble"
     UNLOCK_CARD = "unlock_card"
@@ -574,6 +580,9 @@ class DPCode(StrEnum):
     VA_BATTERY = "va_battery"
     VA_HUMIDITY = "va_humidity"
     VA_TEMPERATURE = "va_temperature"
+    VIDEO_INTENSITY = "video_intensity"
+    VIDEO_MODE = "video_mode"
+    VIDEO_SCENE = "video_scene"
     VOC_STATE = "voc_state"
     VOC_VALUE = "voc_value"
     VOICE_BT_PLAY = "voice_bt_play"
@@ -608,6 +617,3 @@ class DPCode(StrEnum):
     WORK_STATUS = "work_status"
     ZONE_ATTRIBUTE = "zone_attribute"
     ZONE_NUMBER = "zone_number"
-    DEFROST = "defrost"
-    TIMER = "timer"
-    INNERDRY = "innerdry"
