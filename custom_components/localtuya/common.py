@@ -1,9 +1,10 @@
 """Code shared between all platforms."""
+
 import asyncio
 import logging
 import time
 from datetime import timedelta
-from typing import Callable, Coroutine, NamedTuple
+from typing import Any, Callable, Coroutine, NamedTuple
 
 from homeassistant.core import HomeAssistant, CALLBACK_TYPE, callback
 from homeassistant.config_entries import ConfigEntry
@@ -635,8 +636,8 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
         value = self._config.get(attr, "-1")
         return value is not None and value != "-1"
 
-    def dp_value(self, key):
-        """Return cached value for DPS index or Entity Config Key."""
+    def dp_value(self, key, default=None) -> Any | None:
+        """Return cached value for DPS index or Entity Config Key. else default None"""
         requested_dp = str(key)
         # If requested_dp in DP ID, get cached value.
         if (value := self._status.get(requested_dp)) or value is not None:
@@ -648,7 +649,8 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
                 return value
 
         if value is None:
-            self.debug(f"{self.name}: is requesting unknown DP Value {key}", force=True)
+            value = default
+            # self.debug(f"{self.name}: is requesting unknown DP Value {key}", force=True)
 
         return value
 
