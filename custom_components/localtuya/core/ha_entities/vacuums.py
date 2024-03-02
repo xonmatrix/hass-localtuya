@@ -26,7 +26,7 @@ CONF_RETURN_MODE = "return_mode"
 CONF_STOP_STATUS = "stop_status"
 
 DEFAULT_IDLE_STATUS = "standby,sleep"
-DEFAULT_RETURNING_STATUS = "docking"
+DEFAULT_RETURNING_STATUS = "docking,to_charge"
 DEFAULT_DOCKED_STATUS = "charging,chargecompleted"
 DEFAULT_MODES = "smart,wall_follow,spiral,single"
 DEFAULT_FAN_SPEEDS = "low,normal,high"
