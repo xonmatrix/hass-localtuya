@@ -224,7 +224,7 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
             self._state = STATE_DOCKED
         elif state_value == self._config[CONF_RETURNING_STATUS_VALUE]:
             self._state = STATE_RETURNING
-        elif state_value == [self._config[CONF_PAUSED_STATE], "pause"]:
+        elif state_value in [self._config[CONF_PAUSED_STATE], "pause"]:
             self._state = STATE_PAUSED
         elif self.has_config(CONF_PAUSE_DP) and self.dp_value(CONF_PAUSE_DP) is True:
             self._state = STATE_PAUSED
