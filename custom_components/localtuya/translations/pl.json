@@ -179,6 +179,7 @@
                     "clean_area_dp": "DP obszaru czyszczenia (zazwyczaj 32)",
                     "clean_record_dp": "DP zapisu czyszczenia (zazwyczaj 34)",
                     "locate_dp": "DP lokalizacji (zazwyczaj 31)",
+                    "pause_dp":"Pause DP",
                     "paused_state": "Stan pauzy (pauza, itp)",
                     "stop_status": "Status zatrzymania",
                     "brightness": "Jasność (tylko dla koloru białego)",

@@ -140,6 +140,7 @@ class DPCode(StrEnum):
     BATTERY_PERCENTAGE = "battery_percentage"  # Battery percentage
     BATTERY_STATE = "battery_state"  # Battery state
     BATTERY_VALUE = "battery_value"  # Battery value
+    BREAK_CLEAN = "break_clean"
     BRIGHTNESS_MAX_1 = "brightness_max_1"
     BRIGHTNESS_MAX_2 = "brightness_max_2"
     BRIGHTNESS_MAX_3 = "brightness_max_3"
@@ -227,6 +228,7 @@ class DPCode(StrEnum):
     DELAY_SET = "delay_set"
     DEVICE_STATE1 = "device_state1"
     DEVICE_STATE2 = "device_state2"
+    DIRECTION_CONTROL = "direction_control"
     DISINFECTION = "disinfection"
     DOORBELL = "doorbell"
     DOORCONTACT_STATE = "doorcontact_state"  # Status of door window sensor
@@ -586,6 +588,7 @@ class DPCode(StrEnum):
     VOC_STATE = "voc_state"
     VOC_VALUE = "voc_value"
     VOICE_BT_PLAY = "voice_bt_play"
+    VOICE_LANGUAGE = "voice_language"
     VOICE_MIC = "voice_mic"
     VOICE_PLAY = "voice_play"
     VOICE_SWITCH = "voice_switch"
@@ -615,5 +618,6 @@ class DPCode(StrEnum):
     WORK_POWER = "work_power"
     WORK_STATE = "work_state"
     WORK_STATUS = "work_status"
+    Y_MOP = "y_mop"
     ZONE_ATTRIBUTE = "zone_attribute"
     ZONE_NUMBER = "zone_number"

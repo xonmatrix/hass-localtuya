@@ -145,6 +145,7 @@ CONF_FAULT_DP = "fault_dp"
 CONF_PAUSED_STATE = "paused_state"
 CONF_RETURN_MODE = "return_mode"
 CONF_STOP_STATUS = "stop_status"
+CONF_PAUSE_DP = "pause_dp"
 
 # number
 CONF_MIN_VALUE = "min_value"

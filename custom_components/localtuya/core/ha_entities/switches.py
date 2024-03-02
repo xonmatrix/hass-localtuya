@@ -495,6 +495,30 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             icon="mdi:account-voice",
             entity_category=EntityCategory.CONFIG,
         ),
+        LocalTuyaEntity(
+            id=DPCode.SEEK,
+            name="Device locating",
+            icon="mdi:select-marker",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.RESET_MAP,
+            name="Map Resetting",
+            icon="mdi:backup-restore",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.BREAK_CLEAN,
+            name="Resumable Cleaning",
+            icon="mdi:cog-play-outline",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.Y_MOP,
+            name="Mop Y",
+            icon="mdi:dots-vertical",
+            entity_category=EntityCategory.CONFIG,
+        ),
     ),
     # Siren Alarm
     # https://developer.tuya.com/en/docs/iot/categorysgbj?id=Kaiuz37tlpbnu
