@@ -944,6 +944,7 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             icon="mdi:file-chart-outline",
         ),
     ),
+    # HDMI Sync Box A1
     "hdmipmtbq": (
         LocalTuyaEntity(
             id=DPCode.VIDEO_SCENE,

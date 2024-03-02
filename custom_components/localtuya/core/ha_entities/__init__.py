@@ -186,7 +186,7 @@ def get_dp_values(dp: str, dps_data: dict, req_info: CLOUD_VALUE = None) -> dict
         # We only need the scaling factor, other values will be scaled from via later on.
         # dp_values["min"] = scale(dp_values.get("min"), val_scale)
         pref_type = req_info.prefer_type or int
-        val_scale = pref_type(dp_values.get("scale", 1))
+        val_scale = dp_values.get("scale", 1)
         dp_values["min"] = pref_type(dp_values.get("min"))
         dp_values["max"] = pref_type(dp_values.get("max"))
         dp_values["step"] = pref_type(dp_values.get("step"))
