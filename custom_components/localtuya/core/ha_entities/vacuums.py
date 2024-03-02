@@ -81,6 +81,7 @@ VACUUMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             battery_dp=(DPCode.BATTERY_PERCENTAGE, DPCode.ELECTRICITY_LEFT),
             mode_dp=DPCode.MODE,
             fan_speed_dp=DPCode.SUCTION,
+            pause_dp=DPCode.PAUSE,
             clean_time_dp=(
                 DPCode.CLEAN_TIME,
                 DPCode.TOTAL_CLEAN_AREA,
