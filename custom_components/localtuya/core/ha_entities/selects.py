@@ -473,7 +473,6 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.BRIGHT_STATE,
             name="Brightness",
             entity_category=EntityCategory.CONFIG,
-            entity_category=EntityCategory.CONFIG,
             custom_configs=localtuya_selector(
                 {"low": "LOW", "middle": "MIDDLE", "high": "HIGH", "strong": "MAX"}
             ),
