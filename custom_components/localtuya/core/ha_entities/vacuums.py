@@ -55,8 +55,9 @@ def localtuya_vaccuums(
     paused_state: str = None,
     stop_status: str = None,
     idle_status_value: str = None,
+    docked_status_value: str = None,
 ) -> dict:
-    """Will return dict with CONF MIN AND CONF MAX, scale 1 is default, 1=1"""
+    """Will return dict with the vacuum localtuya entity configs"""
     data = {
         CONF_MODES: CLOUD_VALUE(modes, CONF_MODE_DP, "range", str),
         CONF_IDLE_STATUS_VALUE: idle_status_value or DEFAULT_IDLE_STATUS,
@@ -65,6 +66,7 @@ def localtuya_vaccuums(
         CONF_FAN_SPEEDS: CLOUD_VALUE(fan_speeds, CONF_FAN_SPEED_DP, "range", str),
         CONF_RETURN_MODE: return_mode or DEFAULT_RETURN_MODE,
         CONF_RETURNING_STATUS_VALUE: returning_status_value or DEFAULT_RETURNING_STATUS,
+        CONF_DOCKED_STATUS_VALUE: docked_status_value or CONF_DOCKED_STATUS_VALUE,
     }
 
     return data
@@ -98,6 +100,7 @@ VACUUMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
                 paused_state=DEFAULT_PAUSED_STATE,
                 stop_status=DEFAULT_STOP_STATUS,
                 idle_status_value=DEFAULT_IDLE_STATUS,
+                docked_status_value=DEFAULT_DOCKED_STATUS,
             ),
         ),
     ),
