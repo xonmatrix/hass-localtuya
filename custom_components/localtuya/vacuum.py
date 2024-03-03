@@ -49,8 +49,8 @@ MODE = "cleaning_mode"
 FAULT = "fault"
 
 DEFAULT_IDLE_STATUS = "standby,sleep"
-DEFAULT_RETURNING_STATUS = "docking,to_charge"
-DEFAULT_DOCKED_STATUS = "charging,chargecompleted"
+DEFAULT_RETURNING_STATUS = "docking,to_charge,goto_charge"
+DEFAULT_DOCKED_STATUS = "charging,chargecompleted,charge_done"
 DEFAULT_MODES = "smart,wall_follow,spiral,single"
 DEFAULT_FAN_SPEEDS = "low,normal,high"
 DEFAULT_PAUSED_STATE = "paused"
@@ -105,6 +105,11 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
             self._modes_list = [mode.lstrip() for mode in modes_list]
             self._attrs[MODES_LIST] = self._modes_list
 
+        self._returning_status_list = []
+        if self.has_config(CONF_RETURNING_STATUS_VALUE):
+            returning_status = self._config[CONF_RETURNING_STATUS_VALUE].split(",")
+            self._returning_status_list = [state.lstrip() for state in returning_status]
+
         self._docked_status_list = []
         if self.has_config(CONF_DOCKED_STATUS_VALUE):
             docked_status = self._config[CONF_DOCKED_STATUS_VALUE].split(",")
@@ -129,7 +134,10 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
             | VacuumEntityFeature.STATE
         )
 
-        if self.has_config(CONF_RETURN_MODE):
+        if (
+            self.has_config(CONF_RETURN_MODE)
+            and self._config[CONF_RETURN_MODE] in self._modes_list
+        ):
             supported_features |= VacuumEntityFeature.RETURN_HOME
         if self.has_config(CONF_FAN_SPEED_DP):
             supported_features |= VacuumEntityFeature.FAN_SPEED
@@ -225,7 +233,7 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
             self._state = STATE_IDLE
         elif state_value in self._docked_status_list:
             self._state = STATE_DOCKED
-        elif state_value == self._config[CONF_RETURNING_STATUS_VALUE]:
+        elif state_value in self._returning_status_list:
             self._state = STATE_RETURNING
         elif state_value in [self._config[CONF_PAUSED_STATE], "pause"]:
             self._state = STATE_PAUSED

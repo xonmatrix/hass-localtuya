@@ -496,12 +496,6 @@ SWITCHES: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.CONFIG,
         ),
         LocalTuyaEntity(
-            id=DPCode.SEEK,
-            name="Device locating",
-            icon="mdi:select-marker",
-            entity_category=EntityCategory.CONFIG,
-        ),
-        LocalTuyaEntity(
             id=DPCode.RESET_MAP,
             name="Map Resetting",
             icon="mdi:backup-restore",

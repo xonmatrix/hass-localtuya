@@ -26,8 +26,8 @@ CONF_RETURN_MODE = "return_mode"
 CONF_STOP_STATUS = "stop_status"
 
 DEFAULT_IDLE_STATUS = "standby,sleep"
-DEFAULT_RETURNING_STATUS = "docking,to_charge"
-DEFAULT_DOCKED_STATUS = "charging,chargecompleted"
+DEFAULT_RETURNING_STATUS = "docking,to_charge,goto_charge"
+DEFAULT_DOCKED_STATUS = "charging,chargecompleted,charge_done"
 DEFAULT_MODES = "smart,wall_follow,spiral,single"
 DEFAULT_FAN_SPEEDS = "low,normal,high"
 DEFAULT_PAUSED_STATE = "paused"
@@ -72,6 +72,7 @@ VACUUMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             mode_dp=DPCode.MODE,
             fan_speed_dp=DPCode.SUCTION,
             pause_dp=DPCode.PAUSE,
+            locate_dp=DPCode.SEEK,
             clean_time_dp=(
                 DPCode.CLEAN_TIME,
                 DPCode.TOTAL_CLEAN_AREA,

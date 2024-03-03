@@ -162,7 +162,7 @@
             "state_off": "Off Value",
             "powergo_dp": "Power DP (usually 25 or 2)",
             "idle_status_value": "Idle Status (comma-separated)",
-            "returning_status_value": "Returning Status",
+            "returning_status_value": "Returning Status (comma-separated)",
             "docked_status_value": "Docked Status (comma-separated)",
             "fault_dp": "Fault DP (usually 11)",
             "battery_dp": "Battery status DP (usually 14)",

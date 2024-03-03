@@ -688,6 +688,28 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
                 }
             ),
         ),
+        LocalTuyaEntity(
+            id=DPCode.MODE,
+            entity_category=EntityCategory.CONFIG,
+            icon="mdi:layers-outline",
+            name="Mode",
+            custom_configs=localtuya_selector(
+                {
+                    "standby": "StandBy",
+                    "random": "Random",
+                    "smart": "SMART",
+                    "wall_follow": "Follow Wall",
+                    "mop": "MOP",
+                    "spiral": "Spiral",
+                    "left_spiral": "Spiral Left",
+                    "right_spiral": "Spiral Right",
+                    "right_bow": "Bow Right",
+                    "left_bow": "Bow Left",
+                    "partial_bow": "Bow Partial",
+                    "chargego": "Go to Charge",
+                }
+            ),
+        ),
     ),
     # Fan
     # https://developer.tuya.com/en/docs/iot/f?id=K9gf45vs7vkge

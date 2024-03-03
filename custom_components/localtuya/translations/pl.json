@@ -166,7 +166,7 @@
                     "state_off": "Wartość wyłączenia",
                     "powergo_dp": "DP mocy (zazwyczaj 25 or 2)",
                     "idle_status_value": "Stan bezczynności (oddzielone przecinkami)",
-                    "returning_status_value": "Stan powrotu",
+                    "returning_status_value": "Stan powrotu (oddzielone przecinkami)",
                     "docked_status_value": "Stan zadokowania (oddzielone przecinkami)",
                     "fault_dp": "DP błędu (zazwyczaj 11)",
                     "battery_dp": "DP statusu baterii (zazwyczaj 14)",
