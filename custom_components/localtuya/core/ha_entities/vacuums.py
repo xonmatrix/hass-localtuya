@@ -67,7 +67,7 @@ VACUUMS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=DPCode.STATUS,
             icon="mdi:robot-vacuum",
-            powergo_dp=(DPCode.POWER, DPCode.POWER_GO, DPCode.SWITCH),
+            powergo_dp=(DPCode.POWER_GO, DPCode.POWER, DPCode.SWITCH),
             battery_dp=(DPCode.BATTERY_PERCENTAGE, DPCode.ELECTRICITY_LEFT),
             mode_dp=DPCode.MODE,
             fan_speed_dp=DPCode.SUCTION,
