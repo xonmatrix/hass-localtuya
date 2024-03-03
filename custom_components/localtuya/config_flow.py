@@ -1,4 +1,5 @@
 """Config flow for LocalTuya integration integration."""
+
 import asyncio
 import errno
 import logging
@@ -1219,6 +1220,7 @@ async def setup_localtuya_devices(
     # Configure entities.
     for dev_id, dev_data in devices.copy().items():
         category = devices_cloud_data[dev_id].get("category")
+        dev_data["device_cloud_data"] = devices_cloud_data[dev_id]
         if category and (dps_strings := dev_data.get(CONF_DPS_STRINGS, False)):
             dev_entites = gen_localtuya_entities(dev_data, category)
 

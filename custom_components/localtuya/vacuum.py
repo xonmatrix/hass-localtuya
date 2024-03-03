@@ -174,7 +174,7 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
         if self.has_config(CONF_PAUSE_DP):
             return await self._device.set_dp(True, self._config[CONF_PAUSE_DP])
 
-        await self._device.set_dp(False, self._config[CONF_POWERGO_DP])
+        await self.async_stop()
 
     async def async_return_to_base(self, **kwargs):
         """Set the vacuum cleaner to return to the dock."""
@@ -187,12 +187,15 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
 
     async def async_stop(self, **kwargs):
         """Turn the vacuum off stopping the cleaning."""
-        if self.has_config(CONF_STOP_STATUS):
+        if (
+            self.has_config(CONF_STOP_STATUS)
+            and self._config[CONF_STOP_STATUS] in self._modes_list
+        ):
             await self._device.set_dp(
                 self._config[CONF_STOP_STATUS], self._config[CONF_MODE_DP]
             )
         else:
-            await self.async_pause()
+            await self._device.set_dp(False, self._config[CONF_POWERGO_DP])
             # _LOGGER.error("Missing command for stop in commands set.")
 
     async def async_clean_spot(self, **kwargs):
