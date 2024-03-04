@@ -177,6 +177,19 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
         """Turn the vacuum on and start cleaning."""
         await self._device.set_dp(True, self._config[CONF_POWERGO_DP])
 
+    async def async_stop(self, **kwargs):
+        """Turn the vacuum off stopping the cleaning."""
+        if (
+            self.has_config(CONF_STOP_STATUS)
+            and self._config[CONF_STOP_STATUS] in self._modes_list
+        ):
+            await self._device.set_dp(
+                self._config[CONF_STOP_STATUS], self._config[CONF_MODE_DP]
+            )
+        else:
+            await self._device.set_dp(False, self._config[CONF_POWERGO_DP])
+            # _LOGGER.error("Missing command for stop in commands set.")
+
     async def async_pause(self, **kwargs):
         """Stop the vacuum cleaner, do not return to base."""
         if self.has_config(CONF_PAUSE_DP):
@@ -193,19 +206,6 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
         else:
             _LOGGER.error("Missing command for return home in commands set.")
 
-    async def async_stop(self, **kwargs):
-        """Turn the vacuum off stopping the cleaning."""
-        if (
-            self.has_config(CONF_STOP_STATUS)
-            and self._config[CONF_STOP_STATUS] in self._modes_list
-        ):
-            await self._device.set_dp(
-                self._config[CONF_STOP_STATUS], self._config[CONF_MODE_DP]
-            )
-        else:
-            await self._device.set_dp(False, self._config[CONF_POWERGO_DP])
-            # _LOGGER.error("Missing command for stop in commands set.")
-
     async def async_clean_spot(self, **kwargs):
         """Perform a spot clean-up."""
         return None
@@ -213,7 +213,7 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
     async def async_locate(self, **kwargs):
         """Locate the vacuum cleaner."""
         if self.has_config(CONF_LOCATE_DP):
-            await self._device.set_dp("", self._config[CONF_LOCATE_DP])
+            await self._device.set_dp(True, self._config[CONF_LOCATE_DP])
 
     async def async_set_fan_speed(self, fan_speed, **kwargs):
         """Set the fan speed."""
@@ -229,15 +229,16 @@ class LocaltuyaVacuum(LocalTuyaEntity, StateVacuumEntity):
         """Device status was updated."""
         state_value = str(self.dp_value(self._dp_id))
 
-        if state_value in self._idle_status_list:
+        if state_value == "None":
+            self._state = None
+        elif state_value in self._idle_status_list:
             self._state = STATE_IDLE
         elif state_value in self._docked_status_list:
             self._state = STATE_DOCKED
         elif state_value in self._returning_status_list:
             self._state = STATE_RETURNING
-        elif (
-            state_value in [self._config[CONF_PAUSED_STATE], "pause"]
-            or self.dp_value(CONF_PAUSE_DP) is True
+        elif state_value in [self._config[CONF_PAUSED_STATE], "pause"] or (
+            not state_value and self.dp_value(CONF_PAUSE_DP) is True
         ):
             self._state = STATE_PAUSED
         else:
