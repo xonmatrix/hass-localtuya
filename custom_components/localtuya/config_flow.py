@@ -8,6 +8,7 @@ from importlib import import_module
 from functools import partial
 from collections.abc import Coroutine
 from typing import Any
+from copy import deepcopy
 
 from .core.helpers import (
     templates,
@@ -1128,7 +1129,7 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
     @callback
     def _update_entry(self, new_data, target_obj="", new_title=""):
         """Update entry data and save etnry,"""
-        _data = self.config_entry.data.copy()
+        _data = deepcopy(self.config_entry.data)
         if target_obj:
             _data[target_obj].update(new_data)
         else:
@@ -1221,7 +1222,7 @@ async def setup_localtuya_devices(
         devices.update({dev_id: {**devices_cfg[i], **results[i]}})
 
     # Configure entities.
-    for dev_id, dev_data in devices.copy().items():
+    for dev_id, dev_data in deepcopy(devices).items():
         category = devices_cloud_data[dev_id].get("category")
         dev_data["device_cloud_data"] = devices_cloud_data[dev_id]
         if category and (dps_strings := dev_data.get(CONF_DPS_STRINGS, False)):
