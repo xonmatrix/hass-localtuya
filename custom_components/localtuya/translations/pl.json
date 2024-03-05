@@ -108,6 +108,7 @@
                     "add_entities": "Dodaj nowe encje",
                     "manual_dps_strings": "(Opcjonalnie) Ręczne DPS, jeśli nie zostaną wykryte automatycznie (oddzielone przecinkami)",
                     "reset_dpids": "(Opcjonalnie) Identyfikatory DPID do wysłania polecenia RESET, jeśli urządzenie nie odpowiada na żądania statusu po włączeniu (oddzielone przecinkami)",
+                    "device_sleep_time": "(Optional) Device sleep time in seconds: If the device reports its state, then it goes into sleep",
                     "export_config": "Zapisz konfigurację encji jako szablon"
                 }
             },

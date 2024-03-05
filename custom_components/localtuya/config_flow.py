@@ -71,6 +71,7 @@ from .const import (
     ENTITY_CATEGORY,
     PLATFORMS,
     SUPPORTED_PROTOCOL_VERSIONS,
+    CONF_DEVICE_SLEEP_TIME,
 )
 from .discovery import discover
 
@@ -114,6 +115,7 @@ DEVICE_SCHEMA = vol.Schema(
         vol.Optional(CONF_SCAN_INTERVAL): int,
         vol.Optional(CONF_MANUAL_DPS): cv.string,
         vol.Optional(CONF_RESET_DPIDS): str,
+        vol.Optional(CONF_DEVICE_SLEEP_TIME): int,
         vol.Optional(CONF_NODE_ID, default=None): vol.Any(None, cv.string),
     }
 )
@@ -213,6 +215,7 @@ def options_schema(entities):
             vol.Optional(CONF_SCAN_INTERVAL): int,
             vol.Optional(CONF_MANUAL_DPS): cv.string,
             vol.Optional(CONF_RESET_DPIDS): cv.string,
+            vol.Optional(CONF_DEVICE_SLEEP_TIME): int,
             vol.Required(
                 CONF_ENTITIES, description={"suggested_value": entity_names}
             ): cv.multi_select(entity_names),

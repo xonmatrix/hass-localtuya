@@ -47,7 +47,7 @@ _LOGGER = logging.getLogger(__name__)
 
 UNSUB_LISTENER = "unsub_listener"
 
-RECONNECT_INTERVAL = timedelta(seconds=60)
+RECONNECT_INTERVAL = timedelta(seconds=5)
 RECONNECT_TASK = "localtuya_reconnect_interval"
 
 CONFIG_SCHEMA = config_schema()
@@ -112,6 +112,9 @@ async def async_setup(hass: HomeAssistant, config: dict):
         entry: ConfigEntry = async_config_entry_by_device_id(hass, device_id)
         if entry is None:
             return
+
+        if device := hass.data[DOMAIN][entry.entry_id].devices.get(device_ip):
+            ...
 
         if device_id not in device_cache or device_id not in device_cache.get(
             device_id, {}
@@ -367,7 +370,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass_data: HassLocalTuyaData = hass.data[DOMAIN][entry.entry_id]
 
     for dev in hass_data.devices.values():
-        disconnect_devices.append(dev.close())
+        if dev.connected:
+            disconnect_devices.append(dev.close())
         for entity in dev._device_config[CONF_ENTITIES]:
             platforms[entity[CONF_PLATFORM]] = True
 
@@ -376,10 +380,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Close all connection to the devices.
     # Just to prevent the loop get stuck in-case it calls multiples quickly
-    try:
-        await asyncio.wait_for(asyncio.gather(*disconnect_devices), 3)
-    except:
-        pass
+    await asyncio.gather(*disconnect_devices)
 
     # Unsub events.
     [unsub() for unsub in hass_data.unsub_listeners]
