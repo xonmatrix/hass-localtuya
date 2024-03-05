@@ -1129,7 +1129,7 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
     @callback
     def _update_entry(self, new_data, target_obj="", new_title=""):
         """Update entry data and save etnry,"""
-        _data = deepcopy(self.config_entry.data)
+        _data = deepcopy(dict(self.config_entry.data))
         if target_obj:
             _data[target_obj].update(new_data)
         else:
