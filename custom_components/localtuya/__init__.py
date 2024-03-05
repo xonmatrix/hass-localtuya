@@ -23,9 +23,9 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP,
     SERVICE_RELOAD,
 )
-from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.device_registry import DeviceEntry
+import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.event import async_track_time_interval
 
 from .cloud_api import TuyaCloudApi
@@ -324,6 +324,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         platforms = set()
         devices: dict[str, TuyaDevice] = {}
         for dev_id, config in entry_devices.items():
+            if check_if_device_disabled(hass, entry, dev_id):
+                continue
             host = config.get(CONF_HOST)
             entities = entry.data[CONF_DEVICES][dev_id][CONF_ENTITIES]
             platforms = platforms.union(
@@ -396,7 +398,7 @@ async def update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
 
 
 async def async_remove_config_entry_device(
-    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: DeviceEntry
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: dr.DeviceEntry
 ) -> bool:
     """Remove a config entry from a device."""
     dev_id = list(device_entry.identifiers)[0][1].split("_")[-1]
@@ -439,11 +441,15 @@ def reconnectTask(hass: HomeAssistant, entry: ConfigEntry):
 
     async def _async_reconnect(now):
         """Try connecting to devices not already connected to."""
+        reconnect_devices = []
         for host, dev in hass_localtuya.devices.items():
+            dev_id = dev._device_config[CONF_DEVICE_ID]
+            if check_if_device_disabled(hass, entry, dev_id):
+                return
             if not dev.connected:
-                entry.async_create_background_task(
-                    hass, dev.async_connect(), f"reconnect_{host}"
-                )
+                reconnect_devices.append(dev.async_connect())
+
+        await asyncio.gather(*reconnect_devices)
 
     # Add unsub callbeack in unsub_listeners object.
     hass_localtuya.unsub_listeners.append(
@@ -468,3 +474,19 @@ async def async_remove_orphan_entities(hass, entry):
 
     for entity_id in entities.values():
         ent_reg.async_remove(entity_id)
+
+
+@callback
+def check_if_device_disabled(hass: HomeAssistant, entry: ConfigEntry, dev_id):
+    """Return whether if the device disbaled or not"""
+    ent_reg = er.async_get(hass)
+    entries = er.async_entries_for_config_entry(ent_reg, entry.entry_id)
+    ha_device_id: str
+
+    for entitiy in entries:
+        if dev_id in entitiy.unique_id:
+            ha_device_id = entitiy.device_id
+            break
+
+    if ha_device_id:
+        return dr.async_get(hass).async_get(ha_device_id).disabled

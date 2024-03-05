@@ -85,6 +85,9 @@ async def async_setup_entry(
         node_id = dev_entry.get(CONF_NODE_ID)
         device_key = f"{host}_{node_id}" if node_id else host
 
+        if device_key not in hass_entry_data.devices:
+            continue
+
         entities_to_setup = [
             entity
             for entity in dev_entry[CONF_ENTITIES]
