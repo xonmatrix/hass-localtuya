@@ -540,7 +540,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if self._is_closing is not True and not self.is_subdevice:
             # Try quick reconnect.
             self._is_closing = False
-            asyncio.create_task(self.async_connect())
+            self._hass.add_job(self.async_connect())
         if not self._is_closing:
             self._shutdown_entities_delay = async_call_later(
                 self._hass, sleep_time + 3, shutdown_entities
