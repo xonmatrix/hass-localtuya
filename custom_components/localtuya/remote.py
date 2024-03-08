@@ -231,20 +231,23 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
 
     async def _delete_command(self, device, command) -> None:
         """Store new code into stoarge."""
-        device_unqiue_id = self._device_id
-        codes = self._codes
+        codes_data = self._codes
+        ir_controller = self._device_id
 
-        if device_unqiue_id not in codes:
+        if ir_controller not in codes_data:
             raise ServiceValidationError(f"IR remote hasn't learned any buttons yet.")
-        if device not in codes[device_unqiue_id]:
+
+        if device not in codes_data[ir_controller]:
             raise ServiceValidationError(f"Couldn't find the device: {device}.")
-        if command not in codes[device_unqiue_id][device]:
+
+        commands = codes_data[ir_controller][device]
+        if command not in codes_data[ir_controller][device]:
             raise ServiceValidationError(
-                f"Couldn't find the command: {command} for device {device}."
+                f"Couldn't find the command {command} for in {device} device. the available commands for this device is: {list(commands)}"
             )
 
-        codes[device_unqiue_id][device].pop(command)
-        await self._codes_storage.async_save(codes)
+        codes_data[ir_controller][device].pop(command)
+        await self._codes_storage.async_save(codes_data)
 
     async def _save_new_command(self, device, command, code) -> None:
         """Store new code into stoarge."""
@@ -278,18 +281,21 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
 
     def _get_code(self, device, command):
         """Get the code of command from database."""
-
         codes_data = self._codes
         ir_controller = self._device_id
 
         if device not in codes_data[ir_controller]:
             raise ServiceValidationError(f"Couldn't find the device: {device}.")
-        if command not in codes_data[ir_controller][device]:
+
+        commands = codes_data[ir_controller][device]
+        if command not in commands:
             raise ServiceValidationError(
-                f"Couldn't find the command {command} for device {device}."
+                f"Couldn't find the command {command} for in {device} device. the available commands for this device is: {list(commands)}"
             )
 
-        return codes_data[ir_controller][device][command]
+        command = codes_data[ir_controller][device][command]
+
+        return command
 
     def status_updated(self):
         """Device status was updated."""
