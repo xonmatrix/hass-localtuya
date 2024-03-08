@@ -21,6 +21,7 @@ PLATFORMS = {
     "Humidifier": Platform.HUMIDIFIER,
     "Light": Platform.LIGHT,
     "Number": Platform.NUMBER,
+    "Remote": Platform.REMOTE,
     "Select": Platform.SELECT,
     "Sensor": Platform.SENSOR,
     "Siren": Platform.SIREN,
@@ -156,6 +157,10 @@ CONF_STEPSIZE = "step_size"
 # select
 CONF_OPTIONS = "select_options"
 CONF_OPTIONS_FRIENDLY = "select_options_friendly"
+
+# Remote
+CONF_SEND_DP = "send_dp"
+CONF_RECEIVE_DP = "receive_dp"
 
 # States
 ATTR_STATE = "raw_state"

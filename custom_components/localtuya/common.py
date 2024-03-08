@@ -25,6 +25,7 @@ from homeassistant.const import (
     EntityCategory,
     CONF_ICON,
     STATE_UNAVAILABLE,
+    Platform,
 )
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import (
@@ -56,10 +57,12 @@ from .const import (
     CONF_SCALING,
     CONF_DEVICE_SLEEP_TIME,
     CONF_DPS_STRINGS,
+    CONF_MANUAL_DPS,
 )
 
 _LOGGER = logging.getLogger(__name__)
 RESTORE_STATES = {"0": "restore"}
+BYPASS_STATUS = {"0": "bypass"}
 
 
 async def async_setup_entry(
@@ -359,6 +362,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 ]
                 await asyncio.gather(*connect_sub_devices)
 
+            if "0" in self._device_config.get(CONF_MANUAL_DPS, "").split(","):
+                self.status_updated(BYPASS_STATUS)
+
             if self._pending_status:
                 await self.set_dps(self._pending_status)
                 self._pending_status = {}
@@ -566,6 +572,7 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
         self._status = {}
         self._state = None
         self._last_state = None
+        self._hass = device._hass
 
         # Default value is available to be provided by Platform entities if required
         self._default_value = self._config.get(CONF_DEFAULT_VALUE)
@@ -581,18 +588,17 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
 
         self.debug(f"Adding {self.entity_id} with configuration: {self._config}")
 
-        state = await self.async_get_last_state()
-        if state:
-            self.status_restored(state)
+        stored_data = await self.async_get_last_state()
+        if stored_data:
+            self.status_restored(stored_data)
 
-        async def _update_handler(status):
+        def _update_handler(status):
             """Update entity state when status was updated."""
             if status is None:
                 status = {}
             if self._status != status:
                 if status == RESTORE_STATES:
                     status = {}
-                    stored_data: State = await self.async_get_last_state()
                     self.debug(f"Device is sleep restored state: {stored_data.state}")
                     if stored_data and stored_data.state != STATE_UNAVAILABLE:
                         status = {self._dp_id: stored_data.state}
@@ -660,6 +666,9 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
     @property
     def available(self) -> bool:
         """Return if device is available or not."""
+        if self._status == BYPASS_STATUS:
+            return True
+
         return len(self._status) > 0
 
     @property

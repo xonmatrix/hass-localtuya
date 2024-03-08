@@ -232,7 +232,9 @@
                     "humidifier_set_humidity_dp": "(Optional) Set Humidity DP",
                     "min_humidity": "Set the minimum supported humidity",
                     "max_humidity": "Set the maximum supported humidity",
-                    "alarm_supported_states": "States supported by the device"
+                    "alarm_supported_states": "States supported by the device",
+                    "send_dp":"Sending signals DP. (default is 201)",
+                    "receive_dp":"Receiving signals DP. (default is 202)"
                 },
                 "data_description": {
                     "hvac_mode_set":"Each line represents [ hvac_mode: device_value ] [Supported HVAC Modes](https://developers.home-assistant.io/docs/core/entity/climate/#hvac-modes)",
