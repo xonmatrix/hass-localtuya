@@ -238,7 +238,6 @@
                     "min_humidity": "Set the minimum supported humidity",
                     "max_humidity": "Set the maximum supported humidity",
                     "alarm_supported_states": "States supported by the device",
-                    "send_dp":"Sending signals DP. (default is 201)",
                     "receive_dp":"Receiving signals DP. (default is 202)"
                 },
                 "data_description": {

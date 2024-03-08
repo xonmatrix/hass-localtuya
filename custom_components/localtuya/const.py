@@ -159,7 +159,6 @@ CONF_OPTIONS = "select_options"
 CONF_OPTIONS_FRIENDLY = "select_options_friendly"
 
 # Remote
-CONF_SEND_DP = "send_dp"
 CONF_RECEIVE_DP = "receive_dp"
 
 # States

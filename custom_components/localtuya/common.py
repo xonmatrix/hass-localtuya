@@ -599,7 +599,7 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
             if self._status != status:
                 if status == RESTORE_STATES:
                     status = {}
-                    self.debug(f"Device is sleep restored state: {stored_data.state}")
+                    self.debug(f"{self.name}: restoring the state: {stored_data.state}")
                     if stored_data and stored_data.state != STATE_UNAVAILABLE:
                         status = {self._dp_id: stored_data.state}
                 self._status = status.copy()
@@ -666,9 +666,6 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
     @property
     def available(self) -> bool:
         """Return if device is available or not."""
-        if self._status == BYPASS_STATUS:
-            return True
-
         return len(self._status) > 0
 
     @property

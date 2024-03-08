@@ -8,6 +8,7 @@ from functools import partial
 import struct
 from enum import StrEnum
 from typing import Any, Iterable
+from .config_flow import _col_to_select
 
 import voluptuous as vol
 from homeassistant.components.remote import (
@@ -29,7 +30,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.storage import Store
 
 from .common import LocalTuyaEntity, async_setup_entry
-from .const import CONF_SEND_DP, CONF_RECEIVE_DP
+from .const import CONF_RECEIVE_DP
 
 NSDP_CONTROL = "control"  # The control commands
 NSDP_TYPE = "type"  # The identifier of an IR library
@@ -57,12 +58,9 @@ SOTRAGE_KEY = "localtuya_remotes_codes"
 def flow_schema(dps):
     """Return schema used in config flow."""
     return {
-        vol.Optional(CONF_SEND_DP, default=RemoteDP.DP_SEND.value): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=300)
-        ),
-        vol.Optional(CONF_RECEIVE_DP, default=RemoteDP.DP_RECIEVE.value): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=300)
-        ),
+        vol.Optional(
+            CONF_RECEIVE_DP, default=RemoteDP.DP_RECIEVE.value
+        ): _col_to_select(dps, is_dps=True),
     }
 
 
@@ -79,8 +77,8 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         """Initialize the Tuya remote."""
         super().__init__(device, config_entry, remoteid, _LOGGER, **kwargs)
 
-        self._dp_send = str(self._config.get(CONF_SEND_DP, RemoteDP.DP_SEND))
-        self._dp_recieve = str(self._config.get(CONF_SEND_DP, RemoteDP.DP_RECIEVE))
+        self._dp_send = str(self._config.get(self._dp_id, RemoteDP.DP_SEND))
+        self._dp_recieve = str(self._config.get(CONF_RECEIVE_DP, RemoteDP.DP_RECIEVE))
 
         self._device_id = self._device_config[CONF_DEVICE_ID]
 
