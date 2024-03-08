@@ -621,3 +621,5 @@ class DPCode(StrEnum):
     Y_MOP = "y_mop"
     ZONE_ATTRIBUTE = "zone_attribute"
     ZONE_NUMBER = "zone_number"
+    IR_SEND = "ir_send"
+    IR_STUDY_CODE = "ir_study_code"

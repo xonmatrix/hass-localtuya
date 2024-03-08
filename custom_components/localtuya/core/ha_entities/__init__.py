@@ -41,6 +41,7 @@ from .fans import FANS
 from .humidifiers import HUMIDIFIERS
 from .lights import LIGHTS
 from .numbers import NUMBERS
+from .remotes import REMOTES
 from .selects import SELECTS
 from .sensors import SENSORS
 from .sirens import SIRENS
@@ -58,6 +59,7 @@ DATA_PLATFORMS = {
     Platform.HUMIDIFIER: HUMIDIFIERS,
     Platform.LIGHT: LIGHTS,
     Platform.NUMBER: NUMBERS,
+    Platform.REMOTE: REMOTES,
     Platform.SELECT: SELECTS,
     Platform.SENSOR: SENSORS,
     Platform.SIREN: SIRENS,
@@ -66,6 +68,9 @@ DATA_PLATFORMS = {
 }
 
 _LOGGER = logging.getLogger(__name__)
+
+TUYA_CATEGORY = "category"
+DEVICE_CLOUD_DATA = "device_cloud_data"
 
 
 def gen_localtuya_entities(localtuya_data: dict, tuya_category: str) -> list[dict]:
@@ -77,7 +82,7 @@ def gen_localtuya_entities(localtuya_data: dict, tuya_category: str) -> list[dic
         return
 
     device_name: str = localtuya_data.get(CONF_FRIENDLY_NAME).strip()
-    device_cloud_data: dict = localtuya_data.get("device_cloud_data", {})
+    device_cloud_data: dict = localtuya_data.get(DEVICE_CLOUD_DATA, {})
     dps_data = device_cloud_data.get("dps_data", {})
 
     entities = {}
