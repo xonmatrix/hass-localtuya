@@ -172,7 +172,7 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
             await self.send_signal(ControlType.STUDY)
             persistent_notification.async_create(
                 self.hass,
-                f"Press the '{command[0]}' button.",
+                f"Press the '{command}' button.",
                 title="Learn command",
                 notification_id="learn_command",
             )
