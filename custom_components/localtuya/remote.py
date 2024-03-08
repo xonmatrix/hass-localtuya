@@ -114,21 +114,18 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         if not self._attr_is_on:
             raise ServiceValidationError(f"Remote {self.entity_id} is turned off")
 
+        commands = command
         device = kwargs.get(ATTR_DEVICE)
 
         repeats: int = kwargs.get(ATTR_NUM_REPEATS)
         repeats_delay: float = kwargs.get(ATTR_DELAY_SECS)
 
-        for req in [device, command]:
+        for req in [device, commands]:
             if not req:
                 raise ServiceValidationError("Missing required fields")
 
         if not self._storage_loaded:
             await self._async_load_storage()
-
-        code = self._get_code(device, command[0])
-
-        base64_code = "1" + code
 
         # base64_code = ""
         # if base64_code is None:
@@ -137,73 +134,80 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
 
         #     pulses = self.pronto_to_pulses(option_value)
         #     base64_code = "1" + self.pulses_to_base64(pulses)
+        for command in commands:
+            code = self._get_code(device, command)
 
-        if repeats:
-            current_repeat = 0
-            while current_repeat < repeats:
-                await self.send_signal(ControlType.SEND_IR, base64_code)
-                if repeats_delay:
-                    await asyncio.sleep(repeats_delay)
-                current_repeat += 1
-            return
+            base64_code = "1" + code
+            if repeats:
+                current_repeat = 0
+                while current_repeat < repeats:
+                    await self.send_signal(ControlType.SEND_IR, base64_code)
+                    if repeats_delay:
+                        await asyncio.sleep(repeats_delay)
+                    current_repeat += 1
+                continue
 
-        await self.send_signal(ControlType.SEND_IR, base64_code)
+            await self.send_signal(ControlType.SEND_IR, base64_code)
 
     async def async_learn_command(self, **kwargs: Any) -> None:
         """Learn a command from a device."""
         if not self._attr_is_on:
             raise ServiceValidationError(f"Remote {self.entity_id} is turned off")
 
-        now, timeout = 0, kwargs.get(ATTR_TIMEOUT, 15)
+        now, timeout = 0, kwargs.get(ATTR_TIMEOUT, 30)
         sucess = False
-        last_code = self._last_code
 
         device = kwargs.get(ATTR_DEVICE)
-        command = kwargs.get(ATTR_COMMAND)
+        commands = kwargs.get(ATTR_COMMAND)
         # command_type = kwargs.get(ATTR_COMMAND_TYPE)
-        for req in [device, command]:
+        for req in [device, commands]:
             if not req:
                 raise ServiceValidationError("Missing required fields")
 
         if not self._storage_loaded:
             await self._async_load_storage()
 
-        await self.send_signal(ControlType.STUDY)
-        persistent_notification.async_create(
-            self.hass,
-            f"Press the '{command[0]}' button.",
-            title="Learn command",
-            notification_id="learn_command",
-        )
-
-        try:
-            while now < timeout:
-                if last_code != (dp_code := self.dp_value(RemoteDP.DP_RECIEVE)):
-                    self._last_code = dp_code
-                    sucess = True
-                    await self.send_signal(ControlType.STUDY_EXIT)
-                    break
-
-                now += 1
-                await asyncio.sleep(1)
-
-            if not sucess:
-                await self.send_signal(ControlType.STUDY_EXIT)
-                raise ServiceValidationError("Failed to learn the key")
-
-        finally:
-            persistent_notification.async_dismiss(
-                self.hass, notification_id="learn_command"
+        for command in commands:
+            last_code = self._last_code
+            await self.send_signal(ControlType.STUDY)
+            persistent_notification.async_create(
+                self.hass,
+                f"Press the '{command[0]}' button.",
+                title="Learn command",
+                notification_id="learn_command",
             )
 
-        # code retrive sucess and it's sotred in self._last_code
-        # we will store the codes.
-        await self._save_new_command(device, command[0], self._last_code)
+            try:
+                while now < timeout:
+                    if last_code != (dp_code := self.dp_value(RemoteDP.DP_RECIEVE)):
+                        self._last_code = dp_code
+                        sucess = True
+                        await self.send_signal(ControlType.STUDY_EXIT)
+                        break
+
+                    now += 1
+                    await asyncio.sleep(1)
+
+                if not sucess:
+                    await self.send_signal(ControlType.STUDY_EXIT)
+                    raise ServiceValidationError(f"Failed to learn: {command}")
+
+            finally:
+                persistent_notification.async_dismiss(
+                    self.hass, notification_id="learn_command"
+                )
+
+            # code retrive sucess and it's sotred in self._last_code
+            # we will store the codes.
+            await self._save_new_command(device, command, self._last_code)
+
+            if command != commands[-1]:
+                await asyncio.sleep(1)
 
     async def async_delete_command(self, **kwargs: Any) -> None:
         """Delete commands from the database."""
         device = kwargs.get(ATTR_DEVICE)
-        command = kwargs.get(ATTR_COMMAND)
+        commands = kwargs.get(ATTR_COMMAND)
 
         for req in [device, command]:
             if not req:
@@ -212,7 +216,8 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         if not self._storage_loaded:
             await self._async_load_storage()
 
-        await self._delete_command(device, command[0])
+        for command in commands:
+            await self._delete_command(device, command)
 
     async def send_signal(self, control, base64_code=None):
         command = {NSDP_CONTROL: control}
