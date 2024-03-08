@@ -282,6 +282,9 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         codes_data = self._codes
         ir_controller = self._device_id
 
+        if ir_controller not in codes_data:
+            raise ServiceValidationError(f"{self.entity_id} No devices/commands found.")
+
         if device not in codes_data[ir_controller]:
             raise ServiceValidationError(f"Couldn't find the device: {device}.")
 
