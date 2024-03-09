@@ -87,9 +87,11 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
 
         self._last_code = None
 
-        self._codes = {}
+        self._codes = {}  # Contains only device commands.
+        self._global_codes = {}  # contains all devices commands.
 
         self._codes_storage = Store(self._hass, CODE_STORAGE_VERSION, SOTRAGE_KEY)
+        self._codes_storage._async_migrate_func(1, 1, self._codes)
 
         self._storage_loaded = False
 
@@ -207,7 +209,7 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         device = kwargs.get(ATTR_DEVICE)
         commands = kwargs.get(ATTR_COMMAND)
 
-        for req in [device, command]:
+        for req in [device, commands]:
             if not req:
                 raise ServiceValidationError("Missing required fields")
 
@@ -231,20 +233,24 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         """Store new code into stoarge."""
         codes_data = self._codes
         ir_controller = self._device_id
+        devices_data = self._global_codes
 
-        if ir_controller not in codes_data:
-            raise ServiceValidationError(f"IR remote hasn't learned any buttons yet.")
+        if ir_controller in codes_data:
+            devices_data = codes_data[ir_controller]
 
-        if device not in codes_data[ir_controller]:
+        if device not in devices_data:
             raise ServiceValidationError(f"Couldn't find the device: {device}.")
 
-        commands = codes_data[ir_controller][device]
-        if command not in codes_data[ir_controller][device]:
+        commands = devices_data[device]
+        if command not in commands:
             raise ServiceValidationError(
                 f"Couldn't find the command {command} for in {device} device. the available commands for this device is: {list(commands)}"
             )
 
-        codes_data[ir_controller][device].pop(command)
+        # For now this only works if the command is in the list of commands of this device.
+        devices_data[device].pop(command)
+        if device in self._global_codes:
+            self._global_codes.pop(device)
         await self._codes_storage.async_save(codes_data)
 
     async def _save_new_command(self, device, command, code) -> None:
@@ -263,6 +269,7 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         else:
             codes[device_unqiue_id][device] = device_data
 
+        self._global_codes[device] = device_data
         await self._codes_storage.async_save(codes)
 
     async def _async_load_storage(self):
@@ -270,6 +277,11 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         # Exception is intentionally not trapped to
         # provide feedback if something fails.
         self._codes.update(await self._codes_storage.async_load() or {})
+
+        if self._codes:
+            for dev in self._codes.keys():
+                self._global_codes.update(self._codes[dev])
+
         self._storage_loaded = True
 
     # No need to restore state for a remote
@@ -281,20 +293,21 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         """Get the code of command from database."""
         codes_data = self._codes
         ir_controller = self._device_id
+        devices_data = self._global_codes
 
-        if ir_controller not in codes_data:
-            raise ServiceValidationError(f"IR remote hasn't learned any buttons yet.")
+        if ir_controller in codes_data:
+            devices_data = codes_data[ir_controller]
 
-        if device not in codes_data[ir_controller]:
+        if device not in devices_data:
             raise ServiceValidationError(f"Couldn't find the device: {device}.")
 
-        commands = codes_data[ir_controller][device]
+        commands = devices_data[device]
         if command not in commands:
             raise ServiceValidationError(
                 f"Couldn't find the command {command} for in {device} device. the available commands for this device is: {list(commands)}"
             )
 
-        command = codes_data[ir_controller][device][command]
+        command = devices_data[device][command]
 
         return command
 
@@ -309,40 +322,3 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
 
 
 async_setup_entry = partial(async_setup_entry, DOMAIN, LocalTuyaRemote, flow_schema)
-
-
-def pronto_to_pulses(pronto):
-    ret = []
-    pronto = [int(x, 16) for x in pronto.split(" ")]
-    ptype = pronto[0]
-    timebase = pronto[1]
-    pair1_len = pronto[2]
-    pair2_len = pronto[3]
-    if ptype != 0:
-        # only raw (learned) codes are handled
-        return ret
-    if timebase < 90 or timebase > 139:
-        # only 38 kHz is supported?
-        return ret
-    pronto = pronto[4:]
-    timebase *= 0.241246
-    for i in range(0, pair1_len * 2, 2):
-        ret += [round(pronto[i] * timebase), round(pronto[i + 1] * timebase)]
-    pronto = pronto[pair1_len * 2 :]
-    for i in range(0, pair2_len * 2, 2):
-        ret += [round(pronto[i] * timebase), round(pronto[i + 1] * timebase)]
-    return ret
-
-
-def pulses_to_base64(pulses):
-    fmt = "<" + str(len(pulses)) + "H"
-    return base64.b64encode(struct.pack(fmt, *pulses)).decode("ascii")
-
-
-def base64_to_pulses(code_base_64):
-    if len(code_base_64) % 4 == 1 and code_base_64.startswith("1"):
-        # code can be padded with "1"
-        code_base_64 = code_base_64[1:]
-    raw_bytes = base64.b64decode(code_base_64)
-    fmt = "<%dH" % (len(raw_bytes) >> 1)
-    return list(struct.unpack(fmt, raw_bytes))
