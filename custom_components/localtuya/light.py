@@ -348,7 +348,9 @@ class LocaltuyaLight(LocalTuyaEntity, LightEntity):
                 states[self._config.get(CONF_COLOR_MODE)] = MODE_MUSIC
 
         if ATTR_BRIGHTNESS in kwargs and (
-            ColorMode.BRIGHTNESS in color_modes or self.has_config(CONF_BRIGHTNESS)
+            ColorMode.BRIGHTNESS in color_modes
+            or self.has_config(CONF_BRIGHTNESS)
+            or self.has_config(CONF_COLOR)
         ):
             brightness = map_range(
                 int(kwargs[ATTR_BRIGHTNESS]),
