@@ -91,7 +91,6 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         self._global_codes = {}  # contains all devices commands.
 
         self._codes_storage = Store(self._hass, CODE_STORAGE_VERSION, SOTRAGE_KEY)
-        self._codes_storage._async_migrate_func(1, 1, self._codes)
 
         self._storage_loaded = False
 
@@ -276,6 +275,7 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         """Load code and flag storage from disk."""
         # Exception is intentionally not trapped to
         # provide feedback if something fails.
+        # await self._codes_storage._async_migrate_func(1, 1, self._codes)
         self._codes.update(await self._codes_storage.async_load() or {})
 
         if self._codes:
@@ -310,6 +310,10 @@ class LocalTuyaRemote(LocalTuyaEntity, RemoteEntity):
         command = devices_data[device][command]
 
         return command
+
+    async def _async_migrate_func(self, old_major_version, old_minor_version, old_data):
+        """Migrate to the new version."""
+        raise NotImplementedError
 
     def status_updated(self):
         """Device status was updated."""
