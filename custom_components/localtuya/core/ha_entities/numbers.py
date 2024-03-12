@@ -839,6 +839,10 @@ NUMBERS["wxkg"] = (
     *NUMBERS["kg"],
 )
 
+# Circuit Breaker
+# https://developer.tuya.com/en/docs/iot/dlq?id=Kb0kidk9enyh8
+NUMBERS["dlq"] = NUMBERS["zndb"]
+
 # HDMI Sync Box A1
 NUMBERS["hdmipmtbq"] = NUMBERS["dj"]
 
