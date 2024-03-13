@@ -164,7 +164,7 @@ class LocaltuyaLight(LocalTuyaEntity, LightEntity):
         self._hs = None
         self._effect = None
         self._effect_list = []
-        self._scenes = None
+        self._scenes = {}
         if self.has_config(CONF_SCENE):
             if self.has_config(CONF_SCENE_VALUES):
                 values_list = list(self._config.get(CONF_SCENE_VALUES))
