@@ -910,6 +910,17 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             custom_configs=localtuya_selector({"low": "Low", "high": "High"}),
         ),
     ),
+    # Water Detector
+    # https://developer.tuya.com/en/docs/iot/categorysj?id=Kaiuz3iub2sli
+    "sj": (
+        LocalTuyaEntity(
+            id=(DPCode.C_F, DPCode.TEMP_UNIT_CONVERT),
+            name="Temperature Unit",
+            icon="mdi:cog",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_selector({"c": "Celsius", "f": "Fahrenheit"}),
+        ),
+    ),
     # sous vide cookers
     # https://developer.tuya.com/en/docs/iot/f?id=K9r2v9hgmyk3h
     "mzj": (

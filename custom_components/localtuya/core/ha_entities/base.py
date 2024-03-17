@@ -301,6 +301,7 @@ class DPCode(StrEnum):
     HUMIDITY_INDOOR = "humidity_indoor"  # Indoor humidity
     HUMIDITY_SET = "humidity_set"  # Humidity setting
     HUMIDITY_VALUE = "humidity_value"  # Humidity
+    HUMI_STATUS = "humi_status"
     HUM_ALARM = "hum_alarm"
     HUM_PERIODIC_REPORT = "hum_periodic_report"
     HUM_SENSITIVITY = "hum_sensitivity"
@@ -318,6 +319,8 @@ class DPCode(StrEnum):
     LIGHT_MODE = "light_mode"
     LOADSTATUS = "loadstatus"
     LOCK = "lock"  # Lock / Child lock
+    LOWER_TEMP = "lower_temp"
+    LOWER_TEMP_F = "lower_temp_f"
     LOWPROTECTVALUE = "lowprotectvalue"
     LOW_POWER_THRESHOLD = "low_power_threshold"
     LUX = "lux"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
@@ -328,9 +331,11 @@ class DPCode(StrEnum):
     MATERIAL = "material"  # Material
     MAXHUM_SET = "maxhum_set"
     MAXTEMP_SET = "maxtemp_set"
+    MAX_HUMI = "max_humi"
     MIDDLE_CONFIRM = "middle_confirm"  # cover reset.
     MINIHUM_SET = "minihum_set"
     MINITEMP_SET = "minitemp_set"
+    MIN_HUMI = "min_humi"
     MOD = "mod"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
     MODE = "mode"  # Working mode / Mode
     MODE_1 = "mode_1"  # Working mode / Mode
@@ -572,6 +577,7 @@ class DPCode(StrEnum):
     TEMP_SENSITIVITY = "temp_sensitivity"
     TEMP_SET = "temp_set"  # Set the temperature in °C
     TEMP_SET_F = "temp_set_f"  # Set the temperature in °F
+    TEMP_STATUS = "temp_status"
     TEMP_UNIT_CONVERT = "temp_unit_convert"  # Temperature unit switching
     TEMP_VALUE = "temp_value"  # Color temperature
     TEMP_VALUE_V2 = "temp_value_v2"
