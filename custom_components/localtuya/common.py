@@ -224,7 +224,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         """Return whether the device is sleep or not."""
         device_sleep = self._device_config.sleep_time
         last_update = int(time.time()) - self._last_update_time
-        return last_update < device_sleep if device_sleep > 0 else False
+        is_sleep = last_update < device_sleep
+
+        return device_sleep > 0 and is_sleep
 
     async def get_gateway(self):
         """Return the gateway device of this sub device."""
@@ -378,6 +380,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             await self._interface.close()
             self._interface = None
 
+        if not self.is_sleep:
+            self._shutdown_entities()
+
     async def check_connection(self):
         """Ensure that the device is not still connecting; if it is, wait for it."""
         if not self.connected and self._connect_task:
@@ -493,6 +498,16 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     data = {"dp": dpid_trigger, "value": dpid_value}
                     fire_event(event, data)
 
+    def _shutdown_entities(self, now=None):
+        """Shutdown device entities"""
+        self._shutdown_entities_delay = None
+        if self.is_sleep:
+            return
+        if not self.connected:
+            self.debug(f"Disconnected: waiting for discovery broadcast", force=True)
+            signal = f"localtuya_{self._device_config.id}"
+            async_dispatcher_send(self._hass, signal, None)
+
     @callback
     def status_updated(self, status: dict):
         """Device updated status."""
@@ -509,16 +524,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     def disconnected(self):
         """Device disconnected."""
         sleep_time = self._device_config.sleep_time
-
-        def shutdown_entities(now=None):
-            """Shutdown device entities"""
-            self._shutdown_entities_delay = None
-            if self.is_sleep:
-                return
-            if not self.connected:
-                self.debug(f"Disconnected: waiting for discovery broadcast", force=True)
-                signal = f"localtuya_{self._device_config.id}"
-                async_dispatcher_send(self._hass, signal, None)
 
         if self._unsub_interval is not None:
             self._unsub_interval()
@@ -540,7 +545,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._hass.add_job(self.async_connect())
         if not self._is_closing:
             self._shutdown_entities_delay = async_call_later(
-                self._hass, sleep_time + 3, shutdown_entities
+                self._hass, sleep_time + 3, self._shutdown_entities
             )
 
 
