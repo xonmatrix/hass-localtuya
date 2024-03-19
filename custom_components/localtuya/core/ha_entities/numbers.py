@@ -840,6 +840,9 @@ NUMBERS["wxkg"] = (
     *NUMBERS["kg"],
 )
 
+# Water Valve
+NUMBERS["sfkzq"] = NUMBERS["kg"]
+
 # Water Detector
 # https://developer.tuya.com/en/docs/iot/categorysj?id=Kaiuz3iub2sli
 NUMBERS["sj"] = NUMBERS["wsdcg"]

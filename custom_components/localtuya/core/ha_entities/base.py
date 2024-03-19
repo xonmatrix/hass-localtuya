@@ -475,6 +475,7 @@ class DPCode(StrEnum):
     SITUATION_SET = "situation_set"
     SLEEP = "sleep"  # Sleep function
     SLOW_FEED = "slow_feed"
+    SMART_WEATHER = "smart_weather"
     SMOKE_SENSOR_STATE = "smoke_sensor_state"
     SMOKE_SENSOR_STATUS = "smoke_sensor_status"
     SMOKE_SENSOR_VALUE = "smoke_sensor_value"
@@ -556,6 +557,7 @@ class DPCode(StrEnum):
     SWITCH_USB6 = "switch_usb6"  # USB 6
     SWITCH_VERTICAL = "switch_vertical"  # Vertical swing flap switch
     SWITCH_VOICE = "switch_voice"  # Voice switch
+    SWITCH_WEATHER = "switch_weather"
     SWITCH_WELCOME = "switch_welcome"
     SYNC_REQUEST = "sync_request"
     SYNC_RESPONSE = "sync_response"
@@ -584,6 +586,7 @@ class DPCode(StrEnum):
     TIM = "tim"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
     TIMER = "timer"
     TIME_TOTAL = "time_total"
+    TIME_USE = "time_use"
     TODAY_ACC_ENERGY = "today_acc_energy"
     TODAY_ACC_ENERGY1 = "today_acc_energy1"
     TODAY_ACC_ENERGY2 = "today_acc_energy2"
@@ -626,6 +629,8 @@ class DPCode(StrEnum):
     UPPER_TEMP = "upper_temp"
     UPPER_TEMP_F = "upper_temp_f"
     UP_CONFIRM = "up_confirm"  # cover reset.
+    USE_TIME = "use_time"
+    USE_TIME_ONE = "use_time_one"
     UV = "uv"  # UV sterilization
     VA_BATTERY = "va_battery"
     VA_HUMIDITY = "va_humidity"
@@ -657,6 +662,7 @@ class DPCode(StrEnum):
     WATER_SET = "water_set"  # Water level
     WATER_TEMP = "water_temp"
     WATER_USE_DATA = "water_use_data"
+    WEATHER_DELAY = "weather_delay"
     WET = "wet"  # Humidification
     WINDOWDETECT = "windowdetect"
     WINDOW_CHECK = "window_check"

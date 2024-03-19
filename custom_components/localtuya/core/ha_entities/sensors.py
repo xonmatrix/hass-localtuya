@@ -786,6 +786,30 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             state_class=SensorStateClass.MEASUREMENT,
         ),
     ),
+    # Water Valve
+    "sfkzq": (
+        LocalTuyaEntity(
+            id=DPCode.WORK_STATE,
+            name="State",
+            icon="mdi:state-machine",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.USE_TIME_ONE,
+            name="Single Usage Time",
+            icon="mdi:chart-arc",
+            entity_category=EntityCategory.DIAGNOSTIC,
+            custom_configs=localtuya_sensor(unit_of_measurement=UnitOfTime.SECONDS),
+        ),
+        LocalTuyaEntity(
+            id=(DPCode.TIME_USE, DPCode.USE_TIME),
+            name="Usage Time",
+            icon="mdi:chart-arc",
+            entity_category=EntityCategory.DIAGNOSTIC,
+            custom_configs=localtuya_sensor(unit_of_measurement=UnitOfTime.SECONDS),
+        ),
+        *BATTERY_SENSORS,
+    ),
     # Fingerbot
     "szjqr": BATTERY_SENSORS,
     # Solar Light

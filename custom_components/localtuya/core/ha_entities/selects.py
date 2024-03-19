@@ -921,6 +921,18 @@ SELECTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             custom_configs=localtuya_selector({"c": "Celsius", "f": "Fahrenheit"}),
         ),
     ),
+    # Water Valve
+    "sfkzq": (
+        LocalTuyaEntity(
+            id=DPCode.SMART_WEATHER,
+            name="Smart Weather Mode",
+            icon="mdi:cog",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_selector(
+                {"cloudy": "Cloudy", "rainy": "Rainy", "snowy": "Snowy"}
+            ),
+        ),
+    ),
     # sous vide cookers
     # https://developer.tuya.com/en/docs/iot/f?id=K9r2v9hgmyk3h
     "mzj": (
