@@ -110,11 +110,11 @@ async def async_setup(hass: HomeAssistant, config: dict):
         product_key = device["productKey"]
         # If device is not in cache, check if a config entry exists
         entry: ConfigEntry = async_config_entry_by_device_id(hass, device_id)
+
         if entry is None:
             return
 
-        if device := hass.data[DOMAIN][entry.entry_id].devices.get(device_ip):
-            ...
+        hass_data: HassLocalTuyaData = hass.data[DOMAIN][entry.entry_id]
 
         if device_id not in device_cache or device_id not in device_cache.get(
             device_id, {}
@@ -138,6 +138,9 @@ async def async_setup(hass: HomeAssistant, config: dict):
             return
         if not entry.state == ConfigEntryState.LOADED:
             return
+
+        if device := hass_data.devices.get(device_ip):
+            ...
 
         new_data = entry.data.copy()
         updated = False
