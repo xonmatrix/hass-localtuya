@@ -352,7 +352,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     self._hass, self._async_refresh, timedelta(seconds=scan_inv)
                 )
 
-            self._is_closing = False
             self._connect_task = None
             self.debug(f"Success: connected to {host}", force=True)
             if self._sub_devices:
@@ -404,10 +403,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._interface = None
         if self._disconnect_task:
             self._disconnect_task()
-        self.debug(
-            f"Closed connection with {self._device_config.name}",
-            force=True,
-        )
+        self.debug(f"Closed connection with {self._device_config.name}", force=True)
 
     async def update_local_key(self):
         """Retrieve updated local_key from Cloud API and update the config_entry."""
@@ -539,10 +535,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._connect_task = None
 
         # If it disconnects unexpectedly.
-        if self._is_closing is not True and not self.is_subdevice:
+        if not self._is_closing and not self.is_subdevice:
             # Try quick reconnect.
-            self._is_closing = False
-            self._hass.add_job(self.async_connect())
+            async_call_later(self._hass, 1, self.async_connect)
         if not self._is_closing:
             self._shutdown_entities_delay = async_call_later(
                 self._hass, sleep_time + 3, self._shutdown_entities

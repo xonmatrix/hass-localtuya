@@ -352,13 +352,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
         # Connect to tuya devices.
         connect_to_devices = [
-            device.async_connect() for device in hass_localtuya.devices.values()
+            asyncio.create_task(device.async_connect())
+            for device in hass_localtuya.devices.values()
         ]
         # Update listener: add to unsub_listeners
         entry_update = entry.add_update_listener(update_listener)
         hass_localtuya.unsub_listeners.append(entry_update)
 
-        await asyncio.gather(*connect_to_devices)
+        if connect_to_devices:
+            await asyncio.wait(connect_to_devices, return_when=asyncio.FIRST_COMPLETED)
 
     await setup_entities(entry.data[CONF_DEVICES])
 
@@ -375,20 +377,21 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass_data: HassLocalTuyaData = hass.data[DOMAIN][entry.entry_id]
 
     for dev in hass_data.devices.values():
-        if dev.connected:
-            disconnect_devices.append(dev.close())
+        # dev.closed = True
+        # if dev.connected:
+        disconnect_devices.append(asyncio.create_task(dev.close()))
         for entity in dev._device_config.entities:
             platforms[entity[CONF_PLATFORM]] = True
 
-    # Unload the platforms.
-    await hass.config_entries.async_unload_platforms(entry, platforms)
-
-    # Close all connection to the devices.
-    # Just to prevent the loop get stuck in-case it calls multiples quickly
-    await asyncio.gather(*disconnect_devices)
-
     # Unsub events.
     [unsub() for unsub in hass_data.unsub_listeners]
+
+    # Close all connection to the devices.
+    if disconnect_devices:
+        await asyncio.wait(disconnect_devices)
+
+    # Unload the platforms.
+    await hass.config_entries.async_unload_platforms(entry, platforms)
 
     hass.data[DOMAIN].pop(entry.entry_id)
 
@@ -450,9 +453,7 @@ def reconnectTask(hass: HomeAssistant, entry: ConfigEntry):
             if check_if_device_disabled(hass, entry, dev_id):
                 return
             if not dev.connected:
-                reconnect_devices.append(dev.async_connect())
-
-        await asyncio.gather(*reconnect_devices)
+                asyncio.create_task(dev.async_connect())
 
     # Add unsub callbeack in unsub_listeners object.
     hass_localtuya.unsub_listeners.append(
