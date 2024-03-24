@@ -465,9 +465,9 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
         def fire_event(event, data: dict):
             event_data = {CONF_DEVICE_ID: deviceID or self._device_config.id}
-            event_data.update(data)
+            event_data.update(data.copy())
             # Send an event with status, The default length of event without data is 2.
-            if len(event_data) > 2:
+            if len(event_data) > 1:
                 self._hass.bus.async_fire(f"localtuya_{event}", event_data)
 
         event = "states_update"
@@ -483,7 +483,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         # Device triggered event.
         if old_status and new_status is not None:
             event = device_triggered
-            data = {"states": old_status.update(new_status)}
+            data = {"states": new_status}
             fire_event(event, data)
 
             if self._interface is not None:
