@@ -383,9 +383,6 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
                         ),
                         5,
                     )
-                    # Break the loop if input isn't auto.
-                    if not auto_protocol:
-                        break
 
                     detected_dps = await interface.detect_available_dps(cid=cid)
                     # If Auto: using DPS detected we will assume this is the correct version if dps found.
@@ -393,6 +390,11 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
                         # Set the conf_protocol to the worked version to return it and update self.device_data.
                         conf_protocol = version
                         break
+
+                    # Break the loop if input isn't auto.
+                    if not auto_protocol:
+                        break
+
                 # If connection to host is failed raise wrong address.
                 except (ValueError, pytuya.DecodeError) as ex:
                     error = ex
@@ -402,6 +404,8 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
                 finally:
                     if not auto_protocol and data.get(CONF_DEVICE_SLEEP_TIME, 0) > 0:
                         bypass_connection = True
+                    if not error and not interface:
+                        error = InvalidAuth
 
         if CONF_RESET_DPIDS in data:
             reset_ids_str = data[CONF_RESET_DPIDS].split(",")
@@ -467,7 +471,7 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
     # Indicate an error if no datapoints found as the rest of the flow
     # won't work in this case
     if not bypass_connection and error:
-        raise ValueError(error)
+        raise error
     # If bypass handshake. otherwise raise faild to make handshake with device.
     # --- Cloud: We will use the DPS found on cloud if exists.
     # --- No cloud: user will have to input the DPS manually.
