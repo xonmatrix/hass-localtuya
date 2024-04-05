@@ -395,7 +395,8 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
                         break
                 # If connection to host is failed raise wrong address.
                 except (ValueError, pytuya.DecodeError) as ex:
-                    raise ValueError(ex)
+                    error = ex
+                    break
                 except:
                     continue
                 finally:
