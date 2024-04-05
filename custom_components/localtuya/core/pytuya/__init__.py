@@ -1501,7 +1501,7 @@ async def connect(
             address,
             port,
         )
-    except (OSError, DecodeError) as ex:
+    except OSError as ex:
         raise ValueError(str(ex))
     except Exception as ex:
         raise Exception(ex)

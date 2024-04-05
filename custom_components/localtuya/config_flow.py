@@ -385,14 +385,15 @@ async def validate_input(hass: core.HomeAssistant, entry_id, data):
                     )
 
                     detected_dps = await interface.detect_available_dps(cid=cid)
+
+                    # Break the loop if input isn't auto.
+                    if not auto_protocol:
+                        break
+
                     # If Auto: using DPS detected we will assume this is the correct version if dps found.
                     if len(detected_dps) > 0:
                         # Set the conf_protocol to the worked version to return it and update self.device_data.
                         conf_protocol = version
-                        break
-
-                    # Break the loop if input isn't auto.
-                    if not auto_protocol:
                         break
 
                 # If connection to host is failed raise wrong address.
