@@ -53,7 +53,7 @@ from hashlib import md5, sha256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-version_tuple = (2024, 3, 0)
+version_tuple = (2024, 4, 0)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "rospogrigio, xZetsubou"
 
@@ -596,12 +596,7 @@ class MessageDispatcher(ContextualLogger):
 
     async def wait_for(self, seqno, cmd, timeout=5):
         """Wait for response to a sequence number to be received and return it."""
-        # This is for >= 3.4 devices [workaround].
-        # if cmd == CONTROL_NEW and self.version >= 3.4:
-        #     seqno += 2
         if seqno in self.listeners:
-            self.error(f"listener exists for {seqno}")
-            return
             raise Exception(f"listener exists for {seqno}")
 
         self.debug("Command %d waiting for seq. number %d", cmd, seqno)
@@ -983,11 +978,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.debug("3.4 or 3.5 device: negotiating a new session key")
             await self._negotiate_session_key()
 
-        self.debug(
-            "Sending command %s (device type: %s)",
-            command,
-            self.dev_type,
-        )
+        self.debug("Sending command %s (device type: %s)", command, self.dev_type)
         payload = self._generate_payload(command, dps, nodeId=nodeID)
         real_cmd = payload.cmd
         dev_type = self.dev_type
@@ -1100,8 +1091,6 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         # in the ranges [1-25] and [100-110] need to split the bruteforcing in
         # different steps due to request payload limitation (max. length = 255)
 
-        if not cid:
-            self.dps_cache = {}
         ranges = [(2, 11), (11, 21), (21, 31), (100, 111)]
 
         for dps_range in ranges:
