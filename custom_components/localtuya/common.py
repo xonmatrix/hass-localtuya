@@ -332,6 +332,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 if self._fake_gateway:
                     self.warning(f"Failed to use {name} as gateway.")
                     await self.abort_connect()
+                    await self.update_local_key()
 
         if self._interface is not None:
             # Attempt to restore status for all entities that need to first set
@@ -424,7 +425,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             new_data = self._config_entry.data.copy()
             self._local_key = cloud_localkey
 
-            if self.is_subdevice:
+            if self._node_id:
                 from .core.helpers import get_gateway_by_deviceid
 
                 # Update Node ID.
