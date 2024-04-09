@@ -294,6 +294,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 await self.abort_connect()
                 if not retry < self._connect_max_tries and not self.is_sleep:
                     self.warning(f"Failed to connect to {host}: {str(ex)}")
+                if "key" in str(ex):
+                    await self.update_local_key()
 
         if self._interface is not None:
             try:
@@ -435,9 +437,12 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 # Update Gateway ID and IP
                 new_gw = get_gateway_by_deviceid(dev_id, cloud_devs)
                 new_data[CONF_DEVICES][dev_id][CONF_GATEWAY_ID] = new_gw.id
+                self.info(f"{dev_id} new gateway ID: {new_gw.id}")
                 if discovery and (local_gw := discovery.devices.get(new_gw.id)):
                     new_ip = local_gw.get(CONF_TUYA_IP, self._device_config.host)
                     new_data[CONF_DEVICES][dev_id][CONF_HOST] = new_ip
+                    self.info(f"Updated {dev_id} IP: {new_ip}")
+
                 self.info(f"Updated informations for sub-device {dev_id}.")
 
             new_data[CONF_DEVICES][dev_id][CONF_LOCAL_KEY] = self._local_key
