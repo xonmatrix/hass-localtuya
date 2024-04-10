@@ -865,10 +865,12 @@ class LocalTuyaOptionsFlowHandler(config_entries.OptionsFlow):
                 errors["base"] = "invalid_auth"
             except EmptyDpsList:
                 errors["base"] = "empty_dps"
-            except (Exception, ValueError, pytuya.DecodeError) as ex:
+            except (ValueError, pytuya.DecodeError) as ex:
                 _LOGGER.debug("Unexpected exception: %s", ex)
                 placeholders["ex"] = str(ex)
                 errors["base"] = "unknown"
+            except Exception as ex:
+                _LOGGER.debug("Unexpected exception: %s", ex)
                 raise ex
 
         defaults = {}
