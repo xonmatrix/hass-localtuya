@@ -362,7 +362,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         """Change value of a DP of the Tuya device."""
         if self._interface is not None:
             self._pending_status.update({dp_index: state})
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.001)
             await self.set_values()
         else:
             if self.is_sleep:
@@ -372,7 +372,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         """Change value of a DPs of the Tuya device."""
         if self._interface is not None:
             self._pending_status.update(states)
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.001)
             await self.set_values()
         else:
             if self.is_sleep:
