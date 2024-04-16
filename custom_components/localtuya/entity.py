@@ -159,10 +159,7 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
 
         def _update_handler(_status):
             """Update entity state when status was updated."""
-            status = _status.copy()
-
-            if status is None:
-                status = {}
+            status = _status.copy() if _status is not None else {}
 
             if status == RESTORE_STATES and stored_data:
                 if stored_data.state not in (STATE_UNAVAILABLE, STATE_UNKNOWN):
