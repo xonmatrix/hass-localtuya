@@ -33,7 +33,7 @@ from homeassistant.const import (
     UnitOfTemperature,
 )
 
-from .common import LocalTuyaEntity, async_setup_entry
+from .entity import LocalTuyaEntity, async_setup_entry
 from .const import (
     CONF_CURRENT_TEMPERATURE_DP,
     CONF_ECO_DP,
@@ -149,7 +149,7 @@ def flow_schema(dps):
     }
 
 
-class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
+class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
     """Tuya climate device."""
 
     _enable_turn_on_off_backwards_compatibility = False
@@ -161,7 +161,7 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
         switchid,
         **kwargs,
     ):
-        """Initialize a new LocaltuyaClimate."""
+        """Initialize a new LocalTuyaClimate."""
         super().__init__(device, config_entry, switchid, _LOGGER, **kwargs)
         self._state = None
         self._target_temperature = None
@@ -446,4 +446,4 @@ class LocaltuyaClimate(LocalTuyaEntity, ClimateEntity):
                     break
 
 
-async_setup_entry = partial(async_setup_entry, DOMAIN, LocaltuyaClimate, flow_schema)
+async_setup_entry = partial(async_setup_entry, DOMAIN, LocalTuyaClimate, flow_schema)
