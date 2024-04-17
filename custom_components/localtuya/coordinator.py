@@ -119,10 +119,14 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             return
         gateway: TuyaDevice
         node_host = self._device_config.host
-        devices: dict = self._hass_entry.devices
+        devices = self._hass_entry.devices
 
         # Sub to gateway.
         if gateway := devices.get(node_host):
+            # Ensure that sub-device still on the same gateway device.
+            if gateway._local_key != self._local_key:
+                raise Exception("Sub-device key doesn't match the gateway localkey")
+
             self._gwateway = gateway
             gateway._sub_devices[self._node_id] = self
             return gateway
@@ -197,20 +201,16 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     await self._interface.reset(reset_dpids, cid=self._node_id)
 
                 self.debug("Retrieving initial state")
-
                 # Usually we use status instead of detect_available_dps, but some device doesn't reports all dps when ask for status.
                 status = await self._interface.detect_available_dps(cid=self._node_id)
                 if status is None:  # and not self.is_subdevice
                     raise Exception("Failed to retrieve status")
+
                 self._interface.start_heartbeat()
                 self.status_updated(status)
 
-            except UnicodeDecodeError as e:
-                self.exception(f"Connect to {host} failed: due to: {type(e)}")
-                await self.abort_connect()
-                update_localkey = True
-            except pytuya.DecodeError as derror:
-                self.info(f"Initial update state failed {derror}, trying key update")
+            except (UnicodeDecodeError, pytuya.DecodeError) as e:
+                self.exception(f"Connect to {host} failed: due to {type(e)}: {e}")
                 await self.abort_connect()
                 update_localkey = True
             except Exception as e:
@@ -218,7 +218,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     e = "Sub device is not connected" if self.is_subdevice else e
                     self.warning(f"Connect to {host} failed: {e}")
                     await self.abort_connect()
-                    update_localkey = True
             except:
                 if self._fake_gateway:
                     self.warning(f"Failed to use {name} as gateway.")
