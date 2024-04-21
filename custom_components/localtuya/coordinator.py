@@ -202,7 +202,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
                 self.debug("Retrieving initial state")
                 # Usually we use status instead of detect_available_dps, but some device doesn't reports all dps when ask for status.
-                status = await self._interface.detect_available_dps(cid=self._node_id)
+                status = await self._interface.status(cid=self._node_id)
                 if status is None:  # and not self.is_subdevice
                     raise Exception("Failed to retrieve status")
 
@@ -218,6 +218,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     e = "Sub device is not connected" if self.is_subdevice else e
                     self.warning(f"Connect to {host} failed: {e}")
                     await self.abort_connect()
+                    if self.is_subdevice:
+                        update_localkey = True
             except:
                 if self._fake_gateway:
                     self.warning(f"Failed to use {name} as gateway.")
@@ -247,17 +249,14 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._connect_task = None
             self.debug(f"Success: connected to {host}", force=True)
             if self._sub_devices:
-                connect_sub_devices = [
-                    device.async_connect() for device in self._sub_devices.values()
-                ]
-                await asyncio.gather(*connect_sub_devices)
+                for subdevice in self._sub_devices.values():
+                    self._hass.async_create_task(subdevice.async_connect())
 
             if not self._status and "0" in self._device_config.manual_dps.split(","):
                 self.status_updated(RESTORE_STATES)
 
             if self._pending_status:
-                await self.set_dps(self._pending_status)
-                self._pending_status = {}
+                await self.set_status()
 
         # If not connected try to handle the errors.
         if not self._interface:
@@ -349,15 +348,15 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             )
             self.info(f"local_key updated for device {name}.")
 
-    async def set_values(self):
+    async def set_status(self):
         """Send self._pending_status payload to device."""
         await self.check_connection()
         if self._interface and self._pending_status:
             payload, self._pending_status = self._pending_status.copy(), {}
             try:
                 await self._interface.set_dps(payload, cid=self._node_id)
-            except Exception:  # pylint: disable=broad-except
-                self.debug(f"Failed to set values {payload}", force=True)
+            except Exception as ex:  # pylint: disable=broad-except
+                self.debug(f"Failed to set values {payload} --> {ex}", force=True)
         elif not self._interface:
             self.error(f"Device is not connected.")
 
@@ -366,7 +365,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if self._interface is not None:
             self._pending_status.update({dp_index: state})
             await asyncio.sleep(0.001)
-            await self.set_values()
+            await self.set_status()
         else:
             if self.is_sleep:
                 return self._pending_status.update({str(dp_index): state})
@@ -376,7 +375,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if self._interface is not None:
             self._pending_status.update(states)
             await asyncio.sleep(0.001)
-            await self.set_values()
+            await self.set_status()
         else:
             if self.is_sleep:
                 return self._pending_status.update(states)
