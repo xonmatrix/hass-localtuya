@@ -572,9 +572,7 @@ class MessageDispatcher(ContextualLogger):
     RESET_SEQNO = -101
     SESS_KEY_SEQNO = -102
 
-    def __init__(
-        self, dev_id, callback_status_update, protocol_version, local_key, enable_debug
-    ):
+    def __init__(self, dev_id, callback_status_update, protocol_version, local_key):
         """Initialize a new MessageBuffer."""
         super().__init__()
         self.buffer = b""
@@ -582,7 +580,6 @@ class MessageDispatcher(ContextualLogger):
         self.callback_status_update = callback_status_update
         self.version = protocol_version
         self.local_key = local_key
-        self.set_logger(_LOGGER, dev_id, enable_debug)
 
     def abort(self):
         """Abort all waiting clients."""
@@ -758,7 +755,6 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         """
         super().__init__()
         self.loop = asyncio.get_running_loop()
-        self.set_logger(_LOGGER, dev_id, enable_debug)
         self.id = dev_id
         self.local_key = local_key.encode("latin1")
         self.real_local_key = self.local_key
@@ -776,7 +772,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.seqno = 1
         self.transport = None
         self.listener = weakref.ref(listener)
-        self.dispatcher = self._setup_dispatcher(enable_debug)
+        self.dispatcher = self._setup_dispatcher()
         self.on_connected = on_connected
         self.heartbeater = None
         self.dps_cache = {}
@@ -785,6 +781,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.dps_whitelist = UPDATE_DPS_WHITELIST
         self.dispatched_dps = {}  # Store payload so we can trigger an event in HA.
         self._last_command_sent = 1
+        self.enable_debug(enable_debug)
 
     def set_version(self, protocol_version):
         """Set the device version and eventually start available DPs detection."""
@@ -812,7 +809,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         return json.loads('{ "Error":"%s", "Err":"%s", "Payload":%s }' % vals)
 
-    def _setup_dispatcher(self, enable_debug) -> MessageDispatcher:
+    def _setup_dispatcher(self) -> MessageDispatcher:
         def _status_update(msg):
             if msg.seqno > 0:
                 self.seqno = msg.seqno + 1
@@ -840,9 +837,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
                 listener.status_updated(device)
 
-        return MessageDispatcher(
-            self.id, _status_update, self.version, self.local_key, enable_debug
-        )
+        return MessageDispatcher(self.id, _status_update, self.version, self.local_key)
 
     def connection_made(self, transport):
         """Did connect to the device."""
@@ -1460,6 +1455,13 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.debug("Sending payload: %s", payload)
 
         return MessagePayload(command_override, payload)
+
+    def enable_debug(self, enable=False):
+        """Enable the debug logs for the device."""
+        if enable:
+            self.set_logger(_LOGGER, self.id, enable)
+            self.dispatcher.set_logger(_LOGGER, self.id, enable)
+            self.info(f"Enabled debug for device: {self.id}")
 
     @property
     def last_command_sent(self):
