@@ -1458,10 +1458,8 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
     def enable_debug(self, enable=False):
         """Enable the debug logs for the device."""
-        if enable:
-            self.set_logger(_LOGGER, self.id, enable)
-            self.dispatcher.set_logger(_LOGGER, self.id, enable)
-            self.info(f"Enabled debug for device: {self.id}")
+        self.set_logger(_LOGGER, self.id, enable)
+        self.dispatcher.set_logger(_LOGGER, self.id, enable)
 
     @property
     def last_command_sent(self):
