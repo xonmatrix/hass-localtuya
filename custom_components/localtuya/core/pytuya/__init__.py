@@ -853,12 +853,8 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             if wait == 10:
                 break
 
-        try:
-            self._last_command_sent = time.time()
-            self.transport.write(data)
-        except Exception:
-            await self.close()
-            raise
+        self._last_command_sent = time.time()
+        self.transport.write(data)
 
     def start_heartbeat(self):
         """Start the heartbeat transmissions with the device."""
