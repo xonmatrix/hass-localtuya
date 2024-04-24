@@ -485,11 +485,14 @@ def parse_header(data):
         )
 
     # sanity check. currently the max payload length is somewhere around 300 bytes
-    if payload_len > 1000:
-        raise DecodeError(
-            "Header claims the packet size is over 1000 bytes!  It is most likely corrupt.  Claimed size: %d bytes. fmt:%s unpacked:%r"
-            % (payload_len, fmt, unpacked)
+    if payload_len > 2000:
+        _LOGGER.debug(
+            f"Header claims the packet size is over 2000 bytes!  It is most likely corrupt.  Claimed size: {payload_len} bytes. fmt: {fmt} unpacked: {unpacked}"
         )
+        # raise DecodeError(
+        #     "Header claims the packet size is over 2000 bytes!  It is most likely corrupt.  Claimed size: %d bytes. fmt:%s unpacked:%r"
+        #     % (payload_len, fmt, unpacked)
+        # )
 
     return TuyaHeader(prefix, seqno, cmd, payload_len, total_length)
 
@@ -624,10 +627,8 @@ class MessageDispatcher(ContextualLogger):
             prefix_offset_6699 = self.buffer.find(PREFIX_6699_BIN)
 
             if prefix_offset_55AA < 0 and prefix_offset_6699 < 0:
-                header_len = header_len_55AA
                 self.buffer = self.buffer[1 - prefix_len :]
             else:
-                header_len = header_len_6699
                 prefix_offset = (
                     prefix_offset_6699 if prefix_offset_55AA < 0 else prefix_offset_55AA
                 )
