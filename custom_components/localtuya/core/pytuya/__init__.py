@@ -644,8 +644,7 @@ class MessageDispatcher(ContextualLogger):
                 no_retcode=no_retcode,
                 logger=self,
             )
-            buffer_offset = 4 if prefix_offset_6699 != -1 else -4
-            self.buffer = self.buffer[header_len + buffer_offset + header.length :]
+            self.buffer = self.buffer[header.total_length :]
             self._dispatch(msg)
 
     def _dispatch(self, msg):
