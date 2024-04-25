@@ -487,7 +487,7 @@ def parse_header(data):
     # sanity check. currently the max payload length is somewhere around 300 bytes
     if payload_len > 2000:
         _LOGGER.debug(
-            f"Header claims the packet size is over 2000 bytes!  It is most likely corrupt.  Claimed size: {payload_len} bytes. fmt: {fmt} unpacked: {unpacked}"
+            f"Header claims the packet size is over 2000 bytes!  It is most likely corrupt. Claimed size: {payload_len} bytes. fmt: {fmt} unpacked: {unpacked}"
         )
         # raise DecodeError(
         #     "Header claims the packet size is over 2000 bytes!  It is most likely corrupt.  Claimed size: %d bytes. fmt:%s unpacked:%r"
@@ -625,19 +625,15 @@ class MessageDispatcher(ContextualLogger):
         while self.buffer:
             prefix_offset_55AA = self.buffer.find(PREFIX_55AA_BIN)
             prefix_offset_6699 = self.buffer.find(PREFIX_6699_BIN)
-
-            if prefix_offset_55AA < 0 and prefix_offset_6699 < 0:
-                self.buffer = self.buffer[1 - prefix_len :]
-            else:
-                prefix_offset = (
-                    prefix_offset_6699 if prefix_offset_55AA < 0 else prefix_offset_55AA
-                )
-                self.buffer = self.buffer[prefix_offset:]
+            prefix_offset = (
+                prefix_offset_6699 if prefix_offset_55AA < 0 else prefix_offset_55AA
+            )
 
             # Check if enough data for measage header
             if len(self.buffer) < header_len:
                 break
 
+            self.buffer = self.buffer[prefix_offset:]
             header = parse_header(self.buffer)
             hmac_key = self.local_key if self.version >= 3.4 else None
             no_retcode = False
@@ -648,7 +644,8 @@ class MessageDispatcher(ContextualLogger):
                 no_retcode=no_retcode,
                 logger=self,
             )
-            self.buffer = self.buffer[header_len - 4 + header.length :]
+            buffer_offset = 6 if prefix_offset_6699 != -1 else 0
+            self.buffer = self.buffer[header_len - 4 + header.length + buffer_offset :]
             self._dispatch(msg)
 
     def _dispatch(self, msg):
