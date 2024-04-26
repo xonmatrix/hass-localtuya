@@ -646,18 +646,12 @@ class MessageDispatcher(ContextualLogger):
         if msg.seqno in self.listeners:
             self.debug("Dispatching sequence number %d", msg.seqno)
             self._release_listener(msg.seqno, msg)
-
         if msg.cmd == HEART_BEAT:
             self.debug("Got heartbeat response")
             self._release_listener(self.HEARTBEAT_SEQNO, msg)
         elif msg.cmd == UPDATEDPS:
             self.debug("Got normal updatedps response")
             self._release_listener(self.RESET_SEQNO, msg)
-            if self.RESET_SEQNO not in self.listeners:
-                self.debug(
-                    "Got additional updatedps message without request - skipping: %s",
-                    sem,
-                )
         elif msg.cmd == SESS_KEY_NEG_RESP:
             self.debug("Got key negotiation response")
             self._release_listener(self.SESS_KEY_SEQNO, msg)
@@ -665,7 +659,6 @@ class MessageDispatcher(ContextualLogger):
             if self.RESET_SEQNO in self.listeners:
                 self.debug("Got reset status update")
                 self._release_listener(self.RESET_SEQNO, msg)
-                sem = self.listeners[self.RESET_SEQNO]
             else:
                 self.debug("Got status update")
                 self.callback_status_update(msg)
@@ -689,7 +682,7 @@ class MessageDispatcher(ContextualLogger):
             self.listeners[seqno] = msg
             sem.release()
         else:
-            self.debug("Got additional message without request - skipping: %s", sem)
+            self.debug(f"{seqno} - Got additional message without request: skip {sem}")
 
 
 class TuyaListener(ABC):
