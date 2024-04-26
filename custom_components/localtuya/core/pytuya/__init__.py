@@ -484,7 +484,7 @@ def parse_header(data, logger=_LOGGER):
         raise DecodeError(err)
 
     # sanity check. currently the max payload length is somewhere around 300 bytes
-    if payload_len > 10 and cmd == CONTROL_NEW:
+    if payload_len > 2000:
         err = f"Header claims the packet size is over 2000 bytes!  It is most likely corrupt. Claimed size: {payload_len} bytes. fmt: {fmt} unpacked: {unpacked}"
         logger.error(err)
         raise DecodeError(err)
