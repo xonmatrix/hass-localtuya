@@ -123,7 +123,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if gateway := devices.get(node_host):
             # Ensure that sub-device still on the same gateway device.
             if gateway._local_key != self._local_key:
-                raise Exception("Sub-device key doesn't match the gateway localkey")
+                self.warning("Sub-device localkey doesn't match the gateway localkey")
+                self._local_key = gateway._local_key
 
             self._gwateway = gateway
             gateway._sub_devices[self._node_id] = self

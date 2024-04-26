@@ -348,7 +348,7 @@ def pack_message(msg, hmac_key=None):
     return data
 
 
-def unpack_message(data, hmac_key=None, header=None, no_retcode=False, logger=None):
+def unpack_message(data, hmac_key=None, header=None, no_retcode=False, logger=_LOGGER):
     """Unpack bytes into a TuyaMessage."""
     if header is None:
         header = parse_header(data)
@@ -377,8 +377,7 @@ def unpack_message(data, hmac_key=None, header=None, no_retcode=False, logger=No
             header_len + header.length,
             len(data),
         )
-        _LOGGER.debug(f"DecodeError:  ( Not enough data to unpack payload )")
-        # raise DecodeError(f"Not enough data to unpack payload: {data}")
+        raise DecodeError(f"Not enough data to unpack payload: {data}")
 
     end_len = struct.calcsize(end_fmt)
     # the retcode is technically part of the payload, but strip it as we do not want it here
@@ -455,7 +454,7 @@ def unpack_message(data, hmac_key=None, header=None, no_retcode=False, logger=No
     )
 
 
-def parse_header(data):
+def parse_header(data, logger=_LOGGER):
     """Unpack bytes into a TuyaHeader."""
     if data[:4] == PREFIX_6699_BIN:
         fmt = MESSAGE_HEADER_FMT_6699
@@ -465,7 +464,9 @@ def parse_header(data):
     header_len = struct.calcsize(fmt)
 
     if len(data) < header_len:
-        raise DecodeError("Not enough data to unpack header")
+        err = "Not enough data to unpack header"
+        logger.error(err)
+        raise DecodeError(err)
 
     unpacked = struct.unpack(fmt, data[:header_len])
     prefix = unpacked[0]
@@ -478,21 +479,15 @@ def parse_header(data):
         # seqno |= unknown << 32
         total_length = payload_len + header_len + len(SUFFIX_6699_BIN)
     else:
-        # log.debug('Header prefix wrong! %08X != %08X', prefix, PREFIX_VALUE)
-        raise DecodeError(
-            "Header prefix wrong! %08X is not %08X or %08X"
-            % (prefix, PREFIX_55AA_VALUE, PREFIX_6699_VALUE)
-        )
+        err = f"Header prefix wrong! {prefix} is not {PREFIX_55AA_VALUE} or {PREFIX_6699_VALUE}"
+        logger.error(err)
+        raise DecodeError(err)
 
     # sanity check. currently the max payload length is somewhere around 300 bytes
-    if payload_len > 2000:
-        _LOGGER.debug(
-            f"Header claims the packet size is over 2000 bytes!  It is most likely corrupt. Claimed size: {payload_len} bytes. fmt: {fmt} unpacked: {unpacked}"
-        )
-        # raise DecodeError(
-        #     "Header claims the packet size is over 2000 bytes!  It is most likely corrupt.  Claimed size: %d bytes. fmt:%s unpacked:%r"
-        #     % (payload_len, fmt, unpacked)
-        # )
+    if payload_len > 10 and cmd == CONTROL_NEW:
+        err = f"Header claims the packet size is over 2000 bytes!  It is most likely corrupt. Claimed size: {payload_len} bytes. fmt: {fmt} unpacked: {unpacked}"
+        logger.error(err)
+        raise DecodeError(err)
 
     return TuyaHeader(prefix, seqno, cmd, payload_len, total_length)
 
@@ -616,11 +611,7 @@ class MessageDispatcher(ContextualLogger):
         """Add new data to the buffer and try to parse messages."""
         self.buffer += data
 
-        header_len_55AA = struct.calcsize(MESSAGE_RECV_HEADER_FMT)
-        header_len_6699 = struct.calcsize(MESSAGE_HEADER_FMT_6699)
-
-        header_len = header_len_55AA
-        prefix_len = len(PREFIX_55AA_BIN)
+        header_len = struct.calcsize(MESSAGE_RECV_HEADER_FMT)
 
         while self.buffer:
             prefix_offset_55AA = self.buffer.find(PREFIX_55AA_BIN)
@@ -629,12 +620,12 @@ class MessageDispatcher(ContextualLogger):
                 prefix_offset_6699 if prefix_offset_55AA < 0 else prefix_offset_55AA
             )
 
+            self.buffer = self.buffer[prefix_offset:]
             # Check if enough data for measage header
             if len(self.buffer) < header_len:
                 break
 
-            self.buffer = self.buffer[prefix_offset:]
-            header = parse_header(self.buffer)
+            header = parse_header(self.buffer, logger=self)
             hmac_key = self.local_key if self.version >= 3.4 else None
             no_retcode = False
             msg = unpack_message(
@@ -1182,10 +1173,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             json_payload = json.loads(payload)
         except Exception as ex:
             if "devid not" in payload:  # DeviceID Not found.
-                raise ValueError("DeviceID Not found")
+                raise ValueError(f"DeviceID [{self.id}] Not found")
             else:
                 raise DecodeError(
-                    f"could not decrypt data: wrong local_key? (exception: {ex}, payload: {payload})"
+                    f"[{self.id}]: could not decrypt data: wrong local_key? (exception: {ex}, payload: {payload})"
                 )
             # json_payload = self.error_json(ERR_JSON, payload)
 
