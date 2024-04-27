@@ -834,8 +834,11 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             if wait == 10:
                 break
 
-        self._last_command_sent = time.time()
-        self.transport.write(data)
+        if self.transport is not None:
+            self._last_command_sent = time.time()
+            self.transport.write(data)
+        else:
+            await self.close()
 
     def start_heartbeat(self):
         """Start the heartbeat transmissions with the device."""
@@ -858,9 +861,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                     self.exception("Heartbeat failed (%s), disconnecting", ex)
                     break
 
-            transport = self.transport
-            self.transport = None
-            transport.close()
+            if self.transport is not None:
+                transport = self.transport
+                self.transport = None
+                transport.close()
 
         if self.heartbeater is None:
             # Prevent duplicates heartbeat task
