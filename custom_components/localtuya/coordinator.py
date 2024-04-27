@@ -168,7 +168,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     if not gateway or (not gateway.connected and gateway.is_connecting):
                         return await self.abort_connect()
                     self._interface = gateway._interface
-                    self._interface.enable_debug(self._device_config.enable_debug)
+                    if self._device_config.enable_debug:
+                        self._interface.enable_debug(True)
                 else:
                     self._interface = await asyncio.wait_for(
                         pytuya.connect(
