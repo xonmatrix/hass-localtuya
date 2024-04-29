@@ -612,18 +612,26 @@ class MessageDispatcher(ContextualLogger):
         self.buffer += data
 
         header_len = struct.calcsize(MESSAGE_RECV_HEADER_FMT)
-
         while self.buffer:
-            prefix_offset_55AA = self.buffer.find(PREFIX_55AA_BIN)
-            prefix_offset_6699 = self.buffer.find(PREFIX_6699_BIN)
-            prefix_offset = (
-                prefix_offset_6699 if prefix_offset_55AA < 0 else prefix_offset_55AA
-            )
-
-            self.buffer = self.buffer[prefix_offset:]
             # Check if enough data for measage header
             if len(self.buffer) < header_len:
                 break
+
+            prefix_offset_55AA = self.buffer.find(PREFIX_55AA_BIN)
+            prefix_offset_6699 = self.buffer.find(PREFIX_6699_BIN)
+            prefixes = (prefix_offset_55AA, prefix_offset_6699)
+
+            # If somehow we got unexpected message, we will ignore it and reset the buffer.
+            if prefix_offset_55AA < 0 and prefix_offset_6699 < 0:
+                self.debug(f"Got unexpected Message prefix: {self.buffer}", force=True)
+                self.buffer = b""
+                break
+
+            # If the prefix is not at the start of the message.
+            if prefix_offset_55AA != 0 and prefix_offset_6699 != 0:
+                self.debug(f"Message prefix offset not at the start {self.buffer}")
+                prefix_offset = min(prefix for prefix in prefixes if not prefix < 0)
+                self.buffer = self.buffer[prefix_offset:]
 
             header = parse_header(self.buffer, logger=self)
             hmac_key = self.local_key if self.version >= 3.4 else None
