@@ -39,6 +39,7 @@ _LOGGER = logging.getLogger(__name__)
 
 COVER_COMMANDS = {
     "Open, Close and Stop": "open_close_stop",
+    "Open, Close and Continue": "open_close_continue",
     "ON, OFF and Stop": "on_off_stop",
     "fz, zz and Stop": "fz_zz_stop",
     "zz, fz and Stop": "zz_fz_stop",
