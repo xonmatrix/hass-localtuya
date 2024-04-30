@@ -634,6 +634,10 @@ class MessageDispatcher(ContextualLogger):
                 self.buffer = self.buffer[prefix_offset:]
 
             header = parse_header(self.buffer, logger=self)
+            # Check if the all data for the message has been received.
+            if len(self.buffer) < header.total_length:
+                break
+
             hmac_key = self.local_key if self.version >= 3.4 else None
             no_retcode = False
             msg = unpack_message(
