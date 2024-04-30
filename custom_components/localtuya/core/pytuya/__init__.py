@@ -851,6 +851,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.transport.write(data)
         else:
             await self.close()
+            raise Exception(f"The data couldn't be sent to the device")
 
     def start_heartbeat(self):
         """Start the heartbeat transmissions with the device."""
