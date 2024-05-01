@@ -149,6 +149,30 @@ def flow_schema(dps):
     }
 
 
+def convert_temperature(num_1, num_2) -> tuple[float, float]:
+    """Take two values and compare them. If one is in Fahrenheit, Convert it to Celsius."""
+    if None in (num_1, num_2):
+        return num_1, num_2
+
+    def prec_diff(value1, value2):
+        """Return the percentage difference between two values"""
+        max_value, min_value = max(value1, value2), min(value1, value2)
+        try:
+            return abs((max_value - min_value) / min_value) * 100
+        except ZeroDivisionError:
+            return 0
+
+    # Check if one value is in Celsius and the other is in Fahrenheit
+    if prec_diff(num_1, num_2) > 100:
+        fahrenheit = max(num_1, num_2)
+        to_celsius = (fahrenheit - 32) * 5 / 9
+        if fahrenheit == num_1:
+            num_1 = to_celsius
+        elif fahrenheit == num_2:
+            num_2 = to_celsius
+    return num_1, num_2
+
+
 class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
     """Tuya climate device."""
 
@@ -414,6 +438,11 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
             self._current_temperature = (
                 self.dp_value(CONF_CURRENT_TEMPERATURE_DP) * self._precision
             )
+
+        # Force Current temperature and Target temperature
+        self._target_temperature, self._current_temperature = convert_temperature(
+            self._target_temperature, self._current_temperature
+        )
 
         # Update preset states
         if self._has_presets:
