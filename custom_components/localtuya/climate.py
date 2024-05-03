@@ -154,7 +154,7 @@ def convert_temperature(num_1, num_2) -> tuple[float, float]:
     if None in (num_1, num_2):
         return num_1, num_2
 
-    def prec_diff(value1, value2):
+    def perc_diff(value1, value2):
         """Return the percentage difference between two values"""
         max_value, min_value = max(value1, value2), min(value1, value2)
         try:
@@ -163,13 +163,14 @@ def convert_temperature(num_1, num_2) -> tuple[float, float]:
             return 0
 
     # Check if one value is in Celsius and the other is in Fahrenheit
-    if prec_diff(num_1, num_2) > 100:
+    if perc_diff(num_1, num_2) > 110:
         fahrenheit = max(num_1, num_2)
         to_celsius = (fahrenheit - 32) * 5 / 9
         if fahrenheit == num_1:
             num_1 = to_celsius
         elif fahrenheit == num_2:
             num_2 = to_celsius
+
     return num_1, num_2
 
 
@@ -189,6 +190,7 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         super().__init__(device, config_entry, switchid, _LOGGER, **kwargs)
         self._state = None
         self._target_temperature = None
+        self._target_temp_forced_to_celsius = False
         self._current_temperature = None
         self._hvac_mode = None
         self._preset_mode = None
@@ -272,13 +274,19 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
     def min_temp(self):
         """Return the minimum temperature."""
         # DEFAULT_MIN_TEMP is in C
-        return self._config.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP)
+        min_temp = self._config.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP)
+        if self._target_temp_forced_to_celsius:
+            min_temp = round((min_temp - 32) * 5 / 9)
+        return min_temp
 
     @property
     def max_temp(self):
         """Return the maximum temperature."""
         # DEFAULT_MAX_TEMP is in C
-        return self._config.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP)
+        max_temp = self._config.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP)
+        if self._target_temp_forced_to_celsius:
+            max_temp = round((max_temp - 32) * 5 / 9)
+        return max_temp
 
     @property
     def hvac_mode(self):
@@ -387,6 +395,10 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         """Set new target temperature."""
         if ATTR_TEMPERATURE in kwargs and self.has_config(CONF_TARGET_TEMPERATURE_DP):
             temperature = round(kwargs[ATTR_TEMPERATURE] / self._precision_target)
+            if self._target_temp_forced_to_celsius:
+                # Revert temperture to Fahrenheit it was forced to celsius
+                temperature = round((temperature * 1.8) + 32)
+
             await self._device.set_dp(
                 temperature, self._config[CONF_TARGET_TEMPERATURE_DP]
             )
@@ -439,10 +451,14 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
                 self.dp_value(CONF_CURRENT_TEMPERATURE_DP) * self._precision
             )
 
-        # Force Current temperature and Target temperature
-        self._target_temperature, self._current_temperature = convert_temperature(
+        # Force the Current temperature and Target temperature to matching the unit.
+        target_temp, self._current_temperature = convert_temperature(
             self._target_temperature, self._current_temperature
         )
+
+        # if target temperature converted to celsius, then convert all related values to set temperature.
+        self._target_temp_forced_to_celsius = target_temp != self.target_temperature
+        self.target_temperature = target_temp
 
         # Update preset states
         if self._has_presets:
