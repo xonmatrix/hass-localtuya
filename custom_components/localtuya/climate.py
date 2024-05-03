@@ -457,8 +457,9 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         )
 
         # if target temperature converted to celsius, then convert all related values to set temperature.
-        self._target_temp_forced_to_celsius = target_temp != self.target_temperature
-        self.target_temperature = target_temp
+        if target_temp != self.target_temperature:
+            self._target_temp_forced_to_celsius = True
+            self.target_temperature = target_temp
 
         # Update preset states
         if self._has_presets:
