@@ -30,7 +30,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import async_track_time_interval
 
 from .coordinator import TuyaDevice, HassLocalTuyaData, TuyaCloudApi
-from .config_flow import ENTRIES_VERSION, config_schema
+from .config_flow import ENTRIES_VERSION
 from .const import (
     ATTR_UPDATED_AT,
     CONF_GATEWAY_ID,
@@ -50,8 +50,6 @@ UNSUB_LISTENER = "unsub_listener"
 
 RECONNECT_INTERVAL = timedelta(seconds=5)
 RECONNECT_TASK = "localtuya_reconnect_interval"
-
-CONFIG_SCHEMA = config_schema()
 
 CONF_DP = "dp"
 CONF_VALUE = "value"
