@@ -157,6 +157,7 @@
                     "positioning_mode": "Tryb pozycjonowania",
                     "current_position_dp": "Bieżąca pozycja (tylko dla trybu *pozycjonowania*)",
                     "set_position_dp": "Ustaw pozycję (tylko dla trybu *pozycjonowania*)",
+                    "stop_switch_dp": "(Optional) Stop switch (if the cover has continue command?)",
                     "position_inverted": "Odwróć pozycję 0-100 (tylko dla trybu *pozycjonowania*)",
                     "span_time": "Pełny czas otwarcia, w sekundach. (tylko dla trybu *czasowego*)",
                     "unit_of_measurement": "Jednostka miary (opcjonalnie)",

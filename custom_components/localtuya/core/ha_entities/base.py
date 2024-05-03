@@ -551,6 +551,7 @@ class DPCode(StrEnum):
     SWITCH_SAVE_ENERGY = "switch_save_energy"
     SWITCH_SOUND = "switch_sound"  # Voice switch
     SWITCH_SPRAY = "switch_spray"  # Spraying switch
+    SWITCH_STOP = "switch_stop"
     SWITCH_TYPE_1 = "switch_type_1"
     SWITCH_TYPE_2 = "switch_type_2"
     SWITCH_TYPE_3 = "switch_type_3"
