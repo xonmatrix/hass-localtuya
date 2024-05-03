@@ -238,6 +238,9 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         self._eco_value = self._config.get(CONF_ECO_VALUE, "ECO")
         self._has_presets = self._eco_dp or (self._preset_dp and self._preset_set)
 
+        self._min_temp = self._config.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP)
+        self._max_temp = self._config.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP)
+
     @property
     def supported_features(self):
         """Flag supported features."""
@@ -274,19 +277,13 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
     def min_temp(self):
         """Return the minimum temperature."""
         # DEFAULT_MIN_TEMP is in C
-        min_temp = self._config.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP)
-        if self._target_temp_forced_to_celsius:
-            min_temp = round((min_temp - 32) * 5 / 9)
-        return min_temp
+        return self._min_temp
 
     @property
     def max_temp(self):
         """Return the maximum temperature."""
         # DEFAULT_MAX_TEMP is in C
-        max_temp = self._config.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP)
-        if self._target_temp_forced_to_celsius:
-            max_temp = round((max_temp - 32) * 5 / 9)
-        return max_temp
+        return self._max_temp
 
     @property
     def hvac_mode(self):
@@ -457,8 +454,11 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         )
 
         # if target temperature converted to celsius, then convert all related values to set temperature.
-        self._target_temp_forced_to_celsius = True
-        self._target_temperature = target_temp
+        if target_temp != self._target_temperature:
+            self._target_temp_forced_to_celsius = True
+            self._target_temperature = target_temp
+            self._min_temp = round((self._min_temp - 32) * 5 / 9)
+            self._max_temp = round((self._max_temp - 32) * 5 / 9)
 
         # Update preset states
         if self._has_presets:
