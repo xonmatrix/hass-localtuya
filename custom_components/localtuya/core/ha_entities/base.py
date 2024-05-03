@@ -26,6 +26,7 @@ class CLOUD_VALUE:
             Enums: convert the values to [dict or str splitted by comma, default is list].\n
     `remap_values(dict)`: Used to remap dict values, if prefer_type is dict.\n
     `reverse_dict(bool)`: Reverse dict keys, value, if prefer_type is dict.\n
+    `scale(bool)`: For integers, scale final value.\n
     """
 
     default_value: Any
@@ -34,6 +35,7 @@ class CLOUD_VALUE:
     prefer_type: type = None
     remap_values: dict[str, Any] = field(default_factory=dict)
     reverse_dict: bool = False
+    scale: bool = False
 
 
 class LocalTuyaEntity:
