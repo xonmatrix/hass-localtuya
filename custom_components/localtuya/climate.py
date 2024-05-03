@@ -32,7 +32,7 @@ from homeassistant.const import (
     PRECISION_WHOLE,
     UnitOfTemperature,
 )
-
+from homeassistant.util.unit_system import METRIC_SYSTEM
 from .entity import LocalTuyaEntity, async_setup_entry
 from .const import (
     CONF_CURRENT_TEMPERATURE_DP,
@@ -390,12 +390,16 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
-        temperature = kwargs[ATTR_TEMPERATURE]
-        if self._target_temp_forced_to_celsius:
-            # Revert temperture to Fahrenheit it was forced to celsius
-            temperature = round((temperature - 32) * 5 / 9)
-
         if ATTR_TEMPERATURE in kwargs and self.has_config(CONF_TARGET_TEMPERATURE_DP):
+            temperature = kwargs[ATTR_TEMPERATURE]
+
+            if (
+                self._target_temp_forced_to_celsius
+                and self._hass.config.units == METRIC_SYSTEM
+            ):
+                # Revert temperture to Fahrenheit it was forced to celsius
+                temperature = round((temperature - 32) * 5 / 9)
+
             temperature = round(temperature / self._precision_target)
             await self._device.set_dp(
                 temperature, self._config[CONF_TARGET_TEMPERATURE_DP]
