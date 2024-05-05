@@ -1059,12 +1059,13 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         """Return device status."""
         status: dict = await self.exchange(command=DP_QUERY, nodeID=cid, delay=False)
 
-        if status:
-            if cid and "dps" in status:
-                self.dps_cache.update({cid: status["dps"]})
-            elif "dps" in status:
-                self.dps_cache.update({"parent": status["dps"]})
-
+        self.dps_cache.setdefault("parent", {})
+        if status and "dps" in status:
+            if "cid" in status:
+                self.error(f"Yes found status: requested is {cid} and status cid is: {status["cid"]}")
+                self.dps_cache.update({status["cid"]: status["dps"]})
+            else:
+                self.dps_cache["parent"].update(status["dps"])
         return self.dps_cache.get(cid, {}) if cid else self.dps_cache.get("parent", {})
 
     async def heartbeat(self):
