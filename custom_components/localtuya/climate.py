@@ -32,7 +32,7 @@ from homeassistant.const import (
     PRECISION_WHOLE,
     UnitOfTemperature,
 )
-from homeassistant.util.unit_system import METRIC_SYSTEM
+from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 from .entity import LocalTuyaEntity, async_setup_entry
 from .const import (
     CONF_CURRENT_TEMPERATURE_DP,
@@ -149,6 +149,22 @@ def flow_schema(dps):
     }
 
 
+# Convertors
+def f_to_c(num):
+    return (num - 32) * 5 / 9
+
+
+def c_to_f(num):
+    return (num * 1.8) + 32
+
+
+def config_unit(unit):
+    if unit == TEMPERATURE_FAHRENHEIT:
+        return UnitOfTemperature.FAHRENHEIT
+    else:
+        return UnitOfTemperature.CELSIUS
+
+
 def convert_temperature(num_1, num_2) -> tuple[float, float]:
     """Take two values and compare them. If one is in Fahrenheit, Convert it to Celsius."""
     if None in (num_1, num_2):
@@ -241,6 +257,9 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         self._min_temp = self._config.get(CONF_MIN_TEMP, DEFAULT_MIN_TEMP)
         self._max_temp = self._config.get(CONF_MAX_TEMP, DEFAULT_MAX_TEMP)
 
+        # Temperture unit
+        self._temperature_unit = config_unit(self._config.get(CONF_TEMPERATURE_UNIT))
+
     @property
     def supported_features(self):
         """Flag supported features."""
@@ -268,10 +287,7 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
     @property
     def temperature_unit(self):
         """Return the unit of measurement used by the platform."""
-        # Unit may rely on self.hass.config.units.temperature_unit [System Unit]
-        if self._config.get(CONF_TEMPERATURE_UNIT) == TEMPERATURE_FAHRENHEIT:
-            return UnitOfTemperature.FAHRENHEIT
-        return UnitOfTemperature.CELSIUS
+        return self._temperature_unit
 
     @property
     def min_temp(self):
@@ -395,7 +411,7 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
 
             if self._target_temp_forced_to_celsius:
                 # Revert temperture to Fahrenheit it was forced to celsius
-                temperature = round((temperature - 32) * 5 / 9)
+                temperature = round(c_to_f(temperature))
 
             temperature = round(temperature / self._precision_target)
             await self._device.set_dp(
@@ -458,11 +474,11 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         # if target temperature converted to celsius, then convert all related values to set temperature.
         if target_temp != self._target_temperature:
             self._target_temperature = target_temp
-
-            if self._hass.config.units == METRIC_SYSTEM:
-                self._target_temp_forced_to_celsius = True
-                self._min_temp = round((self._min_temp - 32) * 5 / 9)
-                self._max_temp = round((self._max_temp - 32) * 5 / 9)
+            self._target_temp_forced_to_celsius = True
+            self._min_temp = f_to_c(self._min_temp)
+            self._max_temp = f_to_c(self._max_temp)
+            if self._hass.config.units == US_CUSTOMARY_SYSTEM:
+                self._temperature_unit = UnitOfTemperature.CELSIUS
 
         # Update preset states
         if self._has_presets:
