@@ -474,9 +474,11 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         # if target temperature converted to celsius, then convert all related values to set temperature.
         if target_temp != self._target_temperature:
             self._target_temperature = target_temp
-            self._target_temp_forced_to_celsius = True
-            self._min_temp = f_to_c(self._min_temp)
-            self._max_temp = f_to_c(self._max_temp)
+
+            if not self._target_temp_forced_to_celsius:
+                self._target_temp_forced_to_celsius = True
+                self._min_temp = f_to_c(self._min_temp)
+                self._max_temp = f_to_c(self._max_temp)
             if self._hass.config.units == US_CUSTOMARY_SYSTEM:
                 self._temperature_unit = UnitOfTemperature.CELSIUS
 
