@@ -23,8 +23,7 @@ LOCKS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=(DPCode.REMOTE_UNLOCK_SWITCH, DPCode.SWITCH),
             jammed_dp=DPCode.HIJACK,
-            lock_state_dp=(DPCode.OPEN_CLOSE, DPCode.CLOSED_OPENED),
-            custom_configs=localtuya_lock(),
+            lock_state_dp=(DPCode.CLOSED_OPENED, DPCode.OPEN_CLOSE),
         ),
     ),
 }
