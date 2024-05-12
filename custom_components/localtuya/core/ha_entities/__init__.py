@@ -47,6 +47,7 @@ from .sensors import SENSORS
 from .sirens import SIRENS
 from .switches import SWITCHES
 from .vacuums import VACUUMS
+from .locks import LOCKS
 
 # The supported PLATFORMS [ Platform: Data ]
 DATA_PLATFORMS = {
@@ -58,6 +59,7 @@ DATA_PLATFORMS = {
     Platform.FAN: FANS,
     Platform.HUMIDIFIER: HUMIDIFIERS,
     Platform.LIGHT: LIGHTS,
+    Platform.LOCK: LOCKS,
     Platform.NUMBER: NUMBERS,
     Platform.REMOTE: REMOTES,
     Platform.SELECT: SELECTS,

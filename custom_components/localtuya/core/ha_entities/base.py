@@ -326,6 +326,7 @@ class DPCode(StrEnum):
     LIGHT_MODE = "light_mode"
     LOADSTATUS = "loadstatus"
     LOCK = "lock"  # Lock / Child lock
+    LOCK_MOTOR_STATE = "lock_motor_state"
     LOWER_TEMP = "lower_temp"
     LOWER_TEMP_F = "lower_temp_f"
     LOWPROTECTVALUE = "lowprotectvalue"
@@ -367,6 +368,7 @@ class DPCode(StrEnum):
     NET_STATE = "net_state"
     NORMAL_OPEN_SWITCH = "normal_open_switch"
     ODU_FAN_SPEED = "odu_fan_speed"
+    OPEN_CLOSE = "open_close"
     OPPOSITE = "opposite"
     OPTIMUMSTART = "optimumstart"
     OTHEREVENT = "OtherEvent"
@@ -438,6 +440,7 @@ class DPCode(StrEnum):
     RELAY_STATUS_8 = "relay_status_8"  # Scene Switch cjkg
     REMAIN_TIME = "remain_time"
     REMOTE_REGISTER = "remote_register"
+    REMOTE_UNLOCK_SWITCH = "remote_unlock_switch"
     REPORT_PERIOD_SET = "report_period_set"
     REPORT_RATE_CONTROL = "report_rate_control"
     RESET_DUSTER_CLOTH = "reset_duster_cloth"

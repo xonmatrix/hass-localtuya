@@ -1400,6 +1400,14 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.DIAGNOSTIC,
         ),
     ),
+    # Lock
+    "ms": (
+        LocalTuyaEntity(
+            id=DPCode.LOCK_MOTOR_STATE,
+            name="Motor State",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
+    ),
     # Smart Water Meter
     # https://developer.tuya.com/en/docs/iot/f?id=Ka8n052xu7w4c
     "znsb": (

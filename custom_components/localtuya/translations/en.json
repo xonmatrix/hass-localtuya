@@ -240,7 +240,9 @@
                     "max_humidity": "Set the maximum supported humidity",
                     "alarm_supported_states": "States supported by the device",
                     "receive_dp":"Receiving signals DP. (default is 202)",
-                    "key_study_dp":"(Optional) Key Study DP (usually 7)"
+                    "key_study_dp":"(Optional) Key Study DP (usually 7)",
+                    "lock_state_dp":"(Optional) Lock state DP",
+                    "jammed_dp":"(Optional) Jam DP"
                 },
                 "data_description": {
                     "hvac_mode_set":"Each line represents [ hvac_mode: device_value ] [Supported HVAC Modes](https://developers.home-assistant.io/docs/core/entity/climate/#hvac-modes)",
