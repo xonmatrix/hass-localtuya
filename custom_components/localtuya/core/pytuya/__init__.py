@@ -870,7 +870,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         while command_delay and self.last_command_sent < 0.050:
             await asyncio.sleep(0.060)
             wait += 1
-            if wait == 10:
+            if wait > 10:
                 break
 
         if self.transport is not None:
