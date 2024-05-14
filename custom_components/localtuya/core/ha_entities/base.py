@@ -389,6 +389,8 @@ class DPCode(StrEnum):
     PHOTO_MODE = "photo_mode"
     PIR = "pir"  # Motion sensor
     PIR_SENSITIVITY = "pir_sensitivity"
+    PIR_STATE = "pir_state"
+    PIR_TIME = "pir_time"
     PLAY_INFO = "play_info"
     PLAY_MODE = "play_mode"
     PLAY_TIME = "play_time"
