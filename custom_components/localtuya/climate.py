@@ -427,7 +427,9 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode):
         """Set new target operation mode."""
-        new_states = {self._dp_id: hvac_mode != HVACMode.OFF}
+        new_states = {}
+        if not self._state:
+            new_states[self._dp_id] = True
         if hvac_mode in self._hvac_mode_set:
             new_states[self._hvac_mode_dp] = self._hvac_mode_set[hvac_mode]
 
