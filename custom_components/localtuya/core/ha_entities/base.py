@@ -451,6 +451,7 @@ class DPCode(StrEnum):
     RESET_LIMIT = "reset_limit"
     RESET_MAP = "reset_map"
     RESET_ROLL_BRUSH = "reset_roll_brush"
+    RESIDUAL_ELECTRICITY = "residual_electricity"
     REVERSE_ENERGY_TOTAL = "reverse_energy_total"
     ROLL_BRUSH = "roll_brush"
     RUNNING_FAN_SPEED = "running_fan_speed"
