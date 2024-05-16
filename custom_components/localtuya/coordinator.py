@@ -390,7 +390,11 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     async def _async_refresh(self, _now):
         if self._interface is not None:
             self.debug("Refreshing dps for device")
-            await self._interface.update_dps(cid=self._node_id)
+            # This a workdaround for >= 3.4 devices, since there is an issue on waiting for the correct seqno
+            try:
+                await self._interface.update_dps(cid=self._node_id)
+            except TimeoutError:
+                pass
 
     def _dispatch_status(self):
         signal = f"localtuya_{self._device_config.id}"
