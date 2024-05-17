@@ -425,11 +425,14 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
 
         await self._device.set_dp(fan_mode, self._fan_speed_dp)
 
-    async def async_set_hvac_mode(self, hvac_mode):
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode):
         """Set new target operation mode."""
         new_states = {}
         if not self._state:
             new_states[self._dp_id] = True
+        elif hvac_mode == HVACMode.OFF and HVACMode.OFF not in self._hvac_mode_set:
+            new_states[self._dp_id] = False
+
         if hvac_mode in self._hvac_mode_set:
             new_states[self._hvac_mode_dp] = self._hvac_mode_set[hvac_mode]
 
