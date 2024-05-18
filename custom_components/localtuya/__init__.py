@@ -465,8 +465,8 @@ def reconnectTask(hass: HomeAssistant, entry: ConfigEntry):
             dev_id = dev._device_config.id
             if check_if_device_disabled(hass, entry, dev_id):
                 return
-            # "async_connect" has to check if the device is already connected, then stop.
-            asyncio.create_task(dev.async_connect())
+            if not dev.connected:
+                asyncio.create_task(dev.async_connect())
 
     # Add unsub callbeack in unsub_listeners object.
     hass_localtuya.unsub_listeners.append(

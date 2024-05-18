@@ -1,5 +1,6 @@
 """Tuya Device API"""
 
+from __future__ import annotations
 import asyncio
 import logging
 import time
@@ -33,6 +34,14 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+class HassLocalTuyaData(NamedTuple):
+    """LocalTuya data stored in homeassistant data object."""
+
+    cloud_data: TuyaCloudApi
+    devices: dict[str, TuyaDevice]
+    unsub_listeners: list[CALLBACK_TYPE,]
+
+
 class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     """Cache wrapper for pytuya.TuyaInterface."""
 
@@ -57,16 +66,16 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         self._node_id: str = self._device_config.node_id
         self._fake_gateway = fake_gateway
         self._gwateway: TuyaDevice = None
-        self._sub_devices: dict[str, TuyaDevice] = {}
+        self.sub_devices: dict[str, TuyaDevice] = {}
 
         self._status = {}
         # Sleep timer, a device that reports the status every x seconds then goes into sleep.
-        self._passive_device = self._device_config.sleep_time > 0
         self._last_update_time: int = int(time.time()) - 5
         self._pending_status: dict[str, dict[str, Any]] = {}
 
         self.dps_to_request = {}
         self._is_closing = False
+        self._quick_retry = False
         self._connect_task: asyncio.Task | None = None
         self._unsub_on_close: list[CALLBACK_TYPE] = []
         self._entities = []
@@ -111,7 +120,20 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
         return device_sleep > 0 and is_sleep
 
-    async def get_gateway(self):
+    async def async_connect(self, _now=None) -> None:
+        """Connect to device if not already connected."""
+        if not self._hass_entry:
+            self._hass_entry = self._hass.data[DOMAIN][self._config_entry.entry_id]
+
+        if True in (self._is_closing, self.is_connecting, self.connected):
+            return self._dispatch_status() if self.connected else None
+
+        self._connect_task = asyncio.create_task(self._make_connection())
+
+        if not self.is_sleep and not self.is_subdevice:
+            await asyncio.wait((self._connect_task,), timeout=5)
+
+    async def _get_gateway(self):
         """Return the gateway device of this sub device."""
         if not self._node_id:
             return
@@ -127,60 +149,40 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 self._local_key = gateway._local_key
 
             self._gwateway = gateway
-            gateway._sub_devices[self._node_id] = self
+            gateway.sub_devices[self._node_id] = self
             return gateway
         else:
             self.error(f"Couldn't find the gateway for: {self._node_id}")
         return None
-
-    async def async_connect(self, _now=None) -> None:
-        """Connect to device if not already connected."""
-        if not self._hass_entry:
-            self._hass_entry = self._hass.data[DOMAIN][self._config_entry.entry_id]
-
-        if not self._is_closing and not self.is_connecting and not self.connected:
-            try:
-                self._connect_task = asyncio.create_task(self._make_connection())
-                if not self.is_sleep:
-                    await self._connect_task
-            except (TimeoutError, asyncio.CancelledError):
-                ...
-        elif self.connected:
-            # In-case device is connected but somehow the status hasn't been sent.
-            self._dispatch_status()
 
     async def _make_connection(self):
         """Subscribe localtuya entity events."""
         if self.is_sleep and not self._status:
             self.status_updated(RESTORE_STATES)
 
-        name = self._device_config.name
-        host = name if self.is_subdevice else self._device_config.host
+        name, host = self._device_config.name, self._device_config.host
         retry = 0
         update_localkey = False
 
-        self.debug(f"Trying to connect to {host}...", force=True)
+        self.debug(f"Trying to connect to {name} - {host}...", force=True)
         while retry < self._connect_max_tries:
             retry += 1
             try:
                 if self.is_subdevice:
-                    gateway = await self.get_gateway()
+                    gateway = await self._get_gateway()
                     if not gateway or (not gateway.connected and gateway.is_connecting):
                         return await self.abort_connect()
                     self._interface = gateway._interface
                     if self._device_config.enable_debug:
                         self._interface.enable_debug(True)
                 else:
-                    self._interface = await asyncio.wait_for(
-                        pytuya.connect(
-                            self._device_config.host,
-                            self._device_config.id,
-                            self._local_key,
-                            float(self._device_config.protocol_version),
-                            self._device_config.enable_debug,
-                            self,
-                        ),
-                        5,
+                    self._interface = await pytuya.connect(
+                        self._device_config.host,
+                        self._device_config.id,
+                        self._local_key,
+                        float(self._device_config.protocol_version),
+                        self._device_config.enable_debug,
+                        self,
                     )
                 self._interface.add_dps_to_request(self.dps_to_request)
                 break  # Succeed break while loop
@@ -212,7 +214,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
                 self._interface.start_heartbeat()
                 self.status_updated(status)
-
             except (UnicodeDecodeError, pytuya.DecodeError) as e:
                 self.exception(f"Connect to {host} failed: due to {type(e)}: {e}")
                 await self.abort_connect()
@@ -253,12 +254,14 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 )
 
             self._connect_task = None
-            self.debug(f"Success: connected to {host}", force=True)
+            self._quick_retry = False
+            self.debug(f"Success: connected to {name} - {host}", force=True)
 
-            if self._sub_devices:
-                self._interface.start_sub_devices_heartbeat()
-                for subdevice in self._sub_devices.values():
+            if self.sub_devices:
+                for subdevice in self.sub_devices.values():
                     self._hass.async_create_task(subdevice.async_connect())
+
+                self._interface.start_sub_devices_heartbeat()
 
             if not self._status and "0" in self._device_config.manual_dps.split(","):
                 self.status_updated(RESTORE_STATES)
@@ -283,9 +286,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if self._interface is not None:
             await self._interface.close()
             self._interface = None
-
-        if not self.is_sleep:
-            self._shutdown_entities()
 
     async def check_connection(self):
         """Ensure that the device is not still connecting; if it is, wait for it."""
@@ -462,8 +462,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
         self._interface = None
 
-        if self._sub_devices:
-            for sub_dev in self._sub_devices.values():
+        if self.sub_devices:
+            for sub_dev in self.sub_devices.values():
                 sub_dev.disconnected()
 
         if self._connect_task is not None:
@@ -471,19 +471,11 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             self._connect_task = None
 
         # If it disconnects unexpectedly.
-        if not self._is_closing and not self.is_subdevice:
-            # Try quick reconnect.
-            async_call_later(self._hass, 1, self.async_connect)
+        if not self._is_closing and not self.is_subdevice and not self._quick_retry:
+            self._quick_retry = True
+            asyncio.run_coroutine_threadsafe(self.async_connect(), self._hass.loop)
 
         if not self._is_closing:
             self._unsub_on_close.append(
                 async_call_later(self._hass, sleep_time + 3, self._shutdown_entities)
             )
-
-
-class HassLocalTuyaData(NamedTuple):
-    """LocalTuya data stored in homeassistant data object."""
-
-    cloud_data: TuyaCloudApi
-    devices: dict[str, TuyaDevice]
-    unsub_listeners: list[CALLBACK_TYPE,]
