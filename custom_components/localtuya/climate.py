@@ -179,7 +179,7 @@ def convert_temperature(num_1, num_2) -> tuple[float, float]:
             return 0
 
     # Check if one value is in Celsius and the other is in Fahrenheit
-    if perc_diff(num_1, num_2) > 110:
+    if perc_diff(num_1, num_2) > 160:
         fahrenheit = max(num_1, num_2)
         to_celsius = (fahrenheit - 32) * 5 / 9
         if fahrenheit == num_1:
@@ -472,13 +472,14 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
             )
 
         # Force the Current temperature and Target temperature to matching the unit.
-        target_temp, self._current_temperature = convert_temperature(
+        target_temp, current_temperature = convert_temperature(
             self._target_temperature, self._current_temperature
         )
 
         # if target temperature converted to celsius, then convert all related values to set temperature.
         if target_temp != self._target_temperature:
             self._target_temperature = target_temp
+            self._current_temperature = current_temperature
 
             if not self._target_temp_forced_to_celsius:
                 self._target_temp_forced_to_celsius = True
