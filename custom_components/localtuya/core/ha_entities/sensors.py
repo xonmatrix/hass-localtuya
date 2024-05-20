@@ -645,6 +645,13 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.DIAGNOSTIC,
             custom_configs=localtuya_sensor("s"),
         ),
+        LocalTuyaEntity(
+            id=DPCode.ILLUMINANCE_VALUE,
+            name="Illuminance",
+            entity_category=EntityCategory.DIAGNOSTIC,
+            device_class=SensorDeviceClass.ILLUMINANCE,
+            state_class=SensorStateClass.MEASUREMENT,
+        ),
         *BATTERY_SENSORS,
     ),
     # PM2.5 Sensor

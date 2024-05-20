@@ -454,6 +454,13 @@ NUMBERS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Light level",
             custom_configs=localtuya_numbers(0, 981, 1, 1, "lx"),
         ),
+        LocalTuyaEntity(
+            id=DPCode.INTERVAL_TIME,
+            icon="mdi:timer-sand-complete",
+            entity_category=EntityCategory.CONFIG,
+            name="Interval",
+            custom_configs=localtuya_numbers(1, 720, 1, 1, UnitOfTime.MINUTES),
+        ),
     ),
     # Robot Vacuum
     # https://developer.tuya.com/en/docs/iot/fsd?id=K9gf487ck1tlo
