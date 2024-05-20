@@ -782,7 +782,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.on_connected = on_connected
         self.heartbeater: asyncio.Task | None = None
         self.dps_cache = {}
-        self.sub_devices_states = {"online": [], "offline": []}  # [cids,...]
+        self.sub_devices_states = {"online": [], "offline": []}
         self._sub_devs_query_task: asyncio.Task | None = None
         self.local_nonce = b"0123456789abcdef"  # not-so-random random key
         self.remote_nonce = b""
@@ -820,7 +820,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
     def _msg_subdevs_query(self, decoded_message):
         """
         Handle the sub-devices query message.
-        Message: {"online": [cid1, ...], "offline": [cid2, ...]}
+        Message: {"online": [cids, ...], "offline": [cids, ...], "nearby": [cids, ...]}
         """
 
         async def _action():
@@ -841,14 +841,15 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         if (data := decoded_message.get("data")) and isinstance(data, dict):
             devs_states = self.sub_devices_states
+            updated_states = {}
 
             cached_on_devs, cached_off_devs = devs_states.values()
             on_devs, off_devs = data.get("online", []), data.get("offline", [])
 
-            data["offline"] = list(set(cached_off_devs + off_devs))
-            data["online"] = list(set(cached_on_devs + on_devs))
+            updated_states["offline"] = list(set(cached_off_devs + off_devs))
+            updated_states["online"] = list(set(cached_on_devs + on_devs))
 
-            self.sub_devices_states = data
+            self.sub_devices_states = updated_states
 
             if self._sub_devs_query_task is not None:
                 self._sub_devs_query_task.cancel()
@@ -1156,6 +1157,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
     async def subdevices_query(self):
         """Request a list of sub-devices and their status."""
         # Return payload: {"online": [cid1, ...], "offline": [cid2, ...]}
+        # "nearby": [cids, ...] can come in payload.
         payload = self._generate_payload(
             LAN_EXT_STREAM, rawData={"cids": []}, reqType="subdev_online_stat_query"
         )
@@ -1248,8 +1250,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                     payload = payload.decode()
                 except Exception as ex:
                     self.debug("payload was not string type and decoding failed")
-                    raise DecodeError("payload was not a string: %s" % ex)
-                    # return self.error_json(ERR_JSON, payload)
+                    return self.error_json(ERR_JSON, payload)
 
             if "data unvalid" in payload:
                 if self.version <= 3.3:
