@@ -781,6 +781,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.dispatcher = self._setup_dispatcher()
         self.on_connected = on_connected
         self.heartbeater: asyncio.Task | None = None
+        self.sub_devices_hb: asyncio.Task | None = None
         self.dps_cache = {}
         self.sub_devices_states = {"online": [], "offline": []}
         self._sub_devs_query_task: asyncio.Task | None = None
@@ -828,9 +829,9 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                 await asyncio.sleep(2)
 
                 self.debug(f"Sub-Devices States Update: {self.sub_devices_states}")
-                on_devs, off_devs = self.sub_devices_states.values()
+                on_devs = self.sub_devices_states.get("online")
                 listener = self.listener and self.listener()
-                if listener is None:
+                if listener is None or on_devs is None:
                     return
                 for cid, device in listener.sub_devices.items():
                     if cid not in on_devs:
@@ -843,11 +844,13 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             devs_states = self.sub_devices_states
             updated_states = {}
 
-            cached_on_devs, cached_off_devs = devs_states.values()
+            cached_on_devs = devs_states.get("online", [])
+            cached_off_devs = devs_states.get("offline", [])
+
             on_devs, off_devs = data.get("online", []), data.get("offline", [])
 
-            updated_states["offline"] = list(set(cached_off_devs + off_devs))
             updated_states["online"] = list(set(cached_on_devs + on_devs))
+            updated_states["offline"] = list(set(cached_off_devs + off_devs))
 
             self.sub_devices_states = updated_states
 
@@ -938,10 +941,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                     await self.subdevices_query()
                     await asyncio.sleep(HEARTBEAT_SUB_DEVICES_INTERVAL)
                 except (Exception, asyncio.CancelledError) as ex:
-                    self.debug(f"Sub-devices heartbeat stopped due to: {ex}")
-                    break
+                    if self.transport is None:
+                        break
 
-        self.loop.create_task(loop())
+        self.sub_devices_hb = self.loop.create_task(loop())
 
     def data_received(self, data):
         """Received data from device."""
