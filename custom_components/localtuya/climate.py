@@ -306,6 +306,8 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
         """Return current operation ie. heat, cool, idle."""
         if not self._state:
             return HVACMode.OFF
+        if not self._hvac_mode_dp:
+            return HVACMode.HEAT
 
         return self._hvac_mode
 
@@ -313,7 +315,7 @@ class LocalTuyaClimate(LocalTuyaEntity, ClimateEntity):
     def hvac_modes(self):
         """Return the list of available operation modes."""
         if not self.has_config(CONF_HVAC_MODE_DP):
-            return None
+            return [HVACMode.OFF]
 
         modes = list(self._hvac_mode_set)
 
