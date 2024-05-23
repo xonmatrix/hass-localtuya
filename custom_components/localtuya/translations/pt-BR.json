@@ -167,7 +167,7 @@
                     "docked_status_value": "Docked Status (comma-separated)",
                     "fault_dp": "Fault DP (usually 11)",
                     "battery_dp": "Battery status DP (usually 14)",
-                    "mode_dp": "Mode DP (usually 27)",
+                    "mode_dp": "Mode DP ",
                     "modes": "Modes list",
                     "return_mode": "Return home mode",
                     "fan_speed_dp": "(Optional) Fan speeds DP",

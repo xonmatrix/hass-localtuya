@@ -593,12 +593,14 @@ class DPCode(StrEnum):
     TEMP_CURRENT = "temp_current"  # Current temperature in °C
     TEMP_CURRENT_F = "temp_current_f"  # Current temperature in °F
     TEMP_INDOOR = "temp_indoor"  # Indoor temperature in °C
+    TEMP_LOW = "temp_low"
     TEMP_PERIODIC_REPORT = "temp_periodic_report"
     TEMP_SENSITIVITY = "temp_sensitivity"
     TEMP_SET = "temp_set"  # Set the temperature in °C
     TEMP_SET_F = "temp_set_f"  # Set the temperature in °F
     TEMP_STATUS = "temp_status"
     TEMP_UNIT_CONVERT = "temp_unit_convert"  # Temperature unit switching
+    TEMP_UP = "temp_up"
     TEMP_VALUE = "temp_value"  # Color temperature
     TEMP_VALUE_V2 = "temp_value_v2"
     TIM = "tim"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)

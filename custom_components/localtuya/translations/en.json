@@ -172,7 +172,7 @@
                     "docked_status_value": "Docked Status (comma-separated)",
                     "fault_dp": "Fault DP (usually 11)",
                     "battery_dp": "Battery status DP (usually 14)",
-                    "mode_dp": "Mode DP (usually 27)",
+                    "mode_dp": "Mode DP",
                     "modes": "Modes list",
                     "return_mode": "Return home mode",
                     "fan_speed_dp": "(Optional) Fan speeds DP",
@@ -242,7 +242,9 @@
                     "receive_dp":"Receiving signals DP. (default is 202)",
                     "key_study_dp":"(Optional) Key Study DP (usually 7)",
                     "lock_state_dp":"(Optional) Lock state DP",
-                    "jammed_dp":"(Optional) Jam DP"
+                    "jammed_dp":"(Optional) Jam DP",
+                    "target_temperature_high_dp":"(Optional) Target Temperature High DP",
+                    "target_temperature_low_dp":"(Optional) Target Temperature Low DP"
                 },
                 "data_description": {
                     "hvac_mode_set":"Each line represents [ hvac_mode: device_value ] [Supported HVAC Modes](https://developers.home-assistant.io/docs/core/entity/climate/#hvac-modes)",

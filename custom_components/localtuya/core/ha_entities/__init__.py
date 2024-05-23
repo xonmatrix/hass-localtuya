@@ -48,6 +48,7 @@ from .sirens import SIRENS
 from .switches import SWITCHES
 from .vacuums import VACUUMS
 from .locks import LOCKS
+from .water_heaters import WATER_HEATERS
 
 # The supported PLATFORMS [ Platform: Data ]
 DATA_PLATFORMS = {
@@ -67,6 +68,7 @@ DATA_PLATFORMS = {
     Platform.SIREN: SIRENS,
     Platform.SWITCH: SWITCHES,
     Platform.VACUUM: VACUUMS,
+    Platform.WATER_HEATER: WATER_HEATERS,
 }
 
 _LOGGER = logging.getLogger(__name__)
