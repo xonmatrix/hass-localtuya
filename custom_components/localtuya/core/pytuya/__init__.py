@@ -934,13 +934,16 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             """Continuously send heart beat updates."""
             self.debug("Start a heartbeat for sub-devices")
             # This will break if main "heartbeat" stopped
-            while self.heartbeater:
+            while True and self.heartbeater:
                 try:
                     # Reset the state before every reuqest.
                     self.sub_devices_states = {"online": [], "offline": []}
                     await self.subdevices_query()
                     await asyncio.sleep(HEARTBEAT_SUB_DEVICES_INTERVAL)
-                except (Exception, asyncio.CancelledError) as ex:
+                except asyncio.CancelledError:
+                    break
+                except Exception as ex:
+                    self.debug(f"Sub-devices heartbeat failed: {ex}")
                     if self.transport is None:
                         break
 
@@ -971,12 +974,12 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             if wait > 10:
                 break
 
-        if self.transport is not None:
+        try:
             self._last_command_sent = time.time()
             self.transport.write(data)
-        else:
-            self.loop.create_task(self.close())
-            raise Exception(f"The data couldn't be sent to the device")
+        except Exception as ex:
+            await self.close()
+            raise Exception(f"Error on sending data: {ex}")
 
     async def close(self):
         """Close connection and abort all outstanding listeners."""
