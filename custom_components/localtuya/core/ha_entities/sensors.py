@@ -21,6 +21,7 @@ from homeassistant.const import (
     UnitOfVolume,
     UnitOfElectricPotential,
     DEGREE,
+    LIGHT_LUX,
 )
 
 from .base import (
@@ -651,6 +652,7 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             entity_category=EntityCategory.DIAGNOSTIC,
             device_class=SensorDeviceClass.ILLUMINANCE,
             state_class=SensorStateClass.MEASUREMENT,
+            custom_configs=localtuya_sensor(LIGHT_LUX),
         ),
         *BATTERY_SENSORS,
     ),
@@ -903,6 +905,7 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Illuminance",
             device_class=SensorDeviceClass.ILLUMINANCE,
             state_class=SensorStateClass.MEASUREMENT,
+            custom_configs=localtuya_sensor(LIGHT_LUX),
         ),
         *BATTERY_SENSORS,
     ),
