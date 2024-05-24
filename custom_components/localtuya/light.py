@@ -316,7 +316,9 @@ class LocalTuyaLight(LocalTuyaEntity, LightEntity):
         return ColorMode.ONOFF
 
     def __is_color_rgb_encoded(self):
-        return len(self.dp_value(CONF_COLOR)) > 12
+        # for now we will prefer non encoded if color is none "added by manual or cloud pull dp"
+        color = self.dp_value(CONF_COLOR)
+        return False if color is None else len(color) > 12
 
     def __find_scene_by_scene_data(self, data):
         return next(
