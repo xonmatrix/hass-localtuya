@@ -433,12 +433,15 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
     def _shutdown_entities(self, now=None):
         """Shutdown device entities"""
+        if self.is_sleep:
+            return
+
         if self.is_subdevice:
             self.warning(f"Sub-device disconnected from: {self._device_config.host}")
         else:
             self.warning(f"Disconnected: waiting for discovery broadcast")
 
-        if not self.connected and not self.is_sleep:
+        if not self.connected:
             signal = f"localtuya_{self._device_config.id}"
             async_dispatcher_send(self._hass, signal, None)
 
