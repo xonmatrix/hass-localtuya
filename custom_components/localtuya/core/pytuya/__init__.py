@@ -252,7 +252,12 @@ class TuyaLoggingAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
         """Process log point and return output."""
         dev_id = self.extra["device_id"]
-        return f"[{dev_id[0:3]}...{dev_id[-3:]}] {msg}", kwargs
+        name = self.extra.get("name")
+        prefix = f"{dev_id[0:3]}...{dev_id[-3:]}"
+        if name:
+            return f"[{prefix} - {name}] {msg}", kwargs
+
+        return f"[{prefix}] {msg}", kwargs
 
 
 class ContextualLogger:
@@ -266,10 +271,12 @@ class ContextualLogger:
         self._reset_warning = int(time.time())
         self._last_warning = ""
 
-    def set_logger(self, logger, device_id, enable_debug=False):
+    def set_logger(self, logger, device_id, enable_debug=False, name=None):
         """Set base logger to use."""
         self._enable_debug = enable_debug
-        self._logger = TuyaLoggingAdapter(logger, {"device_id": device_id})
+        self._logger = TuyaLoggingAdapter(
+            logger, {"device_id": device_id, "name": name}
+        )
 
     def debug(self, msg, *args, force=False):
         """Debug level log for device. force will ignore device debug check."""
@@ -1557,10 +1564,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         return MessagePayload(command_override, payload)
 
-    def enable_debug(self, enable=False):
+    def enable_debug(self, enable=False, friendly_name=None):
         """Enable the debug logs for the device."""
-        self.set_logger(_LOGGER, self.id, enable)
-        self.dispatcher.set_logger(_LOGGER, self.id, enable)
+        self.set_logger(_LOGGER, self.id, enable, friendly_name)
+        self.dispatcher.set_logger(_LOGGER, self.id, enable, friendly_name)
 
     @property
     def last_command_sent(self):

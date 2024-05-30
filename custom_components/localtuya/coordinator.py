@@ -84,9 +84,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if reset_dps := self._device_config.reset_dps:
             self._default_reset_dpids = [int(id.strip()) for id in reset_dps.split(",")]
 
-        self.set_logger(
-            _LOGGER, self._device_config.id, self._device_config.enable_debug
-        )
+        dev = self._device_config
+        self.set_logger(_LOGGER, dev.id, dev.enable_debug, dev.name)
 
         # This has to be done in case the device type is type_0d
         for entity in self._device_config.entities:
@@ -164,7 +163,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         retry = 0
         update_localkey = False
 
-        self.debug(f"Trying to connect to {name} - {host}...", force=True)
+        self.debug(f"Trying to connect to: {host}...", force=True)
         while retry < self._connect_max_tries:
             retry += 1
             try:
@@ -174,7 +173,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                         return await self.abort_connect()
                     self._interface = gateway._interface
                     if self._device_config.enable_debug:
-                        self._interface.enable_debug(True)
+                        self._interface.enable_debug(True, gateway._device_config.name)
                 else:
                     self._interface = await pytuya.connect(
                         self._device_config.host,
@@ -184,6 +183,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                         self._device_config.enable_debug,
                         self,
                     )
+                    self._interface.enable_debug(self._device_config.enable_debug, name)
                 self._interface.add_dps_to_request(self.dps_to_request)
                 break  # Succeed break while loop
             except Exception as ex:  # pylint: disable=broad-except
@@ -255,7 +255,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
             self._connect_task = None
             self._quick_retry = False
-            self.debug(f"Success: connected to {name} - {host}", force=True)
+            self.debug(f"Success: connected to: {host}", force=True)
 
             if self.sub_devices:
                 for subdevice in self.sub_devices.values():
@@ -309,12 +309,11 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         if self._interface is not None:
             await self._interface.close()
             self._interface = None
-        self.debug(f"Closed connection with {self._device_config.name}", force=True)
+        self.debug(f"Closed connection", force=True)
 
     async def update_local_key(self):
         """Retrieve updated local_key from Cloud API and update the config_entry."""
         dev_id = self._device_config.id
-        name = self._device_config.name
 
         cloud_api = self._hass_entry.cloud_data
         await cloud_api.async_get_devices_list()
@@ -338,22 +337,20 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
                 # Update Gateway ID and IP
                 if new_gw := get_gateway_by_deviceid(dev_id, cloud_devs):
-                    self.info(f"Updated {name} gateway ID to: {new_gw.id}")
+                    self.info(f"Gateway ID has been updated to: {new_gw.id}")
                     new_data[CONF_DEVICES][dev_id][CONF_GATEWAY_ID] = new_gw.id
 
                     if discovery and (local_gw := discovery.devices.get(new_gw.id)):
                         new_ip = local_gw.get(CONF_TUYA_IP, self._device_config.host)
                         new_data[CONF_DEVICES][dev_id][CONF_HOST] = new_ip
-                        self.info(f"Updated {name} IP to: {new_ip}")
-
-                self.info(f"Updated informations for sub-device {name}.")
+                        self.info(f"IP has been updated to: {new_ip}")
 
             new_data[CONF_DEVICES][dev_id][CONF_LOCAL_KEY] = self._local_key
             new_data[ATTR_UPDATED_AT] = str(int(time.time() * 1000))
             self._hass.config_entries.async_update_entry(
                 self._config_entry, data=new_data
             )
-            self.info(f"local_key updated for device {name}.")
+            self.info(f"Local-key has been updated")
 
     async def set_status(self):
         """Send self._pending_status payload to device."""
@@ -436,10 +433,12 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
     def _shutdown_entities(self, now=None):
         """Shutdown device entities"""
-        if self.is_sleep:
-            return
-        if not self.connected:
-            self.debug(f"Disconnected: waiting for discovery broadcast", force=True)
+        if self.is_subdevice:
+            self.warning(f"Sub-device disconnected from: {self._device_config.host}")
+        else:
+            self.warning(f"Disconnected: waiting for discovery broadcast")
+
+        if not self.connected and not self.is_sleep:
             signal = f"localtuya_{self._device_config.id}"
             async_dispatcher_send(self._hass, signal, None)
 
@@ -476,6 +475,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             asyncio.run_coroutine_threadsafe(self.async_connect(), self._hass.loop)
 
         if not self._is_closing:
+            delay = (0 if self.is_subdevice else 3) + sleep_time
             self._unsub_on_close.append(
-                async_call_later(self._hass, sleep_time + 3, self._shutdown_entities)
+                async_call_later(self._hass, delay, self._shutdown_entities)
             )
