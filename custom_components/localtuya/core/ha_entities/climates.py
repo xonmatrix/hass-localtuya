@@ -122,7 +122,11 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=DPCode.SWITCH,
             target_temperature_dp=(DPCode.TEMP_SET, DPCode.TEMP_SET_F),
-            current_temperature_dp=DPCode.TEMP_CURRENT,
+            current_temperature_dp=(
+                DPCode.TEMP_CURRENT,
+                DPCode.TEMP_CURRENT_F,
+                DPCode.TEMPCURRENT,
+            ),
             hvac_mode_dp=DPCode.MODE,
             hvac_action_dp=(DPCode.WORK_MODE, DPCode.WORK_STATUS, DPCode.WORK_STATE),
             preset_dp=DPCode.MODE,
@@ -208,11 +212,15 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=(DPCode.SWITCH, DPCode.MODE),
             target_temperature_dp=(DPCode.TEMP_SET, DPCode.TEMP_SET_F),
-            current_temperature_dp=(DPCode.TEMP_CURRENT_F, DPCode.TEMP_CURRENT),
+            current_temperature_dp=(
+                DPCode.TEMP_CURRENT,
+                DPCode.TEMP_CURRENT_F,
+                DPCode.TEMPCURRENT,
+            ),
             hvac_mode_dp=(DPCode.SWITCH, DPCode.MODE),
             hvac_action_dp=(DPCode.WORK_STATE, DPCode.WORK_MODE, DPCode.WORK_STATUS),
             preset_dp=DPCode.MODE,
-            fan_speed_dp=(DPCode.FAN_SPEED_ENUM, DPCode.WINDSPEED),
+            fan_speed_dp=(DPCode.FAN_SPEED_ENUM, DPCode.WINDSPEED, DPCode.SPEED),
             custom_configs=localtuya_climate(
                 hvac_mode_set={HVACMode.HEAT: True, HVACMode.OFF: False},
                 temp_step=1,
@@ -232,11 +240,15 @@ CLIMATES: dict[str, tuple[LocalTuyaEntity, ...]] = {
         LocalTuyaEntity(
             id=(DPCode.SWITCH, DPCode.MODE),
             target_temperature_dp=(DPCode.TEMP_SET, DPCode.TEMP_SET_F),
-            current_temperature_dp=(DPCode.TEMP_CURRENT_F, DPCode.TEMP_CURRENT),
+            current_temperature_dp=(
+                DPCode.TEMP_CURRENT,
+                DPCode.TEMP_CURRENT_F,
+                DPCode.TEMPCURRENT,
+            ),
             hvac_mode_dp=DPCode.MODE,
             hvac_action_dp=(DPCode.WORK_STATE, DPCode.WORK_MODE, DPCode.WORK_STATUS),
             preset_dp=DPCode.MODE,
-            fan_speed_dp=(DPCode.FAN_SPEED_ENUM, DPCode.WINDSPEED),
+            fan_speed_dp=(DPCode.FAN_SPEED_ENUM, DPCode.WINDSPEED, DPCode.SPEED),
             custom_configs=localtuya_climate(
                 hvac_mode_set={
                     HVACMode.HEAT: "manual",

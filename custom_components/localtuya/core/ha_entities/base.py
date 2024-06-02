@@ -583,6 +583,7 @@ class DPCode(StrEnum):
     TEMP = "temp"  # Temperature setting
     TEMPACTIVATE = "tempactivate"
     TEMPCOMP = "tempcomp"
+    TEMPCURRENT = "tempcurrent"  # Current temperature in °C
     TEMPER_ALARM = "temper_alarm"  # Tamper alarm
     TEMPFLOOR = "TempFloor"
     TEMPPROGRAM = "tempprogram"
