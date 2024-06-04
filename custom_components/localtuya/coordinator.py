@@ -88,8 +88,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         self.set_logger(_LOGGER, dev.id, dev.enable_debug, dev.name)
 
         # This has to be done in case the device type is type_0d
-        for entity in self._device_config.entities:
-            self.dps_to_request[entity[CONF_ID]] = None
+        for dp in self._device_config.dps_strings:
+            self.dps_to_request[dp.split(" ")[0]] = None
 
     def add_entities(self, entities):
         """Set the entities associated with this device."""
@@ -475,7 +475,10 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         # If it disconnects unexpectedly.
         if not self._is_closing and not self.is_subdevice and not self._quick_retry:
             self._quick_retry = True
-            asyncio.run_coroutine_threadsafe(self.async_connect(), self._hass.loop)
+            self._unsub_on_close.append(
+                async_call_later(self._hass, 1, self.async_connect)
+            )
+            # asyncio.run_coroutine_threadsafe(self.async_connect(), self._hass.loop)
 
         if not self._is_closing:
             delay = (0 if self.is_subdevice else 3) + sleep_time
