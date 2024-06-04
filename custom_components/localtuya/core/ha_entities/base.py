@@ -251,6 +251,7 @@ class DPCode(StrEnum):
     DOWN_CONFIRM = "down_confirm"  # cover reset.
     DO_NOT_DISTURB = "do_not_disturb"
     DUSTER_CLOTH = "duster_cloth"
+    ECO = "eco"
     ECO2 = "eco2"
     EDGE_BRUSH = "edge_brush"
     ELECTRICITY_LEFT = "electricity_left"
@@ -579,6 +580,7 @@ class DPCode(StrEnum):
     SWITCH_WELCOME = "switch_welcome"
     SYNC_REQUEST = "sync_request"
     SYNC_RESPONSE = "sync_response"
+    SYSTEMMODE = "systemmode"
     TBD = "tbd"
     TEMP = "temp"  # Temperature setting
     TEMPACTIVATE = "tempactivate"
