@@ -475,10 +475,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         # If it disconnects unexpectedly.
         if not self._is_closing and not self.is_subdevice and not self._quick_retry:
             self._quick_retry = True
-            self._unsub_on_close.append(
-                async_call_later(self._hass, 1, self.async_connect)
-            )
-            # asyncio.run_coroutine_threadsafe(self.async_connect(), self._hass.loop)
+            asyncio.run_coroutine_threadsafe(self.async_connect(), self._hass.loop)
 
         if not self._is_closing:
             delay = (0 if self.is_subdevice else 3) + sleep_time

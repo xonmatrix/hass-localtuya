@@ -53,7 +53,7 @@ from hashlib import md5, sha256
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-version_tuple = (2024, 4, 0)
+version_tuple = (2024, 6, 0)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "rospogrigio, xZetsubou"
 
@@ -696,8 +696,11 @@ class MessageDispatcher(ContextualLogger):
                 self.callback_status_update(msg)
         else:
             if msg.cmd == CONTROL_NEW or not msg.payload:
-                self.debug("Got ACK message for command %d: will ignore it %s", msg.cmd)
-            else:
+                self.debug(
+                    "Got ACK message for command %d: ignoring it %s", msg.cmd, msg.seqno
+                )
+                self.callback_status_update(msg, ack=True)
+            elif msg.seqno not in self.listeners:
                 self.debug(
                     "Got message type %d for unknown listener %d: %s",
                     msg.cmd,
@@ -866,9 +869,13 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self._sub_devs_query_task = self.loop.create_task(_action())
 
     def _setup_dispatcher(self) -> MessageDispatcher:
-        def _status_update(msg):
+        def _status_update(msg, ack=False):
             if msg.seqno > 0:
                 self.seqno = msg.seqno + 1
+                if ack:
+                    self.debug(f"Got update ack message update seqno only. {msg.seqno}")
+                    return
+
             decoded_message: dict = self._decode_payload(msg.payload)
             cid = None
 
@@ -926,9 +933,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                     break
 
             if self.transport is not None:
-                transport = self.transport
-                self.transport = None
-                transport.close()
+                self.clean_up_session()
 
         if self.heartbeater is None:
             # Prevent duplicates heartbeat task
@@ -954,7 +959,8 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                     if self.transport is None:
                         break
 
-        self.sub_devices_hb = self.loop.create_task(loop())
+        if not self.sub_devices_hb:
+            self.sub_devices_hb = self.loop.create_task(loop())
 
     def data_received(self, data):
         """Received data from device."""
@@ -964,13 +970,14 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
     def connection_lost(self, exc):
         """Disconnected from device."""
         self.debug("Connection lost: %s", exc, force=True)
-        self.real_local_key = self.local_key
         try:
             listener = self.listener and self.listener()
             if listener is not None:
                 listener.disconnected()
         except Exception:  # pylint: disable=broad-except
             self.exception("Failed to call disconnected callback")
+
+        self.clean_up_session()
 
     async def transport_write(self, data, command_delay=True):
         """Write data on transport, The 'command_delay' will ensure that no massive requests happen all at once."""
@@ -981,38 +988,31 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             if wait > 10:
                 break
 
-        try:
-            self._last_command_sent = time.time()
-            self.transport.write(data)
-        except Exception as ex:
-            await self.close()
-            raise Exception(f"Error on sending data: {ex}")
+        self._last_command_sent = time.time()
+        self.transport.write(data)
 
     async def close(self):
         """Close connection and abort all outstanding listeners."""
         self.debug("Closing connection")
+        self.clean_up_session()
+
+    def clean_up_session(self):
+        """Clean up session."""
+        self.debug(f"Cleaning up session.")
         self.real_local_key = self.local_key
-        if self.heartbeater is not None:
+        if self.heartbeater:
             self.heartbeater.cancel()
-            try:
-                await self.heartbeater
-            except asyncio.CancelledError:
-                pass
-            self.heartbeater = None
-        if self.dispatcher is not None:
+
+        if self.dispatcher:
             self.dispatcher.abort()
-            self.dispatcher = None
-        if self.transport is not None:
-            transport = self.transport
-            self.transport = None
-            transport.close()
+
+        if self.is_connected:
+            self.transport.close()
 
     async def exchange_quick(self, payload, recv_retries):
         """Similar to exchange() but never retries sending and does not decode the response."""
-        if not self.transport:
-            self.debug(
-                "[" + self.id + "] send quick failed, could not get socket: %s", payload
-            )
+        if not self.is_connected:
+            self.debug("send quick failed, could not get socket: %s", payload)
             return None
         enc_payload = (
             self._encode_message(payload)
@@ -1051,9 +1051,13 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
     async def exchange(self, command, dps=None, nodeID=None, delay=True, payload=None):
         """Send and receive a message, returning response from device."""
+        if not self.is_connected:
+            return None
+
         if self.version >= 3.4 and self.real_local_key == self.local_key:
             self.debug("3.4 or 3.5 device: negotiating a new session key")
-            await self._negotiate_session_key()
+            if not await self._negotiate_session_key():
+                return self.clean_up_session()
 
         self.debug(
             "Sending command %s (device type: %s) DPS: %s", command, self.dev_type, dps
@@ -1061,9 +1065,8 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         payload = payload or self._generate_payload(command, dps, nodeId=nodeID)
         real_cmd = payload.cmd
         dev_type = self.dev_type
-        # self.debug("Exchange: payload %r %r", payload.cmd, payload.payload)
 
-        # Wait for special sequence number if heartbeat or reset
+        # Wait for special sequence number
         seqno = self.seqno
 
         if payload.cmd == HEART_BEAT:
@@ -1137,7 +1140,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         Args:
             dps([int]): list of dps to update, default=detected&whitelisted
         """
-        if self.version in UPDATE_DPS_LIST:
+        if self.version in UPDATE_DPS_LIST and self.is_connected:
             if dps is None:
                 if not self.dps_cache:
                     await self.detect_available_dps(cid=cid)
@@ -1192,7 +1195,6 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.dps_to_request = {"1": None}
             self.add_dps_to_request(range(*dps_range))
             data = await self.status(cid=cid)
-            # if "dps" in data:
             if cid and cid in data:
                 self.dps_cache.update({cid: data[cid]})
             elif not cid and "parent" in data:
@@ -1201,7 +1203,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             if self.dev_type == "type_0a" and not cid:
                 return self.dps_cache.get("parent", {})
 
-        return self.dps_cache.get(cid, {}) if cid else self.dps_cache.get("parent", {})
+        return self.dps_cache.get(cid or "parent", {})
 
     def add_dps_to_request(self, dp_indicies):
         """Add a datapoint (DP) to be included in requests."""
@@ -1570,6 +1572,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.dispatcher.set_logger(_LOGGER, self.id, enable, friendly_name)
 
     @property
+    def is_connected(self):
+        return not self.transport or not self.transport.is_closing()
+
+    @property
     def last_command_sent(self):
         """Return last command sent by seconds"""
         return time.time() - self._last_command_sent
@@ -1593,17 +1599,20 @@ async def connect(
     loop = asyncio.get_running_loop()
     on_connected = loop.create_future()
     try:
-        _, protocol = await loop.create_connection(
-            lambda: TuyaProtocol(
-                device_id,
-                local_key,
-                protocol_version,
-                enable_debug,
-                on_connected,
-                listener or EmptyListener(),
+        _, protocol = await asyncio.wait_for(
+            loop.create_connection(
+                lambda: TuyaProtocol(
+                    device_id,
+                    local_key,
+                    protocol_version,
+                    enable_debug,
+                    on_connected,
+                    listener or EmptyListener(),
+                ),
+                address,
+                port,
             ),
-            address,
-            port,
+            timeout=3,
         )
     except OSError as ex:
         raise ValueError(str(ex))
