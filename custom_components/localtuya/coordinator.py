@@ -104,7 +104,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     @property
     def connected(self):
         """Return if connected to device."""
-        return self._interface is not None
+        return self._interface and self._interface.is_connected
 
     @property
     def is_subdevice(self):
@@ -396,7 +396,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
     def _dispatch_status(self):
         signal = f"localtuya_{self._device_config.id}"
-        async_dispatcher_send(self._hass, signal, self._status)
+        dispatcher_send(self._hass, signal, self._status)
 
     def _handle_event(self, old_status: dict, new_status: dict, deviceID=None):
         """Handle events in HA when devices updated."""
@@ -434,7 +434,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
     def _shutdown_entities(self, now=None):
         """Shutdown device entities"""
-        if self.is_sleep:
+        if self.is_sleep or self.connected:
             return
 
         if self.is_subdevice:
@@ -442,9 +442,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         else:
             self.warning(f"Disconnected: waiting for discovery broadcast")
 
-        if not self.connected:
-            signal = f"localtuya_{self._device_config.id}"
-            dispatcher_send(self._hass, signal, None)
+        signal = f"localtuya_{self._device_config.id}"
+        dispatcher_send(self._hass, signal, None)
 
     @callback
     def status_updated(self, status: dict):
