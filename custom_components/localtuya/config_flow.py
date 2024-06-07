@@ -43,6 +43,7 @@ from homeassistant.const import (
 from homeassistant.core import callback
 
 from .coordinator import pytuya, TuyaCloudApi
+from .core.cloud_api import TUYA_ENDPOINTS
 from .const import (
     ATTR_UPDATED_AT,
     CONF_ADD_DEVICE,
@@ -128,9 +129,7 @@ def _col_to_select(
 
 CLOUD_CONFIGURE_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_REGION, default="eu"): _col_to_select(
-            ["eu", "we", "us", "ea", "cn", "in"]
-        ),
+        vol.Required(CONF_REGION, default="eu"): _col_to_select(TUYA_ENDPOINTS),
         vol.Optional(CONF_CLIENT_ID): cv.string,
         vol.Optional(CONF_CLIENT_SECRET): cv.string,
         vol.Optional(CONF_USER_ID): cv.string,
