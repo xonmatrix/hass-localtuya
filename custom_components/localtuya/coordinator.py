@@ -15,6 +15,7 @@ from homeassistant.helpers.event import async_track_time_interval, async_call_la
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
     async_dispatcher_send,
+    dispatcher_send,
 )
 
 from .core import pytuya
@@ -443,7 +444,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
         if not self.connected:
             signal = f"localtuya_{self._device_config.id}"
-            async_dispatcher_send(self._hass, signal, None)
+            dispatcher_send(self._hass, signal, None)
 
     @callback
     def status_updated(self, status: dict):
