@@ -464,7 +464,7 @@ def reconnectTask(hass: HomeAssistant, entry: ConfigEntry):
         for host, dev in hass_localtuya.devices.items():
             dev_id = dev._device_config.id
             if check_if_device_disabled(hass, entry, dev_id):
-                return
+                continue
             if not dev.connected:
                 asyncio.create_task(dev.async_connect())
 
