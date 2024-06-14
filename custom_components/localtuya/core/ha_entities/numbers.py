@@ -354,6 +354,13 @@ NUMBERS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Power 2 Wanring Limit",
             custom_configs=localtuya_numbers(0, 50000, 1, 1, UnitOfPower.WATT),
         ),
+        LocalTuyaEntity(
+            id=DPCode.POWER_ADJUSTMENT,
+            icon="mdi:generator-mobile",
+            entity_category=EntityCategory.CONFIG,
+            name="Power Adjustment",
+            custom_configs=localtuya_numbers(20, 100, 1, 1, PERCENTAGE),
+        ),
         # Fan "tdq"
         LocalTuyaEntity(
             id=DPCode.FAN_COUNTDOWN,

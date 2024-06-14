@@ -102,6 +102,8 @@ class DPCode(StrEnum):
     https://developer.tuya.com/en/docs/iot/standarddescription?id=K9i5ql6waswzq
     """
 
+    AC_CURRENT = "ac_current"
+    AC_VOLT = "ac_volt"
     ADD_ELE = "add_ele"
     ADD_ELE1 = "add_ele1"
     ADD_ELE2 = "add_ele2"
@@ -168,6 +170,7 @@ class DPCode(StrEnum):
     CLEAN_AREA = "clean_area"
     CLEAN_RECORD = "clean_record"
     CLEAN_TIME = "clean_time"
+    CLEAR_ENERGY = "clear_energy"
     CLICK_SUSTAIN_TIME = "click_sustain_time"
     CLOSED_OPENED = "closed_opened"
     CLOSED_OPENED_KIT = "closed_opened_kit"
@@ -229,6 +232,7 @@ class DPCode(StrEnum):
     CUR_VOLTAGE1 = "cur_voltage1"
     CUR_VOLTAGE2 = "cur_voltage2"
     C_F = "c_f"  # Temperature unit switching
+    DAY_ENERGY = "day_energy"
     DECIBEL_SENSITIVITY = "decibel_sensitivity"
     DECIBEL_SWITCH = "decibel_switch"
     DEFROST = "defrost"
@@ -255,6 +259,8 @@ class DPCode(StrEnum):
     ECO2 = "eco2"
     EDGE_BRUSH = "edge_brush"
     ELECTRICITY_LEFT = "electricity_left"
+    EMISSION = "emission"
+    ENERGY = "energy"
     ENERGY_A_CALIBRATION_FWD = "energy_a_calibration_fwd"
     ENERGY_A_CALIBRATION_REV = "energy_a_calibration_rev"
     ENERGY_B_CALIBRATION_FWD = "energy_b_calibration_fwd"
@@ -375,6 +381,7 @@ class DPCode(StrEnum):
     OPPOSITE = "opposite"
     OPTIMUMSTART = "optimumstart"
     OTHEREVENT = "OtherEvent"
+    OUT_POWER = "out_power"
     OVERCHARGE_SWITCH = "overcharge_switch"
     OXYGEN = "oxygen"  # Oxygen bar
     PAUSE = "pause"
@@ -394,6 +401,7 @@ class DPCode(StrEnum):
     PIR_SENSITIVITY = "pir_sensitivity"
     PIR_STATE = "pir_state"
     PIR_TIME = "pir_time"
+    PLANT = "plant"
     PLAY_INFO = "play_info"
     PLAY_MODE = "play_mode"
     PLAY_TIME = "play_time"
@@ -411,6 +419,7 @@ class DPCode(StrEnum):
     POWER = "power"
     POWEREVENT = "PowerEvent"
     POWER_A = "power_a"
+    POWER_ADJUSTMENT = "power_adjustmen"
     POWER_A_CALIBRATION = "power_a_calibration"
     POWER_B = "power_b"
     POWER_B_CALIBRATION = "power_b_calibration"
@@ -432,6 +441,9 @@ class DPCode(StrEnum):
     PTZ_CONTROL = "ptz_control"
     PTZ_STOP = "ptz_stop"
     PUMP_RESET = "pump_reset"  # Water pump reset
+    PV_CURRENT = "pv_current"
+    PV_POWER = "pv_power"
+    PV_VOLT = "pv_volt"
     RECORD_MODE = "record_mode"
     RECORD_SWITCH = "record_switch"  # Recording switch
     RELAY_STATUS = "relay_status"
@@ -586,6 +598,7 @@ class DPCode(StrEnum):
     TEMPACTIVATE = "tempactivate"
     TEMPCOMP = "tempcomp"
     TEMPCURRENT = "tempcurrent"  # Current temperature in °C
+    TEMPERATURE = "temperature"
     TEMPER_ALARM = "temper_alarm"  # Tamper alarm
     TEMPFLOOR = "TempFloor"
     TEMPPROGRAM = "tempprogram"
