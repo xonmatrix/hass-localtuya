@@ -667,7 +667,7 @@ class MessageDispatcher(ContextualLogger):
     def _dispatch(self, msg):
         """Dispatch a message to someone that is listening."""
 
-        self.debug("Dispatching message CMD %r %s", msg.cmd, msg, force=True)
+        self.debug("Dispatching message CMD %r %s", msg.cmd, msg)
 
         if msg.seqno in self.listeners:
             self.debug("Dispatching sequence number %d", msg.seqno)
@@ -792,9 +792,9 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         self.on_connected = on_connected
         self.heartbeater: asyncio.Task | None = None
         self.sub_devices_hb: asyncio.Task | None = None
+        self._sub_devs_query_task: asyncio.Task | None = None
         self.dps_cache = {}
         self.sub_devices_states = {"online": [], "offline": []}
-        self._sub_devs_query_task: asyncio.Task | None = None
         self.local_nonce = b"0123456789abcdef"  # not-so-random random key
         self.remote_nonce = b""
         self.dps_whitelist = UPDATE_DPS_WHITELIST

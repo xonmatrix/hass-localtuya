@@ -162,13 +162,15 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
             """Update entity state when status was updated."""
             status = self._status.clear() if new_status is None else new_status.copy()
 
-            if status == RESTORE_STATES and stored_data:
+            if status == RESTORE_STATES and stored_data and not self._status:
                 if stored_data.state not in (STATE_UNAVAILABLE, STATE_UNKNOWN):
                     self.debug(f"{self.name}: Restore state: {stored_data.state}")
                     status[self._dp_id] = stored_data.state
 
             if self._status != status:
                 if status:
+                    # Pop the special DPs
+                    status.pop("0", None)
                     self._status.update(status)
                     self.status_updated()
 
@@ -232,7 +234,7 @@ class LocalTuyaEntity(RestoreEntity, pytuya.ContextualLogger):
     @property
     def available(self) -> bool:
         """Return if device is available or not."""
-        return len(self._status) > 0
+        return (len(self._status) > 0) or self._device.connected
 
     @property
     def entity_category(self) -> str:
