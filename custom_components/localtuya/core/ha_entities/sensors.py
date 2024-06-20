@@ -23,6 +23,7 @@ from homeassistant.const import (
     UnitOfMass,
     DEGREE,
     LIGHT_LUX,
+    UnitOfLength,
 )
 
 from .base import (
@@ -1564,6 +1565,25 @@ SENSORS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             id=DPCode.ODU_FAN_SPEED,
             name="ODU Fan Speed",
             icon="mdi:fan",
+        ),
+    ),
+    # Ultrasonic level sensor
+    "ywcgq": (
+        LocalTuyaEntity(
+            id=DPCode.LIQUID_STATE,
+            name="State",
+        ),
+        LocalTuyaEntity(
+            id=DPCode.LIQUID_DEPTH,
+            name="Depth",
+            icon="mdi:altimeter",
+            custom_configs=localtuya_sensor(UnitOfLength.METERS, 1),
+        ),
+        LocalTuyaEntity(
+            id=DPCode.LIQUID_LEVEL_PERCENT,
+            name="Level",
+            icon="mdi:altimeter",
+            custom_configs=localtuya_sensor(PERCENTAGE, 1),
         ),
     ),
 }

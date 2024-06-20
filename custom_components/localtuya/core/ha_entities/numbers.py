@@ -13,6 +13,7 @@ from homeassistant.const import (
     UnitOfPower,
     UnitOfTemperature,
     CONF_UNIT_OF_MEASUREMENT,
+    UnitOfLength,
 )
 
 from .base import DPCode, LocalTuyaEntity, EntityCategory, CLOUD_VALUE
@@ -866,6 +867,39 @@ NUMBERS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Report Period",
             custom_configs=localtuya_numbers(3, 60, unit=UnitOfTime.SECONDS),
             icon="mdi:timer-sand",
+            entity_category=EntityCategory.CONFIG,
+        ),
+    ),
+    # Ultrasonic level sensor
+    "ywcgq": (
+        LocalTuyaEntity(
+            id=DPCode.MAX_SET,
+            name="Maximum",
+            custom_configs=localtuya_numbers(0, 100, unit=PERCENTAGE),
+            icon="mdi:pan-top-right",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.MINI_SET,
+            name="Minimum",
+            custom_configs=localtuya_numbers(0, 100, unit=PERCENTAGE),
+            icon="mdi:pan-bottom-left",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.LIQUID_DEPTH_MAX,
+            name="Depth Maximum",
+            custom_configs=localtuya_numbers(100, 2400, unit=UnitOfLength.METERS),
+            icon="mdi:arrow-collapse-down",
+            entity_category=EntityCategory.CONFIG,
+        ),
+        LocalTuyaEntity(
+            id=DPCode.INSTALLATION_HEIGHT,
+            name="Installation Height",
+            custom_configs=localtuya_numbers(
+                200, 2500, _scale=0.001, unit=UnitOfLength.METERS
+            ),
+            icon="mdi:table-row-height",
             entity_category=EntityCategory.CONFIG,
         ),
     ),

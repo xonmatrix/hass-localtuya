@@ -321,6 +321,7 @@ class DPCode(StrEnum):
     IDU_ERROR = "idu_error"
     ILLUMINANCE_VALUE = "illuminance_value"
     INNERDRY = "innerdry"
+    INSTALLATION_HEIGHT = "installation_height"
     INTERVAL_TIME = "interval_time"
     IPC_WORK_MODE = "ipc_work_mode"
     IR_SEND = "ir_send"
@@ -333,6 +334,10 @@ class DPCode(StrEnum):
     LEVEL_CURRENT = "level_current"
     LIGHT = "light"  # Light
     LIGHT_MODE = "light_mode"
+    LIQUID_DEPTH = "liquid_depth"
+    LIQUID_DEPTH_MAX = "liquid_depth_max"
+    LIQUID_LEVEL_PERCENT = "liquid_level_percent"
+    LIQUID_STATE = "liquid_state"
     LOADSTATUS = "loadstatus"
     LOCK = "lock"  # Lock / Child lock
     LOCK_MOTOR_STATE = "lock_motor_state"
@@ -349,9 +354,11 @@ class DPCode(StrEnum):
     MAXHUM_SET = "maxhum_set"
     MAXTEMP_SET = "maxtemp_set"
     MAX_HUMI = "max_humi"
+    MAX_SET = "max_set"
     MIDDLE_CONFIRM = "middle_confirm"  # cover reset.
     MINIHUM_SET = "minihum_set"
     MINITEMP_SET = "minitemp_set"
+    MINI_SET = "mini_set"
     MIN_HUMI = "min_humi"
     MOD = "mod"  # Ikuu SXSEN003PIR IP65 Motion Detector (Wi-Fi)
     MODE = "mode"  # Working mode / Mode
