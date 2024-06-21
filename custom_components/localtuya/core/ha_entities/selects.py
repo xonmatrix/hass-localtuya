@@ -1261,6 +1261,16 @@ SELECTS["wxkg"] = (
         ),
         condition_contains_any=["single_click", "double_click", "long_press"],
     ),
+    LocalTuyaEntity(
+        id=DPCode.MODE,
+        name="Mode",
+        icon="mdi:cog",
+        entity_category=EntityCategory.CONFIG,
+        custom_configs=localtuya_selector(
+            {"remote_control": "Remtoe", "wireless_switch": "Wireless"}
+        ),
+        condition_contains_any=["remote_control", "wireless_switch"],
+    ),
     *SELECTS["kg"],
 )
 
