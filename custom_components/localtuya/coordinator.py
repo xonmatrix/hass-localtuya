@@ -6,6 +6,7 @@ import logging
 import time
 from datetime import timedelta
 from typing import Any, Callable, Coroutine, NamedTuple
+from functools import partial
 
 
 from homeassistant.core import HomeAssistant, CALLBACK_TYPE, callback, State
@@ -62,7 +63,6 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         self._device_config = DeviceConfig(device_config.copy())
 
         self._interface = None
-        self._connect_max_tries = 3
 
         # For SubDevices
         self._node_id: str = self._device_config.node_id
@@ -78,7 +78,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         self.dps_to_request = {}
         self._is_closing = False
         self._connect_task: asyncio.Task | None = None
-        self._reconnect_task: asyncio.Task | None = None
+        self._unsub_refresh: CALLBACK_TYPE | None = None
+        self._reconnect_task = False
         self._call_on_close: list[CALLBACK_TYPE] = []
         self._entities = []
         self._local_key: str = self._device_config.local_key
@@ -116,6 +117,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
     def is_sleep(self):
         """Return whether the device is sleep or not."""
         device_sleep = self._device_config.sleep_time
+        if device_sleep > 0:
+            setattr(self, "low_power", True)
         last_update = int(time.time()) - self._last_update_time
         is_sleep = last_update < device_sleep
 
@@ -167,11 +170,12 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
         name, host = self._device_config.name, self._device_config.host
         retry = 0
+        max_retries = 3
         update_localkey = False
 
         self.debug(f"Trying to connect to: {host}...", force=True)
         # Connect to the device, interface should be connected for next steps.
-        while retry < self._connect_max_tries:
+        while retry < max_retries:
             retry += 1
             try:
                 if self.is_subdevice:
@@ -193,9 +197,14 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     self._interface.enable_debug(self._device_config.enable_debug, name)
                 self._interface.add_dps_to_request(self.dps_to_request)
                 break  # Succeed break while loop
+            except OSError as e:
+                await self.abort_connect()
+                if retry >= max_retries or e.errno == pytuya.errno.EHOSTUNREACH:
+                    self.warning(f"Connection failed: {e}")
+                    break
             except Exception as ex:  # pylint: disable=broad-except
                 await self.abort_connect()
-                if retry >= self._connect_max_tries and not self.is_sleep:
+                if retry >= max_retries and not self.is_sleep:
                     self.warning(f"Failed to connect to {host}: {str(ex)}")
                 if "key" in str(ex):
                     update_localkey = True
@@ -223,13 +232,13 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                 self._interface.start_heartbeat()
                 self.status_updated(status)
             except (UnicodeDecodeError, pytuya.DecodeError) as e:
-                self.exception(f"Connect to {host} failed: due to {type(e)}: {e}")
+                self.exception(f"Handshake with {host} failed: due to {type(e)}: {e}")
                 await self.abort_connect()
                 update_localkey = True
             except Exception as e:
                 if not (self._fake_gateway and "Not found" in str(e)):
                     e = "Sub device is not connected" if self.is_subdevice else e
-                    self.warning(f"Connect to {host} failed: {e}")
+                    self.warning(f"Handshake with {host} failed: {e}")
                     await self.abort_connect()
                     if self.is_subdevice:
                         update_localkey = True
@@ -239,7 +248,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     await self.abort_connect()
                     update_localkey = True
 
-        # Connect and configure the entities
+        # Connect and configure the entities, at this point the device should be ready to get commands.
         if self.connected:
             # Attempt to restore status for all entities that need to first set
             # the DPS value before the device will respond with status.
@@ -256,10 +265,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             )
 
             if (scan_inv := int(self._device_config.scan_interval)) > 0:
-                self._call_on_close.append(
-                    async_track_time_interval(
-                        self._hass, self._async_refresh, timedelta(seconds=scan_inv)
-                    )
+                self._unsub_refresh = async_track_time_interval(
+                    self._hass, self._async_refresh, timedelta(seconds=scan_inv)
                 )
 
             self._connect_task = None
@@ -312,6 +319,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         """Close connection and stop re-connect loop."""
         self._is_closing = True
         self._shutdown_entities()
+
         for callback in self._call_on_close:
             callback()
 
@@ -442,7 +450,7 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
                     data = {"dp": dpid_trigger, "value": dpid_value}
                     fire_event(event, data)
 
-    def _shutdown_entities(self, now=None):
+    def _shutdown_entities(self, now=None, exc=""):
         """Shutdown device entities"""
         if self.is_sleep or self.connected:
             return
@@ -454,9 +462,13 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
             return
 
         if self.is_subdevice:
-            self.info(f"Sub-device disconnected")
+            self.info(f"Sub-device disconnected due to: {exc}")
+        elif hasattr(self, "low_power"):
+            m, s = divmod((int(time.time()) - self._last_update_time), 60)
+            h, m = divmod(m, 60)
+            self.info(f"The device is still out of reach since: {h}h:{m}m:{s}s")
         else:
-            self.info(f"Disconnected: waiting for discovery broadcast")
+            self.info(f"Disconnected due to: {exc}")
 
     @callback
     def status_updated(self, status: dict):
@@ -471,18 +483,21 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
         self._dispatch_status()
 
     @callback
-    def disconnected(self):
+    def disconnected(self, exc=""):
         """Device disconnected."""
         sleep_time = self._device_config.sleep_time
 
         self._interface = None
 
+        if self._unsub_refresh:
+            self._unsub_refresh()
+
         if self.sub_devices:
             for sub_dev in self.sub_devices.values():
-                sub_dev.disconnected()
+                sub_dev.disconnected("Gateway disconnected")
 
         if self._connect_task is not None:
-            self._connect_task.cancel()
+            self._connect_task.cancel("Device disconnected")
             self._connect_task = None
 
         # If it disconnects unexpectedly.
@@ -491,9 +506,8 @@ class TuyaDevice(pytuya.TuyaListener, pytuya.ContextualLogger):
 
         self._call_on_close.append(asyncio.create_task(self._async_reconnect()).cancel)
         delay = (0 if self.is_subdevice else 3) + sleep_time
-        self._call_on_close.append(
-            async_call_later(self._hass, delay, self._shutdown_entities)
-        )
+        fun = partial(self._shutdown_entities, exc=exc)
+        self._call_on_close.append(async_call_later(self._hass, delay, fun))
 
     async def _async_reconnect(self):
         """Task: continuously attempt to reconnect to the device."""

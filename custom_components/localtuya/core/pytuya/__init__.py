@@ -35,6 +35,7 @@ Credits
     Several CLI tools and code for Tuya devices
 """
 
+import os
 import asyncio
 import errno
 import base64
@@ -277,6 +278,7 @@ class ContextualLogger:
         self._logger = TuyaLoggingAdapter(
             logger, {"device_id": device_id, "name": name}
         )
+        return self
 
     def debug(self, msg, *args, force=False):
         """Debug level log for device. force will ignore device debug check."""
@@ -730,7 +732,7 @@ class TuyaListener(ABC):
         """Device updated status."""
 
     @abstractmethod
-    def disconnected(self):
+    def disconnected(self, exc=""):
         """Device disconnected."""
 
 
@@ -740,7 +742,7 @@ class EmptyListener(TuyaListener):
     def status_updated(self, status):
         """Device updated status."""
 
-    def disconnected(self):
+    def disconnected(self, exc=""):
         """Device disconnected."""
 
 
@@ -846,7 +848,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                 for cid, device in listener.sub_devices.items():
                     if cid not in on_devs:
                         self.debug(f"Sub-device disconnected: {cid}")
-                        device.disconnected()
+                        device.disconnected("Device is offline")
             except asyncio.CancelledError:
                 pass
 
@@ -919,8 +921,8 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.debug("Started heartbeat loop")
             while True:
                 try:
-                    if self.last_command_sent > self.HEARTBEAT_SKIP:
-                        await self.heartbeat()
+                    # if self.last_command_sent > self.HEARTBEAT_SKIP:
+                    await self.heartbeat()
                     await asyncio.sleep(HEARTBEAT_INTERVAL)
                 except asyncio.CancelledError:
                     self.debug("Stopped heartbeat loop")
@@ -973,7 +975,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         try:
             listener = self.listener and self.listener()
             if listener is not None:
-                listener.disconnected()
+                listener.disconnected(exc or "Connection lost")
         except Exception:  # pylint: disable=broad-except
             self.exception("Failed to call disconnected callback")
 
@@ -985,7 +987,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         while command_delay and self.last_command_sent < 0.050:
             await asyncio.sleep(0.060)
             wait += 1
-            if wait > 10:
+            if wait >= 10:
                 break
 
         self._last_command_sent = time.time()
@@ -1614,10 +1616,17 @@ async def connect(
             ),
             timeout=3,
         )
-    except OSError as ex:
-        raise ValueError(str(ex))
+    # Assuming the connect timed out then then the host isn't reachable.
+    except (OSError, TimeoutError) as ex:
+        if ex.errno == errno.EHOSTUNREACH or isinstance(ex, TimeoutError):
+            raise OSError(
+                errno.EHOSTUNREACH,
+                os.strerror(errno.EHOSTUNREACH) + f" ('{address}', '{port}')",
+            )
+
+        raise ex
     except Exception as ex:
-        raise Exception(ex)
+        raise ex
     except:
         raise Exception(f"The host refused to connect")
 

@@ -1267,7 +1267,7 @@ SELECTS["wxkg"] = (
         icon="mdi:cog",
         entity_category=EntityCategory.CONFIG,
         custom_configs=localtuya_selector(
-            {"remote_control": "Remtoe", "wireless_switch": "Wireless"}
+            {"remote_control": "Remote", "wireless_switch": "Wireless"}
         ),
         condition_contains_any=["remote_control", "wireless_switch"],
     ),
