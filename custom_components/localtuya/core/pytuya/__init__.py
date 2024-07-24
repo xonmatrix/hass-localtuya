@@ -726,7 +726,6 @@ class TuyaListener(ABC):
     """Listener interface for Tuya device changes."""
 
     sub_devices: dict[str, Self]
-    sub_device_online = False
 
     @abstractmethod
     def status_updated(self, status):
@@ -756,8 +755,6 @@ class EmptyListener(TuyaListener):
 
 class TuyaProtocol(asyncio.Protocol, ContextualLogger):
     """Implementation of the Tuya protocol."""
-
-    HEARTBEAT_SKIP = 5
 
     def __init__(
         self,
@@ -927,9 +924,8 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.debug("Started heartbeat loop")
             while True:
                 try:
-                    # if self.last_command_sent > self.HEARTBEAT_SKIP:
-                    await self.heartbeat()
                     await asyncio.sleep(HEARTBEAT_INTERVAL)
+                    await self.heartbeat()
                 except asyncio.CancelledError:
                     self.debug("Stopped heartbeat loop")
                     raise
@@ -955,10 +951,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.debug("Start a heartbeat for sub-devices")
             while True:
                 try:
+                    await asyncio.sleep(HEARTBEAT_SUB_DEVICES_INTERVAL)
                     # Reset the state before every request.
                     self.sub_devices_states = {"online": [], "offline": []}
                     await self.subdevices_query()
-                    await asyncio.sleep(HEARTBEAT_SUB_DEVICES_INTERVAL)
                 except asyncio.CancelledError:
                     break
                 except Exception as ex:
@@ -987,11 +983,11 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         except Exception:  # pylint: disable=broad-except
             self.exception("Failed to call disconnected callback")
 
-    async def transport_write(self, data, command_delay=True):
-        """Write data on transport, The 'command_delay' will ensure that no massive requests happen all at once."""
+    async def transport_write(self, data):
+        """Write data on transport, ensure that no massive requests happen all at once."""
         wait = 0
-        while command_delay and self.last_command_sent < 0.050:
-            await asyncio.sleep(0.060)
+        while self.last_command_sent < 0.050:
+            await asyncio.sleep(0.010)
             wait += 1
             if wait >= 10:
                 break
@@ -1061,7 +1057,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                 )
         return None
 
-    async def exchange(self, command, dps=None, nodeID=None, delay=True, payload=None):
+    async def exchange(self, command, dps=None, nodeID=None, payload=None):
         """Send and receive a message, returning response from device."""
         if not self.is_connected:
             return None
@@ -1090,7 +1086,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         enc_payload = self._encode_message(payload)
 
-        await self.transport_write(enc_payload, delay)
+        await self.transport_write(enc_payload)
         msg = await self.dispatcher.wait_for(seqno, payload.cmd)
         if msg is None:
             self.debug("Wait was aborted for seqno %d", seqno)
@@ -1117,7 +1113,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
     async def status(self, cid=None):
         """Return device status."""
-        status: dict = await self.exchange(command=DP_QUERY, nodeID=cid, delay=False)
+        status: dict = await self.exchange(command=DP_QUERY, nodeID=cid)
 
         self.dps_cache.setdefault("parent", {})
         if status and "dps" in status:
