@@ -827,7 +827,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
         try:
             spayload = json.dumps(payload)
             # spayload = payload.replace('\"','').replace('\'','')
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             spayload = '""'
 
         vals = (error_codes[number], str(number), spayload)
@@ -867,10 +867,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             updated_states["online"] = list(set(cached_on_devs + on_devs))
             updated_states["offline"] = list(set(cached_off_devs + off_devs))
 
-            self.sub_devices_states = updated_states
-
             if self._sub_devs_query_task is not None:
                 self._sub_devs_query_task.cancel()
+
+            self.sub_devices_states = updated_states
             self._sub_devs_query_task = self.loop.create_task(_action())
 
     def _setup_dispatcher(self) -> MessageDispatcher:
@@ -902,12 +902,16 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             listener = self.listener and self.listener()
             if listener is not None:
                 if cid:
-                    listener = listener.sub_devices.get(cid, listener)
-                    device = self.dps_cache.get(cid, {})
+                    # Don't pass sub-device's payload to the (fake)gateway!
+                    if not (listener := listener.sub_devices.get(cid, None)):
+                        return self.debug(
+                            f'Payload for missing sub-device discarded: "{decoded_message}"'
+                        )
+                    status = self.dps_cache.get(cid, {})
                 else:
-                    device = self.dps_cache.get("parent", {})
+                    status = self.dps_cache.get("parent", {})
 
-                listener.status_updated(device)
+                listener.status_updated(status)
 
         return MessageDispatcher(self.id, _status_update, self.version, self.local_key)
 
@@ -1031,7 +1035,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         try:
             await self.transport_write(enc_payload)
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             await self.close()
             return None
         while recv_retries:
@@ -1040,7 +1044,7 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
                 msg = await self.dispatcher.wait_for(seqno, payload.cmd)
                 # for 3.4 devices, we get the starting seqno with the SESS_KEY_NEG_RESP message
                 self.seqno = msg.seqno
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 msg = None
             if msg and len(msg.payload) != 0:
                 return msg
@@ -1086,7 +1090,10 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         enc_payload = self._encode_message(payload)
 
-        await self.transport_write(enc_payload)
+        try:
+            await self.transport_write(enc_payload)
+        except Exception:  # pylint: disable=broad-except
+            return self.clean_up_session()
         msg = await self.dispatcher.wait_for(seqno, payload.cmd)
         if msg is None:
             self.debug("Wait was aborted for seqno %d", seqno)
