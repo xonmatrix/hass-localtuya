@@ -46,6 +46,7 @@ import logging
 import struct
 import time
 import weakref
+from enum import Enum
 from abc import ABC, abstractmethod
 from typing import Self
 from collections import namedtuple
@@ -113,6 +114,12 @@ class DecodeError(Exception):
     """Specific Exception caused by decoding error."""
 
     pass
+
+
+class SubdeviceState(Enum):
+    ONLINE = 1
+    OFFLINE = 2
+    ABSENT = 3
 
 
 # Tuya Command Types
@@ -735,7 +742,7 @@ class TuyaListener(ABC):
         """Device disconnected."""
 
     @abstractmethod
-    def subdevice_state(self, is_online):
+    def subdevice_state(self, state: SubdeviceState):
         """Device is offline or online."""
 
 
@@ -748,7 +755,7 @@ class EmptyListener(TuyaListener):
     def disconnected(self, exc=""):
         """Device disconnected."""
 
-    def subdevice_state(self, is_online):
+    def subdevice_state(self, state: SubdeviceState):
         """Device is offline or online."""
 
 
@@ -845,11 +852,21 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
                 self.debug(f"Sub-Devices States Update: {self.sub_devices_states}")
                 on_devs = self.sub_devices_states.get("online")
+                off_devs = self.sub_devices_states.get("offline")
                 listener = self.listener and self.listener()
-                if listener is None or on_devs is None:
+                if listener is None or (on_devs is None and off_devs is None):
                     return
-                for cid, device in listener.sub_devices.items():
-                    device.subdevice_state(cid in on_devs)
+                # listener.sub_devices can be changed when an absent sub-device is removed from,
+                # or re-connected sub-deviceis added to it. Such an event causes
+                #     RuntimeError: dictionary changed size during iteration
+                subdevices = dict(listener.sub_devices)
+                for cid, device in subdevices.items():
+                    if cid in on_devs:
+                        device.subdevice_state(SubdeviceState.ONLINE)
+                    elif cid in off_devs:
+                        device.subdevice_state(SubdeviceState.OFFLINE)
+                    else:
+                        device.subdevice_state(SubdeviceState.ABSENT)
             except asyncio.CancelledError:
                 pass
 
@@ -956,7 +973,9 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
             self.heartbeater = self.loop.create_task(
                 heartbeat_loop(
                     # Ver. 3.3 gateways don't respond to subdevice query
-                    sq if is_gateway and self.version >= 3.4 else hb
+                    sq
+                    if is_gateway and self.version >= 3.4
+                    else hb
                 )
             )
 
@@ -1002,6 +1021,9 @@ class TuyaProtocol(asyncio.Protocol, ContextualLogger):
 
         if self.heartbeater:
             self.heartbeater.cancel()
+
+        if self._sub_devs_query_task:
+            self._sub_devs_query_task.cancel()
 
         if self.dispatcher:
             self.dispatcher.abort()
