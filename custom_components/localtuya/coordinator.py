@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import asyncio
+import errno
 import logging
 import time
 from datetime import timedelta
@@ -207,14 +208,12 @@ class TuyaDevice(TuyaListener, ContextualLogger):
                 break  # Succeed break while loop
             except OSError as e:
                 await self.abort_connect()
-                if (
-                    retry >= max_retries or e.errno == pytuya.errno.EHOSTUNREACH
-                ) and not self.is_sleep:
+                if e.errno == errno.EHOSTUNREACH and not self.is_sleep:
                     self.warning(f"Connection failed: {e}")
                     break
             except Exception as ex:  # pylint: disable=broad-except
                 await self.abort_connect()
-                if retry >= max_retries and not self.is_sleep:
+                if not self.is_sleep:
                     self.warning(f"Failed to connect to {host}: {str(ex)}")
                 if "key" in str(ex):
                     update_localkey = True
