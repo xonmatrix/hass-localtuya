@@ -390,6 +390,16 @@ LIGHTS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             custom_configs=localtuya_light(29, 1000, 2700, 6500, False, False),
         ),
     ),
+    # Drying Rack
+    # https://developer.tuya.com/en/docs/iot/categorylyj?id=Kaiuz1cy926vh
+    "lyj": (
+        LocalTuyaEntity(
+            id=DPCode.LIGHT,
+            name="State light",
+            entity_category=EntityCategory.CONFIG,
+            custom_configs=localtuya_light(29, 1000, 2700, 6500, False, False),
+        ),
+    )
 }
 
 # HDMI Sync Box A1
